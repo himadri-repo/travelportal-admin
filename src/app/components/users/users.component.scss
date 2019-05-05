@@ -1,0 +1,25 @@
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+
+#content {
+    width: 100%;
+    padding: 20px;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #999;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #0000ff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.1rem;
+    font-weight: 300;
+}
