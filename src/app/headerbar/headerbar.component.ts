@@ -6,7 +6,6 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   styleUrls: ['./headerbar.component.scss']
 })
 export class HeaderbarComponent implements OnInit {
-
   constructor() { }
 
   ngOnInit() {
