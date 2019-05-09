@@ -22,7 +22,7 @@ a:focus {
 
 .navbar {
     padding: 15px 10px;
-    background-color: #77579c !important;
+    background-color: #faa61a !important;
     border: none;
     border-radius: 0;
     margin-bottom: 0px; /* 40px */
@@ -48,7 +48,10 @@ span {
 }
 
 #content {
-    margin: 0px 10px 0px 10px;
+    /*margin: 0px 10px 0px 10px;*/
+    width: 100%;
+    padding: 10px 40px;
+    background-color: #ffffff;
 }
 
 .no-padding {
@@ -58,13 +61,14 @@ span {
 .wrapper {
     display: flex;
     align-items: stretch;
+    margin: 20px 10px 20px 10px;
 }
 
 .right-floated {
     /*width: 50%;
     float: right;*/
     color: #ffffff;
-    background-color: #77579c;
+    background-color: #faa61a;
     padding: 0px 10px;
 }
 
@@ -72,6 +76,7 @@ span {
     position: sticky;
     top: 0px;
     z-index: 9 !important;
+    box-shadow: 4px 5px 6px rgba(101, 95, 95, 0.55);
 }
 
 .header-menu {

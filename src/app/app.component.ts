@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
 @Component({
@@ -8,7 +8,7 @@ import { Title } from '@angular/platform-browser';
 })
 export class AppComponent {
   title = 'My Travel App';
-  companyname: string = 'OxyTra';
+  companyname = 'OxyTra';
   constructor(headTitle: Title) {
     headTitle.setTitle(this.title);
   }

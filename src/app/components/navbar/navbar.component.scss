@@ -8,7 +8,10 @@
 #sidebar {
     min-width: 250px;
     max-width: 250px;
-    background: #7386D5;
+    background: #060397;
+    background: -webkit-linear-gradient(#060397, #5351b6);
+    background:    -moz-linear-gradient(#060397, #5351b6);
+    background:         linear-gradient(#060397, #5351b6);
     color: #fff;
     transition: all 0.3s;
     height: 100%;
@@ -67,7 +70,7 @@
 
 #sidebar .sidebar-header {
     padding: 20px;
-    background: #6d7fcc;
+    background: #060397;
     text-align: center;
 }
 
@@ -89,7 +92,7 @@
 }
 
 #sidebar ul li a:hover {
-    color: #7386D5;
+    color: #060397;
     background: #fff;
 }
 
@@ -100,7 +103,7 @@
 #sidebar ul li.active>a,
 a[aria-expanded="true"] {
     color: #fff;
-    background: #6d7fcc;
+    background: #060397;
 }
 
 a[data-toggle="collapse"] {

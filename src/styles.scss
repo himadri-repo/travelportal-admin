@@ -1,3 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 
+body {
+    background: #ffffff;
+    background: -webkit-linear-gradient(#ffffff, #293f50);
+    background:    -moz-linear-gradient(#ffffff, #293f50);
+    background:         linear-gradient(#ffffff, #293f50);
+}
+
+a:hover {
+    text-decoration: none !important;
+}
