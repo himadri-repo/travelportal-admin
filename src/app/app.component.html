@@ -15,13 +15,13 @@
           <a class="nav-item nav-link active" href="/search"><i class="fa fa-search"></i>&nbsp;Search Flights<span class="sr-only">(current)</span></a>
         </div>
         <div class="navbar-nav right-floated">
-          <a class="nav-item nav-link active" href="/admin"><i class="fa fa-cogs"></i>&nbsp;Administration<span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link active" href="/admin?uuid={{currentUser.uid}}"><i class="fa fa-cogs"></i>&nbsp;Administration<span class="sr-only">(current)</span></a>
         </div>
         <div class="navbar-nav right-floated">
-          <a class="nav-item nav-link active" routerLink="/user" routerLinkActive="active" skipLocationChange="true"><i class="fa fa-user-o"></i>&nbsp;Hi! {{currentUser.name}}<span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link active" href="/user"><i class="fa fa-user-o"></i>&nbsp;Hi! {{currentUser.name}}<span class="sr-only">(current)</span></a>
         </div>
         <div class="navbar-nav right-floated">
-            <a class="nav-item nav-link active" routerLink="/user/logout"><i class="fa fa-sign-out"></i>&nbsp;Logout<span class="sr-only">(current)</span></a>
+            <a class="nav-item nav-link active" href="/user/logout"><i class="fa fa-sign-out"></i>&nbsp;Logout<span class="sr-only">(current)</span></a>
           </div>
         </div>
     </nav>

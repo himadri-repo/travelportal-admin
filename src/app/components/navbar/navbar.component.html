@@ -6,11 +6,11 @@
     </div>
 
     <ul class="list-unstyled components" *ngIf="(modules | json) != '[]'">
-        <li *ngFor="let category of modules | keyvalue" class="{{get_activeClass(category.key).activeClass}}">
-            <a href="#{{category.key | replaceStringPipe:' ':'_'}}" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
+        <li *ngFor="let category of modules | keyvalue" class="{{get_activeClass(category.key).activeClass}}"> <!--class="get_activeClass(category.key).activeClass"-->
+            <a href="#{{category.key | replaceStringPipe:' ':'_'}}" data-toggle="collapse" class="dropdown-toggle collapsed" aria-expanded="false" >
                 <i class="fa fa-paper-plane"></i>{{category.key}}
             </a>
-            <ul class="collapse list-unstyled {{get_activeClass(category.key).show}}" id="{{category.key | replaceStringPipe:' ':'_'}}">
+            <ul class="list-unstyled collapse get_activeClass(category.key).show" id="{{category.key | replaceStringPipe:' ':'_'}}"> <!-- get_activeClass(category.key).show -->
                 <li *ngFor="let module of category.value"><a routerLink="{{module.path}}" routerLinkActive="active" skipLocationChange="true"><i class="fa fa-plane"></i>&nbsp;{{module.display_name}}</a></li>
             </ul>
         </li>
