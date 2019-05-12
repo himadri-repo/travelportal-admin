@@ -1,11 +1,11 @@
 <!-- Sidebar  -->
 <nav id="sidebar">
-  <div class="sidebar-header">
-      <h3 class="menu-title">Manage Account</h3>
-      <strong>MA</strong>
-  </div>
+    <div class="sidebar-header">
+        <h3 class="menu-title">Manage Account</h3>
+        <strong>MA</strong>
+    </div>
 
-    <ul class="list-unstyled components">
+    <ul class="list-unstyled components" *ngIf="(modules | json) != '[]'">
         <li *ngFor="let category of modules | keyvalue" class="{{get_activeClass(category.key).activeClass}}">
             <a href="#{{category.key | replaceStringPipe:' ':'_'}}" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
                 <i class="fa fa-paper-plane"></i>{{category.key}}

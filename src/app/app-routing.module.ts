@@ -19,11 +19,12 @@ const routes: Routes = [
   {path: 'admin/roles', component: UsersComponent},
   {path: 'admin/wholesalers', component: UsersComponent},
   {path: 'admin/wholesalers/search', component: UsersComponent},
+  {path: 'admin/:uuid', component: AppComponent},
   {path: '**', component: AppComponent}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {initialNavigation: false})],
+  imports: [RouterModule.forRoot(routes, {initialNavigation: false, enableTracing: false})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

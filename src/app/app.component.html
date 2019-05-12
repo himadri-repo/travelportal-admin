@@ -3,16 +3,25 @@
   <div class="container-fluid no-padding">
     <!-- replace everything in this file with this -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky">
-      <a class="navbar-brand" routerLink="#"><h3 class="company-title">{{companyname}}</h3></a>
+      <a class="navbar-brand" routerLink="#"><h3 class="company-title"><i class="fa fa-university"></i>&nbsp;{{currentCompany.display_name}}</h3></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
         <div class="navbar-nav right-floated">
-          <a class="nav-item nav-link active" routerLink="/users" routerLinkActive="active" skipLocationChange="true">Users<span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link active" href="/"><i class="fa fa-home"></i>&nbsp;Home<span class="sr-only">(current)</span></a>
         </div>
         <div class="navbar-nav right-floated">
-            <a class="nav-item nav-link active" routerLink="/suppliers" routerLinkActive="active" skipLocationChange="true">Suppliers<span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link active" href="/search"><i class="fa fa-search"></i>&nbsp;Search Flights<span class="sr-only">(current)</span></a>
+        </div>
+        <div class="navbar-nav right-floated">
+          <a class="nav-item nav-link active" href="/admin"><i class="fa fa-cogs"></i>&nbsp;Administration<span class="sr-only">(current)</span></a>
+        </div>
+        <div class="navbar-nav right-floated">
+          <a class="nav-item nav-link active" routerLink="/user" routerLinkActive="active" skipLocationChange="true"><i class="fa fa-user-o"></i>&nbsp;Hi! {{currentUser.name}}<span class="sr-only">(current)</span></a>
+        </div>
+        <div class="navbar-nav right-floated">
+            <a class="nav-item nav-link active" routerLink="/user/logout"><i class="fa fa-sign-out"></i>&nbsp;Logout<span class="sr-only">(current)</span></a>
           </div>
         </div>
     </nav>

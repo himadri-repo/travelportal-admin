@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonService } from 'src/app/services/common.service';
 import { ActivatedRoute } from '@angular/router';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-navbar',
@@ -10,10 +12,27 @@ import { ActivatedRoute } from '@angular/router';
 export class NavbarComponent implements OnInit {
   public modules = [];
   public activeClass = '';
-  constructor(private commonService: CommonService, private route: ActivatedRoute) { }
+  private currentUser: User;
+  constructor(private commonService: CommonService, private route: ActivatedRoute, private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
-    this.commonService.get_menus('140').subscribe((res: any[]) => {
+    let uuid = '';
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log(urlParams.has('uuid')); // true
+    console.log(urlParams.get('uuid')); // uuid
+    if (urlParams.has('uuid')) {
+      uuid = urlParams.get('uuid');
+    }
+    this.authenticationService.getCurrentUser(uuid).subscribe(obsrv => {
+      if (obsrv != null) {
+        this.currentUser = obsrv;
+        this.populateMenus(this.currentUser.id);
+      }
+    });
+  }
+
+  private populateMenus(userid) {
+    this.commonService.get_menus(userid).subscribe((res: any[]) => {
       this.modules = res;
       // alert(JSON.stringify(this.route.snapshot.params.id));
       // this.modules.forEach(module => {

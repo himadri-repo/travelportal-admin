@@ -1,0 +1,15 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch localhost",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:4200/admin?uuid=aa5c6f4f-73b6-11e9-b782-c4d987fc2c6c",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

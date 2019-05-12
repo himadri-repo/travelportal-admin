@@ -24,7 +24,7 @@ import { AgGridModule } from 'ag-grid-angular';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    AgGridModule
+    AgGridModule.withComponents([]),
   ],
   providers: [CommonService],
   bootstrap: [AppComponent]
