@@ -19,6 +19,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'My Travel App';
   companyname = 'OxyTra';
   currentUUID = '';
+  public message: string;
 
   constructor(private headTitle: Title, private authenticationService: AuthenticationService,
               private route: ActivatedRoute, private router: Router)
@@ -52,6 +53,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.currentUserSubscription.unsubscribe();
+  }
+
+  navigationChangeEvent($event) {
+    this.message = $event;
   }
 
   private initInitialValues(): void {

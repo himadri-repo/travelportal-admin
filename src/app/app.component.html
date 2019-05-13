@@ -27,7 +27,7 @@
     </nav>
     <div class="wrapper">
       <div id="sidebar1">
-        <app-navbar></app-navbar>
+        <app-navbar (navigationChangeEvent)="this.navigationChangeEvent($event)"></app-navbar>
       </div>
       <!-- Page Content  -->
       <div id="content">

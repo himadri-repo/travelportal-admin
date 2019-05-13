@@ -11,6 +11,8 @@ import { HeaderbarComponent } from './headerbar/headerbar.component';
 import { CommonService } from './services/common.service';
 import { ReplaceStringPipePipe } from './common/replace-string-pipe.pipe';
 import { AgGridModule } from 'ag-grid-angular';
+import { WholesalersComponent } from './components/wholesalers/wholesalers.component';
+import { SuppliersComponent } from './components/suppliers/suppliers.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { AgGridModule } from 'ag-grid-angular';
     NavbarComponent,
     UsersComponent,
     HeaderbarComponent,
-    ReplaceStringPipePipe
+    ReplaceStringPipePipe,
+    WholesalersComponent,
+    SuppliersComponent
   ],
   imports: [
     BrowserModule,

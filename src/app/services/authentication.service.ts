@@ -38,8 +38,10 @@ export class AuthenticationService {
     // });
   }
 
-  public get currentUserValue(): User {
-    return this.currentUserSubject.value;
+  public get currentLoggedInUser(): User {
+    // return this.currentUserSubject.value;
+
+    return JSON.parse(localStorage.getItem('currentuser'));
   }
 
   public getCurrentUser(uuid) {
