@@ -13,6 +13,7 @@ import { ReplaceStringPipePipe } from './common/replace-string-pipe.pipe';
 import { AgGridModule } from 'ag-grid-angular';
 import { WholesalersComponent } from './components/wholesalers/wholesalers.component';
 import { SuppliersComponent } from './components/suppliers/suppliers.component';
+import { CustomersComponent } from './components/customers/customers.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
     HeaderbarComponent,
     ReplaceStringPipePipe,
     WholesalersComponent,
-    SuppliersComponent
+    SuppliersComponent,
+    CustomersComponent
   ],
   imports: [
     BrowserModule,

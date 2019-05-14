@@ -8,7 +8,7 @@
             "name": "Launch localhost",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:4200/admin?uuid=aa5c6f4f-73b6-11e9-b782-c4d987fc2c6c",
+            "url": "http://localhost:4200/admin?uuid=10ab1997-73b7-11e9-b224-008cfafc398c",
             "webRoot": "${workspaceFolder}"
         }
     ]

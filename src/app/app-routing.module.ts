@@ -4,11 +4,12 @@ import { UsersComponent } from './components/users/users.component';
 import { AppComponent } from './app.component';
 import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { WholesalersComponent } from './components/wholesalers/wholesalers.component';
+import { CustomersComponent } from './components/customers/customers.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
   {path: 'admin/notification', component: UsersComponent},
-  {path: 'admin/customer', component: UsersComponent},
+  {path: 'admin/customer', component: CustomersComponent},
   {path: 'admin/finance/wallet', component: UsersComponent},
   {path: 'admin/finance/accounts', component: UsersComponent},
   {path: 'admin/services', component: UsersComponent},
