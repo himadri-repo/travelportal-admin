@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { WholesalersComponent } from './components/wholesalers/wholesalers.component';
 import { CustomersComponent } from './components/customers/customers.component';
+import { TicketsComponent } from './components/tickets/tickets.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -13,7 +14,7 @@ const routes: Routes = [
   {path: 'admin/finance/wallet', component: UsersComponent},
   {path: 'admin/finance/accounts', component: UsersComponent},
   {path: 'admin/services', component: UsersComponent},
-  {path: 'admin/tickets', component: UsersComponent},
+  {path: 'admin/tickets', component: TicketsComponent},
   {path: 'admin/sales/bookings', component: UsersComponent},
   {path: 'admin/sales/ledger', component: UsersComponent},
   {path: 'admin/suppliers', component: SuppliersComponent},

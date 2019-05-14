@@ -26,4 +26,7 @@ export class AdminService {
   public getCustomersByCompany(companyid): any {
     return this.httpClient.post<Customer[]>(this.baseUrl + '/customers', {companyid});
   }
+  public getTicketsByCompany(companyid): any {
+    return this.httpClient.post<Customer[]>(this.baseUrl + '/tickets', {companyid});
+  }
 }

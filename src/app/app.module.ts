@@ -14,6 +14,7 @@ import { AgGridModule } from 'ag-grid-angular';
 import { WholesalersComponent } from './components/wholesalers/wholesalers.component';
 import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { CustomersComponent } from './components/customers/customers.component';
+import { TicketsComponent } from './components/tickets/tickets.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { CustomersComponent } from './components/customers/customers.component';
     ReplaceStringPipePipe,
     WholesalersComponent,
     SuppliersComponent,
-    CustomersComponent
+    CustomersComponent,
+    TicketsComponent
   ],
   imports: [
     BrowserModule,
