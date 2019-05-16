@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 import { map, catchError } from 'rxjs/operators';
 import { User } from '../models/user';
 
-const apiUrl = (environment.apiUrl !== null && environment.apiUrl !== undefined) ? environment.apiUrl : 'http://localhost/api';
+const apiUrl = (environment.apiUrl !== null && environment.apiUrl !== undefined) ? environment.apiUrl : 'http://localhost:90/api';
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
   private currentUserSubject: BehaviorSubject<User>;

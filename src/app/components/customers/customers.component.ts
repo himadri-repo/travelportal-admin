@@ -6,6 +6,8 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { User } from 'src/app/models/user';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import { CustomerinfoComponent } from './customerinfo/customerinfo.component';
 
 @Component({
   selector: 'app-customers',
@@ -15,9 +17,11 @@ import { User } from 'src/app/models/user';
 export class CustomersComponent implements OnInit {
   public title = 'app';
   menuTitle = 'customers';
+  message = '';
+  matDialogRef: MatDialogRef<CustomerinfoComponent>;
 
   public columnDefs = [
-    {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer'},
+    {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onClick: this.AddOrEditCustomer.bind(this)}},
     {headerName: 'Code', field: 'user_id', sortable: true, filter: true, resizable: true, width: 70},
     {headerName: 'Name', field: 'name', sortable: true, filter: true, resizable: true, width: 175},
     {headerName: 'Email', field: 'email', sortable: true, filter: true, resizable: true, width: 225, cellRenderer: 'emailrenderer'},
@@ -39,21 +43,25 @@ export class CustomersComponent implements OnInit {
   public rowData: Customer[] = [];
 
   public rowSelection = 'single';
-  private currentUser: User;
+  public currentUser: User;
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
-              private usersService: UsersService, private adminService: AdminService) {
+              private usersService: UsersService, private adminService: AdminService, private dialog: MatDialog) {
 
   }
 
   ngOnInit() {
     this.commonService.setTitle('Customers Management');
+    this.loadGrid();
+  }
 
+  loadGrid() {
     this.currentUser = this.authenticationService.currentLoggedInUser;
-
+    this.message = 'Please wait, loading customer data';
     this.adminService.getCustomersByCompany(this.currentUser.companyid).subscribe((res: Customer[]) => {
       this.rowData = res;
+      this.message = '';
     });
   }
 
@@ -105,12 +113,16 @@ export class CustomersComponent implements OnInit {
     const action_container = document.createElement('span');
     action_container.setAttribute('style', 'text-align: cneter');
     const edit_element = document.createElement('i');
-    let id = parseInt(params.value, 10);
+    const id = parseInt(params.value, 10);
+    const onclick = params.onClick;
+    const data = params.data;
 
     edit_element.className = 'fa fa-pencil-square-o';
     edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
     edit_element.addEventListener('click', (ev) => {
-      alert(`Id : ${id}`);
+      // alert(`Id : ${id}`);
+      // this.AddOrEditCustomer(this.currentUser.companyid, id);
+      onclick(parseInt(data.companyid, 10), parseInt(data.id, 10));
     });
 
     action_container.appendChild(edit_element);
@@ -118,17 +130,22 @@ export class CustomersComponent implements OnInit {
     return action_container;
   }
 
-  // function customLoadingOverlay() {}
-  
-  // customLoadingOverlay.prototype.init = function(params) {
-  //   const action_container = document.createElement('span');
-  //   action_container.appendChild(document.createTextNode('Please wait, refreshing data !!'));
-  //   return action_container;
-  // }
+  AddOrEditCustomer(companyid, customerid) {
+    // alert(`Company Id => ${companyid} | Customer Id => ${customerid}`);
+    this.openDialog(companyid, customerid);
+  }
 
-  // customNoRowsOverlay(params): any {
-  //   const action_container = document.createElement('span');
-  //   action_container.appendChild(document.createTextNode('Sorry, no records found !!'));
-  //   return action_container;
-  // }
+  openDialog(companyid, customerid) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.hasBackdrop = true;
+    dialogConfig.width = '50%';
+    dialogConfig.data = {companyid, customerid};
+
+    this.matDialogRef = this.dialog.open(CustomerinfoComponent, dialogConfig);
+    this.matDialogRef.afterClosed().subscribe(obsrv => {
+      this.loadGrid();
+    });
+  }
 }

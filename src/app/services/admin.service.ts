@@ -11,7 +11,7 @@ import { Customer } from '../models/customer';
   providedIn: 'root'
 })
 export class AdminService {
-  private baseUrl = (environment.apiUrl !== null && environment.apiUrl !== undefined) ? environment.apiUrl : 'http://localhost/api';
+  private baseUrl = (environment.apiUrl !== null && environment.apiUrl !== undefined) ? environment.apiUrl : 'http://localhost:90/api';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -26,7 +26,27 @@ export class AdminService {
   public getCustomersByCompany(companyid): any {
     return this.httpClient.post<Customer[]>(this.baseUrl + '/customers', {companyid});
   }
+
+  public getCustomerById(companyid, customerid): any {
+    return this.httpClient.get(this.baseUrl + `/customer/${companyid}/${customerid}`);
+  }
+
   public getTicketsByCompany(companyid): any {
     return this.httpClient.post<Customer[]>(this.baseUrl + '/tickets', {companyid});
+  }
+
+  public saveCustomer(customer: Customer, callback): any {
+    return this.httpClient.post(this.baseUrl + '/customer/save', {customer}).subscribe(data => {
+      const msg = 'POST Request is successful ';
+      console.log(msg, data);
+      if (callback) {
+        callback(msg);
+      }
+    }, error => {
+      console.log('Error', error);
+      if (callback) {
+        callback(error);
+      }
+    });
   }
 }
