@@ -7,6 +7,8 @@ import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { Supplier } from 'src/app/models/supplier';
 import { Ticket } from 'src/app/models/ticket';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-tickets',
@@ -16,6 +18,7 @@ import { Ticket } from 'src/app/models/ticket';
 export class TicketsComponent implements OnInit {
   public title = 'app';
   menuTitle = 'inventory';
+  message = '';
 
   public columnDefs = [
     {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 75},
@@ -33,14 +36,14 @@ export class TicketsComponent implements OnInit {
     {headerName: 'Admin.Markup', field: 'admin_markup', sortable: true, filter: true, resizable: true, width: 75},
     {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Markup', field: 'markup_rate', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Tag', field: 'data_collected_from', sortable: true, filter: true, resizable: true, width: 75}
+    {headerName: 'Tag', field: 'data_collected_from', sortable: true, filter: true, resizable: true, width: 75},
+    {headerName: 'Updated.On', field: 'updated_on', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'utcdaterenderer'},
+    {headerName: 'Approved', field: 'approved', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'approverenderer'},
 ];
 
   public components = {
-    actionrenderer: this.actionrenderer,
-    chkrenderer: this.chkrenderer,
-    typerenderer: this.typerenderer,
-    emailrenderer: this.emailrenderer
+    utcdaterenderer: this.utcdaterenderer,
+    approverenderer: this.approverenderer
   };
 
   // [loadingOverlayComponent]="customLoadingOverlay"
@@ -49,7 +52,7 @@ export class TicketsComponent implements OnInit {
   public rowData: Ticket[] = [];
 
   public rowSelection = 'single';
-  private currentUser: User;
+  currentUser: User;
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
@@ -61,10 +64,19 @@ export class TicketsComponent implements OnInit {
     this.commonService.setTitle('Inventory Management');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
+    this.RefreshData(this.currentUser.companyid);
+  }
 
-    this.adminService.getTicketsByCompany(this.currentUser.companyid).subscribe((res: Ticket[]) => {
-      this.rowData = res;
+  RefreshData(companyid) {
+    let self = this;
+    self.rowData = [];
+    this.adminService.getTicketsByCompany(companyid).subscribe((res: Ticket[]) => {
+      self.rowData = res;
     });
+  }
+
+  UploadTickets(companyid) {
+    alert('Feature coming soon!!');
   }
 
   emailrenderer(params): any {
@@ -72,6 +84,44 @@ export class TicketsComponent implements OnInit {
     element.href = 'mailto: ' + params.value;
     element.appendChild(document.createTextNode(params.value));
     return element;
+  }
+
+  utcdaterenderer(params): any {
+    const action_container = document.createElement('span');
+    action_container.setAttribute('style', 'text-align: cneter');
+    const updated_on = moment(new Date(params.value + ' UTC')).format('DD-MM-YYYY HH:mm:ss');
+
+    action_container.appendChild(document.createTextNode(updated_on));
+
+    return action_container;
+  }
+
+  approverenderer(params): any {
+    const action_container = document.createElement('span');
+    action_container.setAttribute('style', 'text-align: cneter');
+    const approved = parseInt(params.value, 10);
+    let approvedText = '';
+
+    switch (approved) {
+      case 0:
+        approvedText = 'Pending';
+        break;
+      case 1:
+        approvedText = 'Approved';
+        break;
+      case 2:
+        approvedText = 'Reject';
+        break;
+      case 2:
+        approvedText = 'Hold';
+        break;
+      default:
+        break;
+    }
+
+    action_container.appendChild(document.createTextNode(approvedText));
+
+    return action_container;
   }
 
   typerenderer(params): any {
