@@ -49,4 +49,25 @@ export class AdminService {
       }
     });
   }
+
+  public is_valid(customer: Customer) {
+    const email = customer.email;
+    const mobile = customer.mobile;
+    const compid = customer.companyid;
+    const id = customer.id;
+
+    return new Promise((resolve, reject) => {
+      try {
+        this.httpClient.post<Customer[]>(this.baseUrl + `/customers`, {email, mobile, compid, id}).subscribe(obsrv => {
+          if (obsrv !== null && obsrv !== undefined && obsrv.length > 0) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
+      } catch (ex) {
+        reject(ex);
+      }
+    });
+  }
 }

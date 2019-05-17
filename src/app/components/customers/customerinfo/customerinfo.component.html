@@ -22,6 +22,7 @@
             <input name="mobile" formControlName="mobile" class="form-control" required>
             <div *ngIf="submitted && f.mobile.errors" class="alert alert-danger">
                 <div *ngIf="f.mobile.errors.required">Please provide mobile number, as it is mandatory.</div>
+                <div *ngIf="f.mobile.errors.uniqueMatch">Mobile and Email must be unique</div>
             </div>
         </div>
         <div class="form-group">
@@ -42,6 +43,7 @@
             <input name="email" formControlName="email" class="form-control" required>
             <div *ngIf="submitted && f.email.errors" class="alert alert-danger">
                 <div *ngIf="f.email.errors.required">Please provide your email id</div>
+                <div *ngIf="f.email.errors.uniqueMatch">Mobile and Email must be unique</div>
             </div>
         </div>
         <div class="form-group">

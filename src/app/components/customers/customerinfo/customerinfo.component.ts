@@ -79,17 +79,13 @@ export class CustomerinfoComponent implements OnInit {
     });
   }
 
-  // checkPassword(): ValidatorFn {
-  //   return true;
-  // }
-
   closeDialog() {
     this.dialogRef.close('Close');
   }
 
   get f() { return this.custinfoform.controls; }
 
-  onSubmit() {
+  async onSubmit() {
     this.submitted = true;
     if (!this.custinfoform.invalid) {
       console.log(this.custinfoform.value);
@@ -101,11 +97,20 @@ export class CustomerinfoComponent implements OnInit {
       this.customerInfoData.type = postedForm.type;
       this.customerInfoData.credit_ac = postedForm.credit_ac;
       this.customerInfoData.password = postedForm.password;
-      this.adminService.saveCustomer(this.customerInfoData, () => {
-        this.dialogRef.close('Close');
-        this.custinfoform.reset();
+      const isValid = await this.adminService.is_valid(this.customerInfoData);
+      if (isValid) {
+        this.adminService.saveCustomer(this.customerInfoData, (msg) => {
+          this.dialogRef.close('Close');
+          this.custinfoform.reset();
+          return;
+        });
+      } else {
+        // tslint:disable-next-line: no-string-literal
+        this.custinfoform.controls['mobile'].setErrors({ uniqueMatch: true });
+        // tslint:disable-next-line: no-string-literal
+        this.custinfoform.controls['email'].setErrors({ uniqueMatch: true });
         return;
-      });
+      }
     } else {
       return;
     }
