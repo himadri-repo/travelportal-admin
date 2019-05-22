@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { Wholesaler } from '../models/wholesaler';
 import { Supplier } from '../models/supplier';
 import { Customer } from '../models/customer';
+import { Company } from '../models/company';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,14 @@ export class AdminService {
 
   public getTicketsByCompany(companyid): any {
     return this.httpClient.post<Customer[]>(this.baseUrl + '/tickets', {companyid});
+  }
+
+  public searchWholesalers(): any {
+    return this.httpClient.post<Company[]>(this.baseUrl + '/admin/wholesalers', {});
+  }
+
+  public searchSuppliers(): any {
+    return this.httpClient.post<Company[]>(this.baseUrl + '/admin/suppliers', {});
   }
 
   public saveCustomer(customer: Customer, callback): any {

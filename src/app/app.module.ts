@@ -22,6 +22,8 @@ import { MatToolbarModule, MatDialogModule } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
 import { CustomerinfoComponent } from './components/customers/customerinfo/customerinfo.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';
+import { SuppliersearchComponent } from './components/suppliers/suppliersearch/suppliersearch.component';
 
 
 @NgModule({
@@ -35,7 +37,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     SuppliersComponent,
     CustomersComponent,
     TicketsComponent,
-    CustomerinfoComponent
+    CustomerinfoComponent,
+    SuppliersearchComponent,
+    WholesalerSearchComponent
   ],
   imports: [
     BrowserModule,

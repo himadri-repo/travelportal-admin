@@ -6,6 +6,8 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { WholesalersComponent } from './components/wholesalers/wholesalers.component';
 import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
+import { SuppliersearchComponent } from './components/suppliers/suppliersearch/suppliersearch.component';
+import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -18,11 +20,11 @@ const routes: Routes = [
   {path: 'admin/sales/bookings', component: UsersComponent},
   {path: 'admin/sales/ledger', component: UsersComponent},
   {path: 'admin/suppliers', component: SuppliersComponent},
-  {path: 'admin/suppliers/search', component: SuppliersComponent},
+  {path: 'admin/suppliers/search', component: SuppliersearchComponent},
   {path: 'admin/users', component: UsersComponent},
   {path: 'admin/roles', component: UsersComponent},
   {path: 'admin/wholesalers', component: WholesalersComponent},
-  {path: 'admin/wholesalers/search', component: WholesalersComponent},
+  {path: 'admin/wholesalers/search', component: WholesalerSearchComponent},
   {path: 'admin/:uuid', component: AppComponent},
   {path: '**', component: AppComponent}
 ];
