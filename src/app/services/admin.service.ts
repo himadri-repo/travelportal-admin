@@ -7,6 +7,8 @@ import { Wholesaler } from '../models/wholesaler';
 import { Supplier } from '../models/supplier';
 import { Customer } from '../models/customer';
 import { Company } from '../models/company';
+import { Communication } from '../models/communication';
+import { CommnucationDetail } from '../models/communication_details';
 
 @Injectable({
   providedIn: 'root'
@@ -44,8 +46,39 @@ export class AdminService {
     return this.httpClient.post<Company[]>(this.baseUrl + '/admin/suppliers', {});
   }
 
+  public getCommunications(inviteeid, invitorid): any {
+    return this.httpClient.post<Communication[]>(this.baseUrl + '/admin/communications', {inviteeid, invitorid});
+  }
+
+  public getCommunicationDetails(communicationid): any {
+    return this.httpClient.get<CommnucationDetail[]>(this.baseUrl + `/admin/communications/${communicationid}`);
+  }
+
+  public getMessages(boxtype, communicationid): any {
+    if (boxtype === 'inbox') {
+      return this.httpClient.get<CommnucationDetail[]>(this.baseUrl + `/admin/messages/inbox/${communicationid}`);
+    } else if (boxtype === 'outbox') {
+      return this.httpClient.get<CommnucationDetail[]>(this.baseUrl + `/admin/messages/outbox/${communicationid}`);
+    }
+  }
+
   public saveCustomer(customer: Customer, callback): any {
     return this.httpClient.post(this.baseUrl + '/customer/save', {customer}).subscribe(data => {
+      const msg = 'POST Request is successful ';
+      console.log(msg, data);
+      if (callback) {
+        callback(msg);
+      }
+    }, error => {
+      console.log('Error', error);
+      if (callback) {
+        callback(error);
+      }
+    });
+  }
+
+  public saveMessage(communication: Communication, callback): any {
+    return this.httpClient.post(this.baseUrl + '/admin/message', {communication}).subscribe(data => {
       const msg = 'POST Request is successful ';
       console.log(msg, data);
       if (callback) {

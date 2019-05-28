@@ -1,0 +1,181 @@
+<div class="py-1 text-center">
+  <h1 class="display-4">{{this.title}}</h1>
+  <p class="lead">{{this.currentUser.cname}}`s message box</p>
+  <hr class="my-4">
+  <!-- <p>Content</p> -->
+</div>
+
+<!-- <h4 class="display-4"></h4>
+<hr> -->
+
+<mat-tab-group animationDuration="2000ms" [selectedIndex]="tabindex" (selectedIndexChange)="onSelectedTabChanged($event)">
+  <mat-tab label="New Message">
+    <form [formGroup]="communicationform" autocomplete="off" (ngSubmit)="onSubmit()" novalidate style="width:98%;">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+                <label>Message title</label>
+                <input name="title" formControlName="title" class="form-control" required>
+                <div *ngIf="submitted && f.title.errors" class="alert alert-danger">
+                    <div *ngIf="f.title.errors.required">Title can't be empty</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Message To</label>
+                <span class="form-control">{{this.communication.invitee}}</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Type of message</label>
+              <select name="type" formControlName="type" class="form-control">
+                <option value="-1">-- Select --</option>
+                <option value="0">Message</option>
+                <option value="1">Invite</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Message From</label>
+              <span class="form-control">{{this.communication.invitor}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Message</label>
+              <app-ngx-editor name="message" [placeholder]="'Enter text here...'" [width]="'95%'" [minHeight]="'200px'" [spellcheck]="true" formControlName="message" required></app-ngx-editor>
+          </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-11" style="float:right; padding: 15ps 0px;">
+            <div style="float:right">
+              <button type="submit" class="btn btn-sm btn-primary active" style="margin: 0px 10px">Submit</button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Cancel</button>
+            </div>
+          </div>
+        </div>
+    </form>
+  </mat-tab>
+  <mat-tab label="Inbox">
+    <div class="container-fluid" *ngIf="this.inboxRowSelected === true">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Message title</label>
+            <span name="showtitle" class="form-control">{{this.inboxMessage.title}}</span>
+          </div>
+          <div class="form-group">
+            <label>Message To</label>
+            <span class="form-control">{{this.inboxMessage.invitee}}</span>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Type of message</label>
+            <span class="form-control">{{this.inboxMessage.type}}</span>
+          </div>
+          <div class="form-group">
+            <label>Message From</label>
+            <span class="form-control">{{this.inboxMessage.invitor}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Message</label>
+            <!-- <app-ngx-editor name="showmessage" [placeholder]="'Enter text here...'" [width]="'95%'" [minHeight]="'200px'" [spellcheck]="true" [editable]="false" [(ngModel)]="this.inboxMessage.message"></app-ngx-editor> -->
+            <span class="form-control">{{this.inboxMessage.message}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <mat-toolbar color="default" class="mat-elevation-z1" style="width: 98%; margin: 25px 5px 1px 5px; height:35px;">
+      <span class="badge badge-info">{{message}}</span>
+      <span class="example-spacer"></span>
+      <a class="btn btn-sm btn-success text-white" (click)="loadMessages('inbox')" role="button">
+          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+      </a>
+    </mat-toolbar>
+    <ag-grid-angular 
+        style="width: 98%; height: 400px; margin: 0px 5px 20px 5px;"
+        class="ag-theme-balham"
+        [rowData]="inboxRowData" 
+        [rowSelection]="rowSelection"
+        (rowSelected)="onRowSelected('inbox',$event)"
+        [columnDefs]="inboxColumnDefs"
+        [components]="components"
+        [suppressCellSelection]="true"
+        >
+    </ag-grid-angular>
+    <div class="row">
+      <div class="col-md-11" style="float:right; padding: 15ps 0px;">
+        <div style="float:right">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="Outbox">
+    <div class="container-fluid" *ngIf="this.inboxRowSelected === true">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Message title</label>
+            <span name="showtitle" class="form-control">{{this.inboxMessage.title}}</span>
+          </div>
+          <div class="form-group">
+            <label>Message To</label>
+            <span class="form-control">{{this.inboxMessage.invitee}}</span>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Type of message</label>
+            <span class="form-control">{{this.inboxMessage.type}}</span>
+          </div>
+          <div class="form-group">
+            <label>Message From</label>
+            <span class="form-control">{{this.inboxMessage.invitor}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Message</label>
+            <!-- <app-ngx-editor name="showmessage" [placeholder]="'Enter text here...'" [width]="'95%'" [minHeight]="'200px'" [spellcheck]="true" [editable]="false" [(ngModel)]="this.inboxMessage.message"></app-ngx-editor> -->
+            <div class="form-control" [innerHTML]="this.inboxMessage.message" style="height: 100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 25px 5px 1px 5px; height:35px;">
+      <span class="badge badge-info">{{message}}</span>
+      <span class="example-spacer"></span>
+      <a class="btn btn-sm btn-success text-white" (click)="loadMessages('outbox')" role="button">
+          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+      </a>
+    </mat-toolbar>
+    <ag-grid-angular 
+        style="width: 98%; height: 400px; margin: 0px 5px 20px 5px;"
+        class="ag-theme-balham"
+        [rowData]="outboxRowData" 
+        [rowSelection]="rowSelection"
+        [columnDefs]="outboxColumnDefs"
+        (rowSelected)="onRowSelected('outbox', $event)"
+        [components]="components"
+        [suppressCellSelection]="true"
+        >
+    </ag-grid-angular>
+    <div class="row">
+      <div class="col-md-11" style="float:right; padding: 15ps 0px;">
+        <div style="float:right">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </mat-tab>  
+</mat-tab-group>

@@ -6,6 +6,8 @@ import { UsersService } from 'src/app/services/users.service';
 import { CommonService } from 'src/app/services/common.service';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { AdminService } from 'src/app/services/admin.service';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import { InviteComponent } from '../../communication/invite/invite.component';
 
 @Component({
   selector: 'app-suppliersearch',
@@ -16,6 +18,7 @@ export class SuppliersearchComponent implements OnInit {
   public title = 'app';
   menuTitle = 'suppliers';
   message = '';
+  matDialogRef: MatDialogRef<InviteComponent>;
 
   public columnDefs = [
       {headerName: 'Code', field: 'tenent_code', sortable: true, filter: true, resizable: true, width: 70},
@@ -23,13 +26,13 @@ export class SuppliersearchComponent implements OnInit {
       {headerName: 'Address', field: 'address', sortable: true, filter: true, resizable: true, width: 120},
       {headerName: 'Email', field: 'email', sortable: true, filter: true, resizable: true, width: 200, cellRenderer: 'emailrenderer'},
       {headerName: 'Services', field: 'services', sortable: true, filter: true, resizable: true, width: 350},
-      {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 200, cellRenderer: 'actionsrenderer', cellRendererParams: {onClick: this.sendMessage.bind(this)}},
+      {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 200, cellRenderer: 'actionsrenderer', cellRendererParams: {onInviteClick: this.sendMessage.bind(this), onCommunicationClick: this.readMessage.bind(this)}},
   ];
 
   public components = {
-    actionsrenderer: this.actionsrenderer,
-    emailrenderer: this.emailrenderer,
-    companynamerenderer: this.companynamerenderer
+    actionsrenderer: this.actionsrenderer.bind(this),
+    emailrenderer: this.emailrenderer.bind(this),
+    companynamerenderer: this.companynamerenderer.bind(this)
   };
 
   public rowData: Company[] = [];
@@ -39,7 +42,7 @@ export class SuppliersearchComponent implements OnInit {
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
-              private usersService: UsersService, private adminService: AdminService) {
+              private usersService: UsersService, private adminService: AdminService, private dialog: MatDialog) {
 
   }
 
@@ -61,23 +64,48 @@ export class SuppliersearchComponent implements OnInit {
   actionsrenderer(params): any {
     const action_container = document.createElement('span');
     action_container.setAttribute('style', 'text-align: cneter');
-    const edit_element = document.createElement('i');
     const id = parseInt(params.value, 10);
-    const onclick = params.onClick;
+    const oninviteclick = params.onInviteClick;
+    const onmessageclick = params.onCommunicationClick;
     const data = params.data;
+    const currentCompanyid = this.currentUser.companyid;
+    const currentCompanyName = this.currentUser.cname;
 
-    edit_element.className = 'fa fa-envelope-o';
-    edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
-    edit_element.title = `Invite ${params.data.display_name} to join your network.`;
-    edit_element.addEventListener('click', (ev) => {
-      // alert(`Id : ${id}`);
-      // this.AddOrEditCustomer(this.currentUser.companyid, id);
-      onclick(parseInt(data.id, 10));
+    // Add action element for inviting to suppliers / wholesalers
+    let edit_element = this.getInvitationLink(params, 'invite', (ev) => {
+      oninviteclick(parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
+    });
+
+    if (currentCompanyid !== id) {
+      action_container.appendChild(edit_element);
+    }
+
+    // Add action element for message reading
+    edit_element = this.getInvitationLink(params, 'communication', (ev) => {
+      onmessageclick(parseInt(data.id, 10), currentCompanyid);
     });
 
     action_container.appendChild(edit_element);
 
     return action_container;
+  }
+
+  public getInvitationLink(params, actionName, callback) {
+    const edit_element = document.createElement('i');
+
+    if (actionName.toLowerCase() === 'invite') {
+      edit_element.title = `Invite ${params.data.display_name} to join your network.`;
+      edit_element.className = 'fa fa-envelope-o actionicon actionicon-bl';
+    } else if (actionName.toLowerCase() === 'communication') {
+      edit_element.title = `Check message received.`;
+      edit_element.className = 'fa fa-comments-o actionicon actionicon-gr';
+    }
+    edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
+
+    if (callback !== null) {
+      edit_element.addEventListener('click', callback);
+    }
+    return edit_element;
   }
 
   ngOnInit() {
@@ -94,7 +122,27 @@ export class SuppliersearchComponent implements OnInit {
     });
   }
 
-  sendMessage(companyid) {
+  sendMessage(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName) {
+    // alert(companyid);
+    this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName);
+  }
+
+  readMessage(companyid) {
     alert(companyid);
+  }
+
+  openDialog(supplierid, suppliername, companyid, companyname) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.hasBackdrop = true;
+    dialogConfig.width = '70%';
+    dialogConfig.height = '700px';
+    dialogConfig.data = {type: 'Invite Supplier', inviteeid: supplierid, inviteename: suppliername, invitorid: companyid, invitorname: companyname};
+
+    this.matDialogRef = this.dialog.open(InviteComponent, dialogConfig);
+    this.matDialogRef.afterClosed().subscribe(obsrv => {
+      this.loadSuppliers();
+    });
   }
 }

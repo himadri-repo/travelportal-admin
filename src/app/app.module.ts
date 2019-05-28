@@ -20,11 +20,15 @@ import { TicketsComponent } from './components/tickets/tickets.component';
 
 import { MatToolbarModule, MatDialogModule } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
 import { CustomerinfoComponent } from './components/customers/customerinfo/customerinfo.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';
 import { SuppliersearchComponent } from './components/suppliers/suppliersearch/suppliersearch.component';
+import { InviteComponent } from './components/communication/invite/invite.component';
 
+import { NgxEditorModule } from 'ngx-editor';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 @NgModule({
   declarations: [
@@ -39,7 +43,8 @@ import { SuppliersearchComponent } from './components/suppliers/suppliersearch/s
     TicketsComponent,
     CustomerinfoComponent,
     SuppliersearchComponent,
-    WholesalerSearchComponent
+    WholesalerSearchComponent,
+    InviteComponent
   ],
   imports: [
     BrowserModule,
@@ -50,10 +55,14 @@ import { SuppliersearchComponent } from './components/suppliers/suppliersearch/s
     MatToolbarModule,
     MatIconModule,
     MatDialogModule,
-    ReactiveFormsModule
+    MatTabsModule,
+    ReactiveFormsModule,
+    NgxEditorModule,
+    TooltipModule.forRoot()
   ],
   entryComponents: [
-    CustomerinfoComponent
+    CustomerinfoComponent,
+    InviteComponent
   ],
   providers: [CommonService],
   bootstrap: [AppComponent]

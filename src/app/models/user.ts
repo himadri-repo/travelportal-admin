@@ -20,4 +20,5 @@ export class User {
     permission: number;
     is_admin: number;
     uid: string;
+    cname: string;
 }
