@@ -62,6 +62,15 @@ export class AdminService {
     }
   }
 
+  public readMessage(msgid, userid): any {
+    return this.httpClient.post(this.baseUrl + '/admin/message/read', {msgid, userid}).subscribe(data => {
+      const msg = 'POST Request is successful ';
+      console.log(msg, data);
+    }, error => {
+      console.log('Error', error);
+    });
+  }
+
   public saveCustomer(customer: Customer, callback): any {
     return this.httpClient.post(this.baseUrl + '/customer/save', {customer}).subscribe(data => {
       const msg = 'POST Request is successful ';

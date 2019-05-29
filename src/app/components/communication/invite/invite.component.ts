@@ -36,6 +36,7 @@ export class InviteComponent implements OnInit {
 
   public inboxRowSelected = false;
   public inboxMessage: any = {};
+  public options: any = {};
 
   public inboxColumnDefs = [
     {headerName: 'Date', field: 'created_on', sortable: true, filter: true, resizable: true, width: 120},
@@ -65,6 +66,22 @@ export class InviteComponent implements OnInit {
     typerenderer: this.typerenderer.bind(this)
   };
 
+  public ibrowClassRules = {
+    'row-bold'(params) {
+      const toberead = parseInt(params.data.read, 10);
+      return toberead === 0;
+    }
+    // 'sick-days-breach': 'data.sickDays > 8'
+  };
+
+  public obrowClassRules = {
+    'row-bold'(params) {
+      const read = parseInt(params.data.read, 10);
+      return read === 0;
+    }
+    // 'sick-days-breach': 'data.sickDays > 8'
+  };
+
   public rowSelection = 'single';
 
   constructor(@Inject(MAT_DIALOG_DATA) public data, public dialogRef: MatDialogRef<InviteComponent>, private authenticationService: AuthenticationService,
@@ -76,6 +93,9 @@ export class InviteComponent implements OnInit {
     this.inviteeid = data.inviteeid;
     this.invitorname = data.invitorname;
     this.inviteename = data.inviteename;
+    this.options = data.option || {showInvite: true, defaultTabIndex: 0};
+
+    this.tabindex = this.options.defaultTabIndex;
 
     this.communication = new Communication();
     this.communication.id = -1;
@@ -137,6 +157,14 @@ export class InviteComponent implements OnInit {
       invitor: new FormControl(this.communication.invitor),
       message: new FormControl(''),
     }, {});
+
+    if (this.tabindex === 1) {
+      // inbox
+      this.loadMessages('inbox');
+    } else if (this.tabindex === 2) {
+      // outbox
+      this.loadMessages('outbox');
+    }
   }
 
   typerenderer(params): any {
@@ -178,12 +206,13 @@ export class InviteComponent implements OnInit {
         communicationDetail.type = postedForm.type;
         communicationDetail.ref_no = '';
         this.communication.details.push(communicationDetail);
-      } catch(e) {
+      } catch (e) {
         console.log(e);
       }
 
       await this.adminService.saveMessage(this.communication, (msg) => {
-          this.dialogRef.close('Close');
+          // this.dialogRef.close('Close');
+          this.tabindex = 2; // Lets move to outbox to see just sent invitation or message
           this.communicationform.reset();
           return;
       });
@@ -215,9 +244,9 @@ export class InviteComponent implements OnInit {
     // this.currentUser = this.authenticationService.currentLoggedInUser;
     // this.message = 'Please wait, loading customer data';
     this.inboxRowData = this.outboxRowData = [];
+    this.inboxRowSelected = false;
     this.adminService.getMessages(boxtype, this.currentUser.companyid).subscribe((res: Message[]) => {
       if (boxtype === 'inbox') {
-        this.inboxRowSelected = false;
         this.inboxRowData = res;
       } else if (boxtype === 'outbox') {
         this.outboxRowData = res;
@@ -243,6 +272,10 @@ export class InviteComponent implements OnInit {
       this.inboxMessage.invitor = inbxMessage.from_company_name;
       this.inboxMessage.title = inbxMessage.title;
       this.inboxMessage.message = inbxMessage.message;
+
+      if (inbxMessage.to_companyid === this.currentUser.companyid) {
+        this.adminService.readMessage(row.data.id, this.currentUser.id);
+      }
 
       this.inboxRowSelected = true;
       // alert(inboxMessage.message);

@@ -124,21 +124,21 @@ export class SuppliersearchComponent implements OnInit {
 
   sendMessage(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName) {
     // alert(companyid);
-    this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName);
+    this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName, {showInvite: true, defaultTabIndex: 0});
   }
 
-  readMessage(companyid) {
-    alert(companyid);
+  readMessage(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName) {
+    this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName, {showInvite: false, defaultTabIndex: 1});
   }
 
-  openDialog(supplierid, suppliername, companyid, companyname) {
+  openDialog(supplierid, suppliername, companyid, companyname, option) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.hasBackdrop = true;
     dialogConfig.width = '70%';
     dialogConfig.height = '700px';
-    dialogConfig.data = {type: 'Invite Supplier', inviteeid: supplierid, inviteename: suppliername, invitorid: companyid, invitorname: companyname};
+    dialogConfig.data = {type: 'Invite Supplier', inviteeid: supplierid, inviteename: suppliername, invitorid: companyid, invitorname: companyname, option};
 
     this.matDialogRef = this.dialog.open(InviteComponent, dialogConfig);
     this.matDialogRef.afterClosed().subscribe(obsrv => {

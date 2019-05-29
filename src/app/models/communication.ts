@@ -12,6 +12,7 @@ export class Communication {
     invitee: string;
     invitor: string;
     msgcount: number;
+    toberead: number;
     details: Array<CommnucationDetail>;
 
     constructor() {

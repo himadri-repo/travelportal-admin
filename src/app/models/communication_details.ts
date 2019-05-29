@@ -11,4 +11,6 @@ export class CommnucationDetail {
     created_on: string;
     updated_by: number;
     updated_on: string;
+    read: number;
+    last_read_on: string;
 }

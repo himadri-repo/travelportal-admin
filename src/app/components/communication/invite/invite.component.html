@@ -31,7 +31,7 @@
               <select name="type" formControlName="type" class="form-control">
                 <option value="-1">-- Select --</option>
                 <option value="0">Message</option>
-                <option value="1">Invite</option>
+                <option value="1" *ngIf="this.options.showInvite">Invite</option>
               </select>
             </div>
             <div class="form-group">
@@ -107,6 +107,7 @@
         (rowSelected)="onRowSelected('inbox',$event)"
         [columnDefs]="inboxColumnDefs"
         [components]="components"
+        [rowClassRules]="ibrowClassRules"
         [suppressCellSelection]="true"
         >
     </ag-grid-angular>
@@ -166,9 +167,9 @@
         [rowSelection]="rowSelection"
         [columnDefs]="outboxColumnDefs"
         (rowSelected)="onRowSelected('outbox', $event)"
+        [rowClassRules]="obrowClassRules"
         [components]="components"
-        [suppressCellSelection]="true"
-        >
+        [suppressCellSelection]="true">
     </ag-grid-angular>
     <div class="row">
       <div class="col-md-11" style="float:right; padding: 15ps 0px;">
