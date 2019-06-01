@@ -1,4 +1,4 @@
-export class CommnucationDetail {
+export class CommunicationDetail {
     id: number;
     pid: number;
     message: string;
@@ -13,4 +13,6 @@ export class CommnucationDetail {
     updated_on: string;
     read: number;
     last_read_on: string;
+    invitation_type: number; /* 1 = Wholesaler | 2 = Supplier */
+    serviceid: number;
 }

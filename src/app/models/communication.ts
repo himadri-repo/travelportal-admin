@@ -1,4 +1,4 @@
-import { CommnucationDetail } from './communication_details';
+import { CommunicationDetail } from './communication_details';
 
 export class Communication {
     id: number;
@@ -13,9 +13,9 @@ export class Communication {
     invitor: string;
     msgcount: number;
     toberead: number;
-    details: Array<CommnucationDetail>;
+    details: Array<CommunicationDetail>;
 
     constructor() {
-        this.details = new Array<CommnucationDetail>();
+        this.details = new Array<CommunicationDetail>();
     }
 }

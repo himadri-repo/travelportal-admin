@@ -8,10 +8,11 @@ import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
 import { SuppliersearchComponent } from './components/suppliers/suppliersearch/suppliersearch.component';
 import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';
+import { NotificationComponent } from './components/notification/notification.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
-  {path: 'admin/notification', component: UsersComponent},
+  {path: 'admin/notification', component: NotificationComponent},
   {path: 'admin/customer', component: CustomersComponent},
   {path: 'admin/finance/wallet', component: UsersComponent},
   {path: 'admin/finance/accounts', component: UsersComponent},

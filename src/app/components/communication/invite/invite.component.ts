@@ -8,9 +8,10 @@ import { AdminService } from 'src/app/services/admin.service';
 import { Communication } from 'src/app/models/communication';
 import { User } from 'src/app/models/user';
 import { AuthenticationService } from 'src/app/services/authentication.service';
-import { CommnucationDetail } from 'src/app/models/communication_details';
+import { CommunicationDetail } from 'src/app/models/communication_details';
 import { NgxEditorModule } from 'ngx-editor';
 import { Message } from '@angular/compiler/src/i18n/i18n_ast';
+import { Service } from 'src/app/models/service';
 
 @Component({
   selector: 'app-invite',
@@ -29,10 +30,11 @@ export class InviteComponent implements OnInit {
   public inviteename = '';
   public tabindex = 0;
   public currentUser: User;
-  public communicationDetails: CommnucationDetail[];
+  public communicationDetails: CommunicationDetail[];
 
   public inboxRowData: Message[] = [];
   public outboxRowData: Message[] = [];
+  public services: Service[] = [];
 
   public inboxRowSelected = false;
   public inboxMessage: any = {};
@@ -127,7 +129,7 @@ export class InviteComponent implements OnInit {
           self.adminService.getCommunicationDetails(communicationInfo.id).subscribe(obsrv1 => {
             if (obsrv1 !== null && obsrv1 !== undefined && obsrv1.length > 0) {
               for (let index = 0; index < obsrv1.length; index++) {
-                const communicationDetail = new CommnucationDetail();
+                const communicationDetail = new CommunicationDetail();
               }
             }
           });
@@ -156,7 +158,12 @@ export class InviteComponent implements OnInit {
       invitee: new FormControl(this.communication.invitee),
       invitor: new FormControl(this.communication.invitor),
       message: new FormControl(''),
+      service: new FormControl('')
     }, {});
+
+    this.adminService.getServicesByCompany(this.inviteeid).subscribe((res: Service[]) => {
+      this.services = res;
+    });
 
     if (this.tabindex === 1) {
       // inbox
@@ -174,6 +181,10 @@ export class InviteComponent implements OnInit {
       type_value = 'Message';
     } else if (parseInt(params.value, 10) === 1) {
       type_value = 'Invite';
+    } else if (parseInt(params.value, 10) === 2) {
+      type_value = 'Approve';
+    } else if (parseInt(params.value, 10) === 3) {
+      type_value = 'Reject';
     }
 
     const element = document.createElement('span');
@@ -189,6 +200,7 @@ export class InviteComponent implements OnInit {
       console.log(this.communicationform.value);
       const postedForm = this.communicationform.value;
       this.communication = new Communication();
+
       this.communication.id = -1;
       this.communication.companyid = this.currentUser.companyid;
       this.communication.created_by = this.currentUser.id;
@@ -196,14 +208,24 @@ export class InviteComponent implements OnInit {
       this.communication.title = postedForm.title;
 
       try {
-        this.communication.details = new Array<CommnucationDetail>();
-        const communicationDetail = new CommnucationDetail();
+        this.communication.details = new Array<CommunicationDetail>();
+        const communicationDetail = new CommunicationDetail();
+
+        if (postedForm.service === null || postedForm.service === '' || postedForm.service === undefined) {
+          communicationDetail.serviceid = this.services[0].serviceid;
+        } else {
+          communicationDetail.serviceid = parseInt(postedForm.service, 10);
+        }
+
         communicationDetail.active = 1;
         communicationDetail.created_by = this.currentUser.id;
         communicationDetail.from_companyid = this.currentUser.companyid;
         communicationDetail.message = postedForm.message;
         communicationDetail.to_companyid = this.inviteeid;
         communicationDetail.type = postedForm.type;
+        if (postedForm.type === 1) {
+          communicationDetail.invitation_type = (this.title.toLocaleLowerCase() === 'invite wholesaler') ? 1 : 2;
+        }
         communicationDetail.ref_no = '';
         this.communication.details.push(communicationDetail);
       } catch (e) {
@@ -214,6 +236,7 @@ export class InviteComponent implements OnInit {
           // this.dialogRef.close('Close');
           this.tabindex = 2; // Lets move to outbox to see just sent invitation or message
           this.communicationform.reset();
+          // After reset we need to allow user to send another message to the same user.
           return;
       });
 
@@ -267,7 +290,16 @@ export class InviteComponent implements OnInit {
   onRowSelected(messageType, row) {
     if (row.node.selected) {
       const inbxMessage = row.data;
-      this.inboxMessage.type = (inbxMessage.type === 0 ? 'Message' : 'Invite');
+      if (inbxMessage.type === 0) {
+        this.inboxMessage.type = 'Message';
+      } else if (inbxMessage.type === 1) {
+        this.inboxMessage.type = 'Invite';
+      } else if (inbxMessage.type === 2) {
+        this.inboxMessage.type = 'Approve';
+      } else if (inbxMessage.type === 3) {
+        this.inboxMessage.type = 'Reject';
+      }
+
       this.inboxMessage.invitee = inbxMessage.to_company_name;
       this.inboxMessage.invitor = inbxMessage.from_company_name;
       this.inboxMessage.title = inbxMessage.title;

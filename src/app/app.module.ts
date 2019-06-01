@@ -18,7 +18,7 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
 
-import { MatToolbarModule, MatDialogModule } from '@angular/material';
+import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CustomerinfoComponent } from './components/customers/customerinfo/customerinfo.component';
@@ -29,6 +29,7 @@ import { InviteComponent } from './components/communication/invite/invite.compon
 
 import { NgxEditorModule } from 'ngx-editor';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
     CustomerinfoComponent,
     SuppliersearchComponent,
     WholesalerSearchComponent,
-    InviteComponent
+    InviteComponent,
+    NotificationComponent
   ],
   imports: [
     BrowserModule,
@@ -56,6 +58,9 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
     MatIconModule,
     MatDialogModule,
     MatTabsModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    MatSelectModule,
     ReactiveFormsModule,
     NgxEditorModule,
     TooltipModule.forRoot()
