@@ -59,7 +59,7 @@
     </form>
   </mat-tab>
   <mat-tab label="Inbox" style="height: 100%;">
-    <div class="container-fluid" *ngIf="this.inboxRowSelected === true">
+    <div class="container-fluid" *ngIf="this.inboxRowSelected === true" style="margin: 10px 2px 5px 2px;">
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
@@ -92,47 +92,53 @@
         </div>
       </div>
     </div>
-    <form [formGroup]="handleinvitationform" autocomplete="off" (ngSubmit)="onHandleInvitation()" novalidate style="width:98%;">
-      <input type="hidden" formControlName="msgid"/>
-      <div class="container-fluid" *ngIf="this.handleRowInvitation === true" style="margin: 15px 15px;">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="form-group">
-              <mat-radio-group aria-label="Select an option" formControlName="status">
-                <mat-radio-button value="1" style="display:block; margin-right: 25px;">I am accepting invitation from {{this.invitorname}}.</mat-radio-button>
-                <mat-radio-button value="2" style="display:block; margin-right: 25px;">I am rejecting invitation from {{this.invitorname}}.</mat-radio-button>
-              </mat-radio-group>
+    <div class="mpanel mpanel-default" style="margin: 10px 2px 5px 2px; border: 1px inset #cdcdcd;" *ngIf="this.handleRowInvitation === true">
+      <div class="mpanel-header" style="background-color: #3a3a3a; color: #ffffff; padding: 5px;">Response to invitation</div>
+      <div class="mpanel-body">
+        <form [formGroup]="handleinvitationform" autocomplete="off" (ngSubmit)="onHandleInvitation()" novalidate style="width:98%;">
+          <input type="hidden" formControlName="msgid"/>
+          <div class="container-fluid" style="margin: 15px 15px;">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <mat-radio-group aria-label="Select an option" formControlName="status">
+                    <mat-radio-button value="1" style="display:block; margin-right: 25px;">I am accepting invitation from {{this.invitorname}} ({{this.invitation_by}}) as {{this.invitation_for}}.</mat-radio-button>
+                    <mat-radio-button value="2" style="display:block; margin-right: 25px;">I am rejecting invitation from {{this.invitorname}} ({{this.invitation_by}}) as {{this.invitation_for}}.</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="this.g.status.value==='1'">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Select rate plan</label>
+                  <mat-select style="border: 1px solid #cdcdcd; width: 25%; display:block;" formControlName="rateplan">
+                    <mat-option [value]="0">Select Rate Plan</mat-option>
+                    <mat-option *ngFor="let rateplan of rateplans" [value]="rateplan.id">{{rateplan.planname}}</mat-option>
+                  </mat-select>
+                </div>          
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Message</label>
+                  <app-ngx-editor name="message" [placeholder]="'Enter text here...'" [width]="'95%'" [minHeight]="'200px'" [spellcheck]="true" formControlName="message" required></app-ngx-editor>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-11" style="float:right; padding: 15ps 0px;">
+                <div style="float:right">
+                  <button type="submit" class="btn btn-sm btn-primary active" style="margin: 0px 10px">Submit</button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row" *ngIf="this.g.status.value==='1'">
-          <div class="col-md-12">
-            <div class="form-group">
-              <label>Select rate plan</label>
-              <mat-select style="border: 1px solid #cdcdcd; width: 25%; display:block;" formControlName="rateplan">
-                <mat-option [value]="0">Select Rate Plan</mat-option>
-                <mat-option *ngFor="let rateplan of rateplans" [value]="rateplan.id">{{rateplan.planname}}</mat-option>
-              </mat-select>
-            </div>          
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="form-group">
-              <label>Message</label>
-              <app-ngx-editor name="message" [placeholder]="'Enter text here...'" [width]="'95%'" [minHeight]="'200px'" [spellcheck]="true" formControlName="message" required></app-ngx-editor>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-11" style="float:right; padding: 15ps 0px;">
-            <div style="float:right">
-              <button type="submit" class="btn btn-sm btn-primary active" style="margin: 0px 10px">Submit</button>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
-    </form>
+      <div class="mpanel-footer" style="background-color: #3a3a3a; color: #ffffff; padding: 5px;"></div>
+    </div>
     <mat-toolbar color="default" class="mat-elevation-z1" style="width: 95%; margin: 25px 5px 1px 5px; height:35px;">
       <span class="badge badge-info">{{message}}</span>
       <span class="example-spacer"></span>

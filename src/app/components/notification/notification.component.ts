@@ -57,17 +57,19 @@ export class NotificationComponent implements OnInit {
   public inboxRowSelected = false;
   public inboxMessage: any = {};
   public options: any = {};
+  public invitation_for = '';
+  public invitation_by = '';
 
   public invitationHandle: any = {};
 
   public inboxColumnDefs = [
     {headerName: 'Date', field: 'created_on', sortable: true, filter: true, resizable: true, width: 120},
     {headerName: 'Title', field: 'title', sortable: true, filter: true, resizable: true, width: 150},
-    {headerName: 'From', field: 'from_company_name', sortable: true, filter: true, resizable: true, width: 150},
+    {headerName: 'From', field: 'from_company_name', sortable: true, filter: true, resizable: true, width: 250, cellRenderer: 'invitorrenderer'},
     // {headerName: 'To', field: 'to_company_name', sortable: true, filter: true, resizable: true, width: 150},
-    {headerName: 'Ref.No', field: 'ref_no', sortable: true, filter: true, resizable: true, width: 100},
+    // {headerName: 'Ref.No', field: 'ref_no', sortable: true, filter: true, resizable: true, width: 100},
     {headerName: 'Message', field: 'message', sortable: true, filter: true, resizable: true, width: 200},
-    {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 100, cellRenderer: 'typerenderer'},
+    {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'typerenderer'},
     {headerName: 'Send.By', field: 'name', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 100, cellRenderer: 'actionsrenderer', cellRendererParams: {onAcceptInvitation: this.handleInvitation.bind(this), onRejectInvitation: this.handleInvitation.bind(this)}},
   ];
@@ -87,6 +89,7 @@ export class NotificationComponent implements OnInit {
   public components = {
     typerenderer: this.typerenderer.bind(this),
     actionsrenderer: this.actionsrenderer.bind(this),
+    invitorrenderer: this.invitorrenderer.bind(this),
   };
 
   public ibrowClassRules = {
@@ -282,6 +285,26 @@ export class NotificationComponent implements OnInit {
     return element;
   }
 
+  invitorrenderer(params): any {
+    const data = params.data;
+    let invitedBy = '';
+    let invitedFor = '';
+
+    if (parseInt(data.invitation_type, 10) === 1) {
+      invitedBy = 'Supplier'; invitedFor = 'Wholesaler';
+    } else if (parseInt(data.invitation_type, 10) === 2) {
+      invitedBy = 'Wholesaler'; invitedFor = 'Supplier';
+    }
+
+    // const container_element = document.createElement('span');
+    const element = document.createElement('span');
+    // element.setAttribute('style', 'display: block');
+    element.appendChild(document.createTextNode(params.value + ' (' + invitedBy + ')'));
+    // container_element.appendChild(element);
+    // container_element.appendChild(document.createTextNode(invitedBy));
+    return element;
+  }
+
   // 'accept', parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName
   handleInvitation(mode, msgid, invitorname, inviteeid, inviteename) {
     // alert(`${mode} - ${msgid}`);
@@ -296,6 +319,8 @@ export class NotificationComponent implements OnInit {
     }
 
     this.invitorname = data.from_company_name;
+    this.invitation_for = (parseInt(data.invitation_type, 10) === 1 ? 'wholesaler' : 'supplier');
+    this.invitation_by = (parseInt(data.invitation_type, 10) === 1 ? 'supplier' : 'wholesaler');
     this.g.status.setValue((mode === 'accept') ? '1' : '2');
     this.g.message.setValue('');
     this.g.msgid.setValue(msgid);
@@ -353,6 +378,7 @@ export class NotificationComponent implements OnInit {
     // this.message = 'Please wait, loading customer data';
     this.inboxRowData = this.outboxRowData = [];
     this.inboxRowSelected = false;
+    this.handleRowInvitation = false;
     this.adminService.getMessages(boxtype, this.currentUser.companyid).subscribe((res: Message[]) => {
       if (boxtype === 'inbox') {
         this.inboxRowData = res;
