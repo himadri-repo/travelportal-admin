@@ -69,13 +69,16 @@ export class SuppliersComponent implements OnInit {
 
   feedrenderer(params): any {
     const element = document.createElement('i');
+    const data = params.data;
 
     if (parseInt(params.value, 10) === 1) {
       element.className = 'fa fa-link';
       element.setAttribute('style', 'font-size: 22px; color: #00ff00');
+      element.title = `${data.display_name} is connected with you. Feeds are active`;
     } else {
       element.className = 'fa fa-chain-broken';
       element.setAttribute('style', 'font-size: 22px; color: #ff0000');
+      element.title = `${data.display_name} is connected with you but due to some reason feeds are not enabled yet.\nEither you suspended it or valid rate plan is not assigned yet.`;
     }
     // element.appendChild(document.createTextNode(params.value));
     return element;
@@ -149,7 +152,8 @@ export class SuppliersComponent implements OnInit {
     return edit_element;
   }
 
-  handleEdit(): any {
-
+  handleEdit(action, companyid, company_name, currentCompanyid, currentCompanyName): any {
+    alert(`${company_name} - ${currentCompanyName}`);
+    event.stopPropagation();
   }
 }

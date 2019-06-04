@@ -116,7 +116,10 @@
                     <mat-option [value]="0">Select Rate Plan</mat-option>
                     <mat-option *ngFor="let rateplan of rateplans" [value]="rateplan.id">{{rateplan.planname}}</mat-option>
                   </mat-select>
-                </div>          
+                  <div *ngIf="submitted && g.rateplan.errors" class="alert alert-danger">
+                    <div *ngIf="g.rateplan.errors.required">Rateplan can't be empty</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="row">

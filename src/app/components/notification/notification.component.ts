@@ -69,7 +69,8 @@ export class NotificationComponent implements OnInit {
     // {headerName: 'To', field: 'to_company_name', sortable: true, filter: true, resizable: true, width: 150},
     // {headerName: 'Ref.No', field: 'ref_no', sortable: true, filter: true, resizable: true, width: 100},
     {headerName: 'Message', field: 'message', sortable: true, filter: true, resizable: true, width: 200},
-    {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'typerenderer'},
+    {headerName: 'Req.Status', field: 'type', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'typerenderer'},
+    {headerName: 'Current.Status', field: 'finaltype', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'typerenderer'},
     {headerName: 'Send.By', field: 'name', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 100, cellRenderer: 'actionsrenderer', cellRendererParams: {onAcceptInvitation: this.handleInvitation.bind(this), onRejectInvitation: this.handleInvitation.bind(this)}},
   ];
@@ -81,7 +82,8 @@ export class NotificationComponent implements OnInit {
     {headerName: 'To', field: 'to_company_name', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Ref.No', field: 'ref_no', sortable: true, filter: true, resizable: true, width: 100},
     {headerName: 'Message', field: 'message', sortable: true, filter: true, resizable: true, width: 200},
-    {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 100, cellRenderer: 'typerenderer'},
+    {headerName: 'Req.Status', field: 'type', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'typerenderer'},
+    {headerName: 'Current.Status', field: 'finaltype', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'typerenderer'},
     {headerName: 'Send.By', field: 'name', sortable: true, filter: true, resizable: true, width: 150},
     // {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 200, cellRenderer: 'actionsrenderer', cellRendererParams: {onInviteClick: this.sendMessage.bind(this), onCommunicationClick: this.readMessage.bind(this)}},
   ];
@@ -169,7 +171,7 @@ export class NotificationComponent implements OnInit {
     this.handleinvitationform = this.formBuilder.group({
       status: new FormControl('0'),
       message: new FormControl(''),
-      rateplan: new FormControl(0),
+      rateplan: new FormControl(0, Validators.required),
       msgid: new FormControl(0)
     }, {});
 
@@ -235,7 +237,7 @@ export class NotificationComponent implements OnInit {
       onacceptclick('accept', parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
     });
 
-    if (currentCompanyid !== id) {
+    if (currentCompanyid !== id && parseInt(data.finaltype, 10) !== 2 && parseInt(data.finaltype, 10) !== 3) {
       action_container.appendChild(edit_element);
     }
 
@@ -244,7 +246,9 @@ export class NotificationComponent implements OnInit {
       onrejectclick('reject', parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
     });
 
-    action_container.appendChild(edit_element);
+    if (parseInt(data.finaltype, 10) !== 2 && parseInt(data.finaltype, 10) !== 3) {
+      action_container.appendChild(edit_element);
+    }
 
     return action_container;
   }
@@ -401,13 +405,13 @@ export class NotificationComponent implements OnInit {
   onRowSelected(messageType, row) {
     if (row.node.selected) {
       const inbxMessage = row.data;
-      if (inbxMessage.type === 0) {
+      if (parseInt(inbxMessage.type, 10) === 0) {
         this.inboxMessage.type = 'Message';
-      } else if (inbxMessage.type === 1) {
+      } else if (parseInt(inbxMessage.type, 10) === 1) {
         this.inboxMessage.type = 'Invite';
-      } else if (inbxMessage.type === 2) {
+      } else if (parseInt(inbxMessage.type, 10) === 2) {
         this.inboxMessage.type = 'Approve';
-      } else if (inbxMessage.type === 3) {
+      } else if (parseInt(inbxMessage.type, 10) === 3) {
         this.inboxMessage.type = 'Reject';
       }
 
@@ -428,6 +432,10 @@ export class NotificationComponent implements OnInit {
 
   async onHandleInvitation() {
     this.invitationhandled = true;
+    this.submitted = true;
+    if (this.g.rateplan.value <= 0) {
+      this.g.rateplan.setErrors({ required: true });
+    }
     console.log(this.handleinvitationform.value);
     if (!this.handleinvitationform.invalid) {
       if (this.handleinvitationform.value.status === '1') {
@@ -436,7 +444,8 @@ export class NotificationComponent implements OnInit {
           rateplan: parseInt(postedForm.rateplan, 10), userid: this.currentUser.id});
       } else {
         const postedForm = this.handleinvitationform.value;
-        // this.adminService.rejectInvitation({msgid: postedForm.msgid, message: postedForm.message});
+        this.adminService.rejectInvitation({msgid: postedForm.msgid, message: postedForm.message,
+          rateplan: parseInt(postedForm.rateplan, 10), userid: this.currentUser.id});
       }
 
       this.handleRowInvitation = false;

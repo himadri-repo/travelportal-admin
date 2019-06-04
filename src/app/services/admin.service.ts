@@ -170,45 +170,91 @@ export class AdminService {
           this.saveAsWholesaler(transformWholesaler, status => {
             console.log(status);
             ws_tracking_id = parseInt(status.id, 10);
-            transformWholesaler['id'] = ws_tracking_id;
+            transformWholesaler.id = ws_tracking_id;
 
             const transformSupplier = this.transformSupplier(commDetail, {rateplan, userid, msgid, ws_tracking_id});
             this.saveAsSupplier(transformSupplier, status1 => {
               console.log(status1);
-              // transformWholesaler.details[0]['id'] = parseInt(status1.detail_id, 10);
-              // transformWholesaler.details[0]['tracking_id'] = parseInt(status1.id, 10);
-              // this.saveAsWholesaler(transformWholesaler, status2 => {
-              //   console.log(status2);
-              // });
             });
           });
         } else if (parseInt(commDetail.invitation_type.toString(), 10) === 2) {
           // supplier
           // transform supplier object
-          const transformSupplier = {};
+          const transformSupplier = this.transformSupplier(commDetail, {rateplan, userid, msgid});
+          let ws_tracking_id = 0;
+
           this.saveAsSupplier(transformSupplier, status => {
             console.log(status);
+            ws_tracking_id = parseInt(status.id, 10);
+            transformSupplier.id = ws_tracking_id;
+
+            const transformWholesaler = this.transformWholesaler(commDetail, {rateplan, userid, msgid, ws_tracking_id});
+            // const transformSupplier = this.transformSupplier(commDetail, {rateplan, userid, msgid, ws_tracking_id});
+            this.saveAsWholesaler(transformWholesaler, status1 => {
+              console.log(status1);
+            });
           });
         }
       }
     });
   }
 
+  public rejectInvitation(rejectionObject: any): any {
+    const msgid = rejectionObject.msgid;
+    const message = rejectionObject.message;
+    const rateplan = rejectionObject.rateplan;
+    const userid = parseInt(rejectionObject.userid, 10);
+    let communicationDetail: CommunicationDetail = null;
+    this.getCommunicationDetail(msgid).subscribe((res: CommunicationDetail[]) => {
+      if (res !== null && res !== undefined && res.length > 0) {
+        communicationDetail = res[0];
+        const commDetail = new CommunicationDetail();
+        commDetail.active = 1;
+        commDetail.created_by = userid;
+        commDetail.from_companyid = communicationDetail.to_companyid;
+        commDetail.pid = communicationDetail.pid;
+        commDetail.to_companyid = communicationDetail.from_companyid;
+        commDetail.type = 3; // rejected invitation
+        commDetail.message = message; // rejected invitation
+        commDetail.invitation_type = communicationDetail.invitation_type;
+        commDetail.serviceid = communicationDetail.serviceid;
+
+        // transform CommunicationDetail and save it.
+        this.saveMessageDetails(commDetail);
+      }
+    });
+  }
+
   public transformSupplier(commDetail: CommunicationDetail, config) {
     const supplier: any = {};
+    const invitationType = parseInt(commDetail.invitation_type.toString(), 10);
     supplier.code = `SPL-00${commDetail.from_companyid}`;
     supplier.primary_user_id = config.userid;
-    supplier.supplierid = commDetail.to_companyid;
+    if (invitationType === 1) {
+      supplier.supplierid = commDetail.to_companyid;
+      supplier.companyid = commDetail.from_companyid;
+    } else {
+      supplier.supplierid = commDetail.from_companyid;
+      supplier.companyid = commDetail.to_companyid;
+    }
     supplier.created_by = config.userid;
     supplier.active = 1;
-    supplier.companyid = commDetail.from_companyid;
+    // supplier.companyid = commDetail.from_companyid;
     supplier.details = new Array();
     const supplierDetail: any = {};
     supplierDetail.serviceid = commDetail.serviceid;
     supplierDetail.active = 1;
-    supplierDetail.companyid = commDetail.to_companyid;
-    supplierDetail.allowfeed = 0; // temporary suspend the feed. Let him approve it and assign rate plan.
-    // supplierDetail.rate_plan_id = config.rateplan;
+    if (invitationType === 1) {
+      supplierDetail.companyid = commDetail.to_companyid;
+    } else {
+      supplierDetail.companyid = commDetail.from_companyid;
+    }
+    if (config.rate_plan_id !== null && config.rate_plan_id !== undefined) {
+      supplierDetail.allowfeed = 1; // temporary suspend the feed. Let him approve it and assign rate plan.
+      supplierDetail.rate_plan_id = config.rateplan;
+    } else {
+      supplierDetail.allowfeed = 0; // temporary suspend the feed. Let him approve it and assign rate plan.
+    }
     supplierDetail.status = 1; // accepted invitation (unused)
     supplierDetail.created_by = config.userid;
     supplierDetail.communicationid = config.msgid;
@@ -220,19 +266,36 @@ export class AdminService {
 
   public transformWholesaler(commDetail: CommunicationDetail, config) {
     const wholesaler: any = {};
+    const invitationType = parseInt(commDetail.invitation_type.toString(), 10);
     wholesaler.code = `WS-00${commDetail.from_companyid}`;
     wholesaler.primary_user_id = config.userid;
-    wholesaler.salerid = commDetail.from_companyid;
+    if (invitationType === 1) {
+      wholesaler.salerid = commDetail.from_companyid;
+      wholesaler.companyid = commDetail.to_companyid;
+    } else {
+      wholesaler.salerid = commDetail.to_companyid;
+      wholesaler.companyid = commDetail.from_companyid;
+    }
     wholesaler.created_by = config.userid;
     wholesaler.active = 1;
-    wholesaler.companyid = commDetail.to_companyid;
+    // wholesaler.companyid = commDetail.to_companyid;
     wholesaler.details = new Array();
     const wholesalerDetail: any = {};
     wholesalerDetail.serviceid = commDetail.serviceid;
     wholesalerDetail.active = 1;
-    wholesalerDetail.companyid = commDetail.from_companyid;
-    wholesalerDetail.allowfeed = 1;
-    wholesalerDetail.rate_plan_id = config.rateplan;
+    if (invitationType === 1) {
+      wholesalerDetail.companyid = commDetail.from_companyid;
+    } else {
+      wholesalerDetail.companyid = commDetail.to_companyid;
+    }
+
+    if (config.rateplan !== null && config.rateplan !== undefined) {
+      wholesalerDetail.allowfeed = 1;
+      wholesalerDetail.rate_plan_id = config.rateplan;
+    } else {
+      wholesalerDetail.allowfeed = 0;
+    }
+
     wholesalerDetail.status = 1; // accepted invitation (unused)
     wholesalerDetail.created_by = config.userid;
     wholesalerDetail.communicationid = config.msgid;

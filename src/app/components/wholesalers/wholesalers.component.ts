@@ -153,5 +153,6 @@ export class WholesalersComponent implements OnInit {
 
   handleEdit(action, companyid, company_name, currentCompanyid, currentCompanyName): any {
     alert(`${company_name} - ${currentCompanyName}`);
+    event.stopPropagation();
   }
 }

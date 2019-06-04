@@ -15,4 +15,5 @@ export class CommunicationDetail {
     last_read_on: string;
     invitation_type: number; /* 1 = Wholesaler | 2 = Supplier */
     serviceid: number;
+    finaltype: number;
 }

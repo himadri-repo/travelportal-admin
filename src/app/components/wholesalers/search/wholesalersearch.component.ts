@@ -8,6 +8,7 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { AdminService } from 'src/app/services/admin.service';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import { InviteComponent } from '../../communication/invite/invite.component';
+import { Wholesaler } from 'src/app/models/wholesaler';
 
 @Component({
   selector: 'app-search',
@@ -36,6 +37,7 @@ export class WholesalerSearchComponent implements OnInit {
   };
 
   public rowData: Company[] = [];
+  public myWholesalers: Wholesaler[] = [];
 
   public rowSelection = 'single';
   public currentUser: User;
@@ -76,7 +78,15 @@ export class WholesalerSearchComponent implements OnInit {
       oninviteclick(parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
     });
 
-    if (parseInt(currentCompanyid.toString(), 10) !== id) {
+    // if (parseInt(currentCompanyid.toString(), 10) !== id) {
+    //   action_container.appendChild(edit_element);
+    // }
+
+    const wholesaler = this.myWholesalers.find((whls, idx) => {
+      return parseInt(whls.id.toString(), 10) === id;
+    });
+
+    if (currentCompanyid !== id && (wholesaler === null || wholesaler === undefined)) {
       action_container.appendChild(edit_element);
     }
 
@@ -112,7 +122,9 @@ export class WholesalerSearchComponent implements OnInit {
     this.commonService.setTitle('Wholesaler Management - Search');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
-    this.loadWholesalers();
+    this.loadMyWholesalers(msg => {
+      this.loadWholesalers();
+    });
   }
 
   loadWholesalers() {
@@ -121,6 +133,19 @@ export class WholesalerSearchComponent implements OnInit {
       this.rowData = res;
     }, err => {
       console.log(err);
+    });
+  }
+
+  loadMyWholesalers(callback) {
+    this.adminService.getWholesalersByCompany(this.currentUser.companyid).subscribe((res: any) => {
+      // Wholesaler[]
+      this.myWholesalers = res;
+      if (res === null || res === undefined || res === false) {
+        this.myWholesalers = [];
+      }
+      if (callback !== null) {
+        callback(res);
+      }
     });
   }
 

@@ -8,6 +8,7 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { AdminService } from 'src/app/services/admin.service';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import { InviteComponent } from '../../communication/invite/invite.component';
+import { Supplier } from 'src/app/models/supplier';
 
 @Component({
   selector: 'app-suppliersearch',
@@ -36,6 +37,7 @@ export class SuppliersearchComponent implements OnInit {
   };
 
   public rowData: Company[] = [];
+  public mySuppliers: Supplier[] = [];
 
   public rowSelection = 'single';
   private currentUser: User;
@@ -76,7 +78,11 @@ export class SuppliersearchComponent implements OnInit {
       oninviteclick(parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
     });
 
-    if (currentCompanyid !== id) {
+    const supplier = this.mySuppliers.find((supl, idx) => {
+      return parseInt(supl.id.toString(), 10) === id;
+    });
+
+    if (currentCompanyid !== id && (supplier === null || supplier === undefined)) {
       action_container.appendChild(edit_element);
     }
 
@@ -112,8 +118,24 @@ export class SuppliersearchComponent implements OnInit {
     this.commonService.setTitle('Supplier Management - Search');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
-    this.loadSuppliers();
+    this.loadMySuppliers(msg => {
+      this.loadSuppliers();
+    });
   }
+
+  loadMySuppliers(callback) {
+    this.adminService.getSuppliersByCompany(this.currentUser.companyid).subscribe((res: any) => {
+      // Supplier[]
+      this.mySuppliers = res;
+      if (res === null || res === undefined || res === false) {
+        this.mySuppliers = [];
+      }
+      if (callback !== null) {
+        callback(res);
+      }
+    });
+  }
+
 
   loadSuppliers() {
     this.rowData = [];
