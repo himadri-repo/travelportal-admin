@@ -6,11 +6,11 @@
     </div>
 
     <ul class="list-unstyled components" *ngIf="(modules | json) != '[]'">
-        <li *ngFor="let category of modules | keyvalue" class="{{get_activeClass(category.key).activeClass}}"> <!--class="get_activeClass(category.key).activeClass"-->
+        <li *ngFor="let category of modules | keyvalue" class="{{get_activeClass(category.key).activeClass}}">
             <a href="#{{category.key | replaceStringPipe:' ':'_'}}" data-toggle="collapse" class="dropdown-toggle collapsed" aria-expanded="false" >
                 <i class="fa fa-paper-plane"></i>{{category.key}}
             </a>
-            <ul class="list-unstyled collapse get_activeClass(category.key).show" id="{{category.key | replaceStringPipe:' ':'_'}}"> <!-- get_activeClass(category.key).show -->
+            <ul class="list-unstyled collapse get_activeClass(category.key).show" id="{{category.key | replaceStringPipe:' ':'_'}}">
                 <li *ngFor="let module of category.value"><a routerLink="{{module.path}}" routerLinkActive="active" skipLocationChange="true"><i class="fa fa-plane"></i>&nbsp;{{module.display_name}}</a></li>
             </ul>
         </li>
@@ -74,4 +74,47 @@
             </a>
         </li>
     </ul> -->
+
+    <!-- <div class="col-2 collapse d-md-flex bg-light pt-2 min-vh-100" id="sidebar1">
+        <ul class="nav flex-column flex-nowrap">
+            <li class="nav-item"><a class="nav-link" href="#">Overview</a></li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#submenu1" data-toggle="collapse" data-target="#submenu1">Reports</a>
+                <div class="collapse" id="submenu1" aria-expanded="false">
+                    <ul class="flex-column pl-2 nav">
+                        <li class="nav-item"><a class="nav-link py-0" href="#">Orders</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link collapsed py-1" href="#submenu1sub1" data-toggle="collapse" data-target="#submenu1sub1">Customers</a>
+                            <div class="collapse" id="submenu1sub1" aria-expanded="false">
+                                <ul class="flex-column nav pl-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link p-1" href="#">
+                                            <i class="fa fa-fw fa-clock-o"></i> Daily
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link p-1" href="#">
+                                            <i class="fa fa-fw fa-dashboard"></i> Dashboard
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link p-1" href="#">
+                                            <i class="fa fa-fw fa-bar-chart"></i> Charts
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link p-1" href="#">
+                                            <i class="fa fa-fw fa-compass"></i> Areas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="#">Analytics</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Export</a></li>
+        </ul>
+    </div> -->
 </nav>
