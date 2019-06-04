@@ -169,29 +169,31 @@ export class AdminService {
 
           this.saveAsWholesaler(transformWholesaler, status => {
             console.log(status);
-            ws_tracking_id = parseInt(status.id, 10);
+            ws_tracking_id = parseInt(status.detail_id, 10);
             transformWholesaler.id = ws_tracking_id;
 
             const transformSupplier = this.transformSupplier(commDetail, {rateplan, userid, msgid, ws_tracking_id});
             this.saveAsSupplier(transformSupplier, status1 => {
               console.log(status1);
+              const ws_tracking_id1 = parseInt(status1.detail_id, 10);
             });
           });
         } else if (parseInt(commDetail.invitation_type.toString(), 10) === 2) {
           // supplier
           // transform supplier object
           const transformSupplier = this.transformSupplier(commDetail, {rateplan, userid, msgid});
-          let ws_tracking_id = 0;
+          // let ws_tracking_id = 0;
 
           this.saveAsSupplier(transformSupplier, status => {
             console.log(status);
-            ws_tracking_id = parseInt(status.id, 10);
+            const ws_tracking_id = parseInt(status.detail_id, 10);
             transformSupplier.id = ws_tracking_id;
 
             const transformWholesaler = this.transformWholesaler(commDetail, {rateplan, userid, msgid, ws_tracking_id});
             // const transformSupplier = this.transformSupplier(commDetail, {rateplan, userid, msgid, ws_tracking_id});
             this.saveAsWholesaler(transformWholesaler, status1 => {
               console.log(status1);
+              const ws_tracking_id1 = parseInt(status1.detail_id, 10);
             });
           });
         }
@@ -299,7 +301,7 @@ export class AdminService {
     wholesalerDetail.status = 1; // accepted invitation (unused)
     wholesalerDetail.created_by = config.userid;
     wholesalerDetail.communicationid = config.msgid;
-    wholesalerDetail.tracking_id = null; // this value will be corrosponding supplier_services_tbl's primary id. this record's primary id will be same into wholesaler_services_tbl's tracking_id
+    wholesalerDetail.tracking_id = config.ws_tracking_id; // this value will be corrosponding supplier_services_tbl's primary id. this record's primary id will be same into wholesaler_services_tbl's tracking_id
     wholesaler.details.push(wholesalerDetail);
 
     return wholesaler;
