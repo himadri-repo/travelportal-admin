@@ -1,3 +1,92 @@
+<div class="mpanel mpanel-default" style="margin: 10px 2px 5px 2px; border: 1px inset #cdcdcd;" *ngIf="this.isediting === true">
+    <div class="mpanel-header" style="background-color: #3a3a3a; color: #ffffff; padding: 5px;">Manage supplier ({{this.targetCompanyName}}) contract</div>
+    <div class="mpanel-body">
+      <form [formGroup]="handlelinkform" autocomplete="off" (ngSubmit)="onHandleLink()" novalidate style="width:98%;">
+        <input type="hidden" value="{{supplierid}}"/>
+        <input type="hidden" value="{{wholesalerid}}"/>
+        <input type="hidden" value="{{relationid}}"/>
+        <div class="container-fluid" style="margin: 15px 15px;">
+            <div class="row">
+                <div class="col-20">
+                    <label for="fname">Inventory mode *</label>
+                </div>                
+                <div class="col-80">
+                    <div class="form-group">
+                        <label class="radio-inline"><input type="radio" name="transactiontype" value="1" formControlName="transactiontype">On Request</label>
+                        <label class="radio-inline"><input type="radio" name="transactiontype" value="2" formControlName="transactiontype">On Live</label>
+                        <!-- <mat-radio-group aria-label="Select an option" formControlName="transactiontype">
+                            <mat-radio-button value="1" style="margin-right: 25px;">On live</mat-radio-button>
+                            <mat-radio-button value="2" style="margin-right: 25px;">On Request</mat-radio-button>
+                        </mat-radio-group> -->
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <mat-checkbox formControlName="allowFeed">Allow service feed</mat-checkbox>
+                    </div>
+                </div>
+            </div> -->
+            <div class="row">
+                <div class="col-20">
+                    <label for="country">Select Rate plan *</label>
+                </div>
+                <div class="col-80">
+                    <select id="country" name="country" formControlName="rateplan">
+                        <option value="-1" selected>Select rateplan</option>
+                        <option *ngFor="let rateplan of rateplans" value="{{rateplan.id}}">{{rateplan.planname}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">                
+                <div class="col-20">
+                    <label for="country">Allow service feed *</label>
+                </div>
+                <div class="col-80">
+                    <div class="checkbox">
+                        <label><input type="checkbox" formControlName="allowFeed"></label>
+                    </div>
+                </div>
+            <!-- <div class="col-md-6">
+                    <div class="form-group">
+                        <label style="margin: 0px 10px 0px 0px;">Select rateplan</label>
+                        <mat-select style="border: 1px solid #cdcdcd; width: 50%;" formControlName="rateplan">
+                            <mat-option [value]="0">Select Rateplan</mat-option>
+                            <mat-option *ngFor="let rateplan of rateplans" [value]="rateplan.id">{{rateplan.planname}}</mat-option>
+                        </mat-select>
+                        <div *ngIf="submitted && g.rateplan.errors" class="alert alert-danger">
+                            <div *ngIf="g.rateplan.errors.required">Rateplan can't be empty</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <mat-checkbox formControlName="allowFeed">Allow service feed</mat-checkbox>
+                    </div>
+                </div> -->
+            </div>
+            <!-- <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                    <label>Message</label>
+                    <app-ngx-editor name="message" [placeholder]="'Enter text here...'" [width]="'95%'" [minHeight]="'200px'" [spellcheck]="true" formControlName="message" required></app-ngx-editor>
+                    </div>
+                </div>
+            </div> -->
+            <div class="row">
+                <div class="col-md-11" style="float:right; padding: 15ps 0px;">
+                    <div style="float:right">
+                        <button type="submit" class="btn btn-sm btn-primary active" style="margin: 0px 10px">Submit</button>
+                        <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </form>
+    </div>
+    <div class="mpanel-footer" style="background-color: #3a3a3a; color: #ffffff; padding: 5px;"></div>
+</div>
 <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 25px 5px 1px 5px; height:35px;">
     <span class="badge badge-info">{{message}}</span>
     <span class="example-spacer"></span>

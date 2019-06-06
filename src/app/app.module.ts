@@ -18,7 +18,7 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
 
-import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule } from '@angular/material';
+import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CustomerinfoComponent } from './components/customers/customerinfo/customerinfo.component';
@@ -30,6 +30,7 @@ import { InviteComponent } from './components/communication/invite/invite.compon
 import { NgxEditorModule } from 'ngx-editor';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NotificationComponent } from './components/notification/notification.component';
+import { ConfirmationComponent } from './components/shared/confirmation/confirmation.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { NotificationComponent } from './components/notification/notification.co
     SuppliersearchComponent,
     WholesalerSearchComponent,
     InviteComponent,
-    NotificationComponent
+    NotificationComponent,
+    ConfirmationComponent
   ],
   imports: [
     BrowserModule,
@@ -61,13 +63,16 @@ import { NotificationComponent } from './components/notification/notification.co
     MatCheckboxModule,
     MatRadioModule,
     MatSelectModule,
+    MatFormFieldModule,
+    MatAutocompleteModule,
     ReactiveFormsModule,
     NgxEditorModule,
     TooltipModule.forRoot()
   ],
   entryComponents: [
     CustomerinfoComponent,
-    InviteComponent
+    InviteComponent,
+    ConfirmationComponent
   ],
   providers: [CommonService],
   bootstrap: [AppComponent]

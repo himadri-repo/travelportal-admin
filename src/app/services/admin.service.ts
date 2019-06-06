@@ -247,9 +247,9 @@ export class AdminService {
     supplierDetail.serviceid = commDetail.serviceid;
     supplierDetail.active = 1;
     if (invitationType === 1) {
-      supplierDetail.companyid = commDetail.to_companyid;
-    } else {
       supplierDetail.companyid = commDetail.from_companyid;
+    } else {
+      supplierDetail.companyid = commDetail.to_companyid;
     }
     if (config.rate_plan_id !== null && config.rate_plan_id !== undefined) {
       supplierDetail.allowfeed = 1; // temporary suspend the feed. Let him approve it and assign rate plan.
@@ -286,9 +286,9 @@ export class AdminService {
     wholesalerDetail.serviceid = commDetail.serviceid;
     wholesalerDetail.active = 1;
     if (invitationType === 1) {
-      wholesalerDetail.companyid = commDetail.from_companyid;
-    } else {
       wholesalerDetail.companyid = commDetail.to_companyid;
+    } else {
+      wholesalerDetail.companyid = commDetail.from_companyid;
     }
 
     if (config.rateplan !== null && config.rateplan !== undefined) {
@@ -345,5 +345,43 @@ export class AdminService {
   public getServicesByCompany(companyid): any {
     // tslint:disable-next-line: object-literal-key-quotes
     return this.httpClient.get(this.baseUrl + `/company/${companyid}/services`);
+  }
+
+  public changeFeed(vendorType, feedValue, targetCompanyid, sourceCompanyid): any {
+    if (vendorType === 'supplier') {
+      // tslint:disable-next-line: object-literal-key-quotes
+      return this.httpClient.post(this.baseUrl + `/admin/supplier/${targetCompanyid}/wholesaler/${sourceCompanyid}`, {'detail': {'allowFeed': feedValue}});
+    } else if (vendorType === 'wholesaler') {
+      // tslint:disable-next-line: object-literal-key-quotes
+      return this.httpClient.post(this.baseUrl + `/admin/wholesaler/${targetCompanyid}/supplier/${sourceCompanyid}`, {'detail': {'allowFeed': feedValue}});
+    }
+  }
+
+  public saveLinkDetail(linkDetail: any): any {
+    const vendorType = linkDetail.vendorType;
+    const relationid = parseInt(linkDetail.relationid, 10);
+    const allowFeed = linkDetail.allowFeed ? 1 : 0;
+    const rateplanid = parseInt(linkDetail.rateplanid, 10);
+    const transactiontype = parseInt(linkDetail.transactiontype, 10);
+    const walletid = linkDetail.walletid;
+    const targetCompanyid = parseInt(linkDetail.supplierid, 10);
+    const sourceCompanyid = parseInt(linkDetail.wholesalerid, 10);
+
+    const payload = {
+      'detail': {
+        'id': relationid,
+        'allowfeed': allowFeed,
+        'rate_plan_id': rateplanid,
+        'transaction_type': transactiontype
+      }
+    }
+
+    if (vendorType === 'supplier') {
+      // tslint:disable-next-line: object-literal-key-quotes
+      return this.httpClient.post(this.baseUrl + `/admin/supplier/${targetCompanyid}/wholesaler/${sourceCompanyid}`, payload);
+    } else if (vendorType === 'wholesaler') {
+      // tslint:disable-next-line: object-literal-key-quotes
+      return this.httpClient.post(this.baseUrl + `/admin/wholesaler/${targetCompanyid}/supplier/${sourceCompanyid}`, payload);
+    }
   }
 }

@@ -6,6 +6,8 @@ import { User } from 'src/app/models/user';
 import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { Wholesaler } from 'src/app/models/wholesaler';
+import { MatDialog } from '@angular/material';
+import { ConfirmationComponent } from '../shared/confirmation/confirmation.component';
 
 @Component({
   selector: 'app-wholesalers',
@@ -24,7 +26,7 @@ export class WholesalersComponent implements OnInit {
       {headerName: 'Mobile', field: 'primary_user_mobile', sortable: true, filter: true, resizable: true, width: 100},
       {headerName: 'Website', field: 'baseurl', sortable: true, filter: true, resizable: true, width: 120},
       {headerName: 'Services', field: 'services', sortable: true, filter: true, resizable: true, width: 180},
-      {headerName: 'Allow.Feed', field: 'allowfeed', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'feedrenderer'},
+      {headerName: 'Allow.Feed', field: 'allowfeed', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'feedrenderer', cellRendererParams: {onFeedChange: this.handleFeedChange.bind(this)}},
       {headerName: 'Rateplan', field: 'rateplan_name', sortable: true, filter: true, resizable: true, width: 100},
       {headerName: 'Rateplan.Details', field: 'rateplandetails', sortable: true, filter: true, resizable: true, width: 250},
   ];
@@ -43,7 +45,7 @@ export class WholesalersComponent implements OnInit {
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
-              private usersService: UsersService, private adminService: AdminService) {
+              private usersService: UsersService, private adminService: AdminService, public dialog: MatDialog) {
 
   }
 
@@ -55,6 +57,7 @@ export class WholesalersComponent implements OnInit {
   }
 
   loadWholesalers() {
+    this.rowData = [];
     this.adminService.getWholesalersByCompany(this.currentUser.companyid).subscribe((res: Wholesaler[]) => {
       this.rowData = res;
     });
@@ -69,16 +72,28 @@ export class WholesalersComponent implements OnInit {
 
   feedrenderer(params): any {
     const element = document.createElement('i');
+    const data = params.data;
+    const onFeedChange = params.onFeedChange;
+    const currentCompanyid = this.currentUser.companyid;
+    const currentCompanyName = this.currentUser.cname;
 
     if (parseInt(params.value, 10) === 1) {
       element.className = 'fa fa-link';
-      element.title = 'Feed allowed';
-      element.setAttribute('style', 'font-size: 22px; color: #28a745');
+      element.title = `${data.display_name} is connected with you. Feeds are active`;
+      element.setAttribute('style', 'font-size: 22px; color: #28a745; cursor: pointer; cursor: hand;');
     } else {
       element.className = 'fa fa-chain-broken';
-      element.title = 'Feed not allowed';
-      element.setAttribute('style', 'font-size: 22px; color: #ff0000');
+      element.title = `${data.display_name} is connected with you but due to some reason feeds are not enabled yet.\nEither you suspended it or valid rate plan is not assigned yet.`;
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand;');
     }
+
+    if (onFeedChange !== null) {
+      // this.handleFeedChange
+      element.addEventListener('click', (ev) => {
+        onFeedChange(parseInt(params.value, 10), parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
+      });
+    }
+
     // element.appendChild(document.createTextNode(params.value));
     return element;
   }
@@ -154,5 +169,41 @@ export class WholesalersComponent implements OnInit {
   handleEdit(action, companyid, company_name, currentCompanyid, currentCompanyName): any {
     alert(`${company_name} - ${currentCompanyName}`);
     event.stopPropagation();
+  }
+
+  handleFeedChange(allowFeed, companyid, company_name, currentCompanyid, currentCompanyName): any {
+    // alert(`${company_name} - ${currentCompanyName} - Feed Value: ${allowFeed}`);
+    this.openDialog((allowFeed === 1 ? 'disable feed' : ' enable feed' ), (result) => {
+      if (result === true) {
+        const feedChangedValue = (allowFeed === 1 ? 0 : 1);
+        this.adminService.changeFeed('wholesaler', feedChangedValue, companyid, currentCompanyid).subscribe((res: any) => {
+          console.log(res);
+          this.loadWholesalers();
+        });
+
+        // this.loadWholesalers();
+      }
+    });
+    event.stopPropagation();
+  }
+
+  openDialog(action, callback): void {
+    const dialogRef = this.dialog.open(ConfirmationComponent, {
+      width: '450px',
+      data: `Are you sure to ${action} between selected supplier/wholesaler ?`,
+      autoFocus: true,
+      disableClose: true
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Yes clicked');
+        // Since this is yes, then lets save the changes
+        if (callback) {
+          callback(result);
+        }
+      } else {
+        console.log(`No clicked ${result}`);
+      }
+    });
   }
 }
