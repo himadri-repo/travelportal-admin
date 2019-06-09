@@ -133,6 +133,7 @@ export class SuppliersComponent implements OnInit {
         onFeedChange(parseInt(params.value, 10), parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
       });
     }
+
     // element.appendChild(document.createTextNode(params.value));
     return element;
   }
@@ -311,17 +312,5 @@ export class SuppliersComponent implements OnInit {
         this.loadRateplans();
       });
     }
-
-    // this.targetCompanyName;
-    // this.rateplanid;
-    // this.relationid;
-
-    // this.supplierid = companyid;
-    // this.wholesalerid = currentCompanyid;
-
-    // this.g.allowFeed.setValue(allowfeed);
-    // this.g.rateplan.setValue(rateplanid);
-    // this.g.transactiontype.setValue(`${transactiontype}`);
-    // this.g.walletid.setValue(walletid);
   }
 }

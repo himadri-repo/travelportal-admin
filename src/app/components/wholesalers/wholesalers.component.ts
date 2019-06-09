@@ -8,6 +8,8 @@ import { AdminService } from 'src/app/services/admin.service';
 import { Wholesaler } from 'src/app/models/wholesaler';
 import { MatDialog } from '@angular/material';
 import { ConfirmationComponent } from '../shared/confirmation/confirmation.component';
+import { Rateplan } from 'src/app/models/rateplan';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-wholesalers',
@@ -17,6 +19,8 @@ import { ConfirmationComponent } from '../shared/confirmation/confirmation.compo
 export class WholesalersComponent implements OnInit {
   public title = 'app';
   menuTitle = 'wholesalers';
+  isediting = false;
+  rateplans: Rateplan[] = [];
 
   public columnDefs = [
       {headerName: 'Action', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
@@ -26,6 +30,7 @@ export class WholesalersComponent implements OnInit {
       {headerName: 'Mobile', field: 'primary_user_mobile', sortable: true, filter: true, resizable: true, width: 100},
       {headerName: 'Website', field: 'baseurl', sortable: true, filter: true, resizable: true, width: 120},
       {headerName: 'Services', field: 'services', sortable: true, filter: true, resizable: true, width: 180},
+      {headerName: 'Inventory', field: 'transaction_type', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'transrenderer'},
       {headerName: 'Allow.Feed', field: 'allowfeed', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'feedrenderer', cellRendererParams: {onFeedChange: this.handleFeedChange.bind(this)}},
       {headerName: 'Rateplan', field: 'rateplan_name', sortable: true, filter: true, resizable: true, width: 100},
       {headerName: 'Rateplan.Details', field: 'rateplandetails', sortable: true, filter: true, resizable: true, width: 250},
@@ -36,16 +41,24 @@ export class WholesalersComponent implements OnInit {
     emailrenderer: this.emailrenderer.bind(this),
     actionrenderer: this.actionrenderer.bind(this),
     feedrenderer: this.feedrenderer.bind(this),
+    transrenderer: this.transrenderer.bind(this)
   };
 
   public rowData: Wholesaler[] = [];
   public message = '';
   public rowSelection = 'single';
   private currentUser: User;
+  public handlelinkform: FormGroup;
+  public targetCompanyName = '';
+  public rateplanid = -1;
+  public relationid = -1;
+  public supplierid = -1;
+  public wholesalerid = -1;
+
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
-              private usersService: UsersService, private adminService: AdminService, public dialog: MatDialog) {
+              private usersService: UsersService, private adminService: AdminService, public dialog: MatDialog, private formBuilder: FormBuilder) {
 
   }
 
@@ -54,6 +67,31 @@ export class WholesalersComponent implements OnInit {
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.loadWholesalers();
+
+    this.loadRateplans();
+
+    this.init();
+  }
+
+  init() {
+    this.handlelinkform = this.formBuilder.group({
+      supplierid: new FormControl(-1),
+      wholesalerid: new FormControl(this.currentUser.companyid),
+      allowFeed: new FormControl(0),
+      rateplan:  new FormControl(0),
+      transactiontype:  new FormControl(''),
+      walletid: new FormControl(-1),
+      relationid: new FormControl(-1)
+    }, {});
+  }
+
+  loadRateplans() {
+    const self = this;
+    if (this.currentUser.companyid > 0) {
+      this.adminService.getRatePlans(this.currentUser.companyid).subscribe((res: Rateplan[]) => {
+        self.rateplans = res;
+      });
+    }
   }
 
   loadWholesalers() {
@@ -62,6 +100,8 @@ export class WholesalersComponent implements OnInit {
       this.rowData = res;
     });
   }
+
+  get g() { return this.handlelinkform.controls; }
 
   emailrenderer(params): any {
     const element = document.createElement('a');
@@ -94,6 +134,33 @@ export class WholesalersComponent implements OnInit {
       });
     }
 
+    // element.appendChild(document.createTextNode(params.value));
+    return element;
+  }
+
+  transrenderer(params): any {
+    const element = document.createElement('i');
+    const data = params.data;
+    // const onFeedChange = params.onFeedChange;
+    const currentCompanyid = this.currentUser.companyid;
+    const currentCompanyName = this.currentUser.cname;
+
+    if (parseInt(params.value, 10) === 1) {
+      element.className = 'fa fa-gavel';
+      element.setAttribute('style', 'font-size: 22px; color: #00ff00;');
+      element.title = 'Inventory can be sold on Request basis';
+    } else {
+      element.className = 'fa fa-exchange';
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000;');
+      element.title = 'Inventory can be sold on Live basis';
+    }
+
+    // if (onFeedChange !== null) {
+    //   // this.handleFeedChange
+    //   element.addEventListener('click', (ev) => {
+    //     onFeedChange(parseInt(params.value, 10), parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
+    //   });
+    // }
     // element.appendChild(document.createTextNode(params.value));
     return element;
   }
@@ -131,7 +198,10 @@ export class WholesalersComponent implements OnInit {
 
     // Add action element for inviting to suppliers / wholesalers
     const edit_element = this.getInvitationLink(params, 'edit', (ev) => {
-       oneditclick('edit', parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
+      // rateplanid:"1"
+      // relationid:"1"
+      oneditclick('edit', parseInt(data.rateplanid, 10), parseInt(data.relationid, 10), parseInt(data.allowfeed, 10),
+        parseInt(data.transaction_type, 10), 1, parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
     });
 
     // if (currentCompanyid !== id) {
@@ -166,8 +236,21 @@ export class WholesalersComponent implements OnInit {
     return edit_element;
   }
 
-  handleEdit(action, companyid, company_name, currentCompanyid, currentCompanyName): any {
-    alert(`${company_name} - ${currentCompanyName}`);
+  handleEdit(action, rateplanid, relationid, allowfeed, transactiontype, walletid, companyid, company_name, currentCompanyid, currentCompanyName): any {
+    // alert(`${company_name} - ${currentCompanyName}`);
+    this.isediting = true;
+    this.targetCompanyName = company_name;
+    this.rateplanid = rateplanid;
+    this.relationid = relationid;
+
+    this.supplierid = companyid;
+    this.wholesalerid = currentCompanyid;
+
+    this.g.allowFeed.setValue(allowfeed);
+    this.g.rateplan.setValue(rateplanid);
+    this.g.transactiontype.setValue(`${transactiontype}`);
+    this.g.walletid.setValue(walletid);
+
     event.stopPropagation();
   }
 
@@ -180,8 +263,6 @@ export class WholesalersComponent implements OnInit {
           console.log(res);
           this.loadWholesalers();
         });
-
-        // this.loadWholesalers();
       }
     });
     event.stopPropagation();
@@ -205,5 +286,31 @@ export class WholesalersComponent implements OnInit {
         console.log(`No clicked ${result}`);
       }
     });
+  }
+
+  closeDialog() {
+    this.isediting = false;
+    this.targetCompanyName = '';
+  }
+
+  onHandleLink() {
+    this.isediting = false;
+
+    if (!this.handlelinkform.invalid) {
+      this.adminService.saveLinkDetail({
+        'vendorType': 'wholesaler',
+        'relationid': this.relationid,
+        'allowFeed': this.g.allowFeed.value,
+        'rateplanid': this.g.rateplan.value,
+        'transactiontype': this.g.transactiontype.value,
+        'walletid': this.g.walletid.value,
+        'supplierid': this.supplierid,
+        'wholesalerid': this.wholesalerid
+      }).subscribe(data => {
+        console.log(`Result : ${data}`);
+        this.loadWholesalers();
+        this.loadRateplans();
+      });
+    }
   }
 }

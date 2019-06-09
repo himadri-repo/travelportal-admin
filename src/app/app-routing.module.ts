@@ -26,6 +26,8 @@ const routes: Routes = [
   {path: 'admin/roles', component: UsersComponent},
   {path: 'admin/wholesalers', component: WholesalersComponent},
   {path: 'admin/wholesalers/search', component: WholesalerSearchComponent},
+  {path: 'admin/rateplan', component: UsersComponent},
+  {path: 'admin/profile', component: UsersComponent},
   {path: 'admin/:uuid', component: AppComponent},
   {path: '**', component: AppComponent}
 ];
