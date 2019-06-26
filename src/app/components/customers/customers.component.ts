@@ -26,15 +26,17 @@ export class CustomersComponent implements OnInit {
     {headerName: 'Name', field: 'name', sortable: true, filter: true, resizable: true, width: 175},
     {headerName: 'Email', field: 'email', sortable: true, filter: true, resizable: true, width: 225, cellRenderer: 'emailrenderer'},
     {headerName: 'Mobile', field: 'mobile', sortable: true, filter: true, resizable: true, width: 100},
+    {headerName: 'Approved', field: 'active', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'activerenderer'},
     {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'typerenderer'},
     {headerName: 'Allow.Credit', field: 'credit_ac', sortable: true, filter: true, resizable: true, width: 350, cellRenderer: 'chkrenderer'}
-];
+  ];
 
   public components = {
-    actionrenderer: this.actionrenderer,
-    chkrenderer: this.chkrenderer,
-    typerenderer: this.typerenderer,
-    emailrenderer: this.emailrenderer
+    actionrenderer: this.actionrenderer.bind(this),
+    chkrenderer: this.chkrenderer.bind(this),
+    typerenderer: this.typerenderer.bind(this),
+    emailrenderer: this.emailrenderer.bind(this),
+    activerenderer: this.activerenderer.bind(this)
   };
 
   // [loadingOverlayComponent]="customLoadingOverlay"
@@ -82,17 +84,35 @@ export class CustomersComponent implements OnInit {
 
     if (params.value === 'B2C') {
       element.className = 'fa fa-male fa-female';
-      element.setAttribute('style', 'font-size: 22px; color: #00ff00');
+      element.setAttribute('style', 'font-size: 22px; color: #00ff00; cursor: pointer; cursor: hand');
+      element.title = `Retail customer`;
     } else if (params.value === 'B2B') {
       element.className = 'fa fa-user-o';
-      element.setAttribute('style', 'font-size: 22px; color: #ff0000');
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand');
+      element.title = `Travel Agent`;
     } else if (params.value === 'EMP') {
       element.className = 'fa fa-address-book-o';
-      element.setAttribute('style', 'font-size: 22px; color: #ff0000');
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand');
+      element.title = `Employee`;
     }
     // element.appendChild(imageElement);
     // // element.appendChild(document.createTextNode(params.value));
     // element.appendChild(document.createTextNode(params.value));
+    return element;
+  }
+
+  activerenderer(params): any {
+    const element = document.createElement('i');
+
+    if (parseInt(params.value, 10) === 1) {
+      element.className = 'fa fa-check';
+      element.setAttribute('style', 'font-size: 22px; color: #00ff00; cursor: pointer; cursor: hand');
+      element.title = `Approved`;
+    } else {
+      element.className = 'fa fa-close';
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand');
+      element.title = `Pending approval`;
+    }
     return element;
   }
 
@@ -101,10 +121,12 @@ export class CustomersComponent implements OnInit {
 
     if (parseInt(params.value, 10) === 1) {
       element.className = 'fa fa-check';
-      element.setAttribute('style', 'font-size: 22px; color: #00ff00');
+      element.setAttribute('style', 'font-size: 22px; color: #00ff00; cursor: pointer; cursor: hand');
+      element.title = `Credit allowed`;
     } else {
       element.className = 'fa fa-close';
-      element.setAttribute('style', 'font-size: 22px; color: #ff0000');
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand');
+      element.title = `Credit NOT allowed`;
     }
     return element;
   }
@@ -119,6 +141,7 @@ export class CustomersComponent implements OnInit {
 
     edit_element.className = 'fa fa-pencil-square-o';
     edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
+    edit_element.title = 'Edit customer';
     edit_element.addEventListener('click', (ev) => {
       // alert(`Id : ${id}`);
       // this.AddOrEditCustomer(this.currentUser.companyid, id);

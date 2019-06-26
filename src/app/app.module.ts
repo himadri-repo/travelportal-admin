@@ -31,6 +31,8 @@ import { NgxEditorModule } from 'ngx-editor';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NotificationComponent } from './components/notification/notification.component';
 import { ConfirmationComponent } from './components/shared/confirmation/confirmation.component';
+import { RateplanComponent } from './components/general/rateplan/rateplan.component';
+import { ProfileComponent } from './components/general/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +50,9 @@ import { ConfirmationComponent } from './components/shared/confirmation/confirma
     WholesalerSearchComponent,
     InviteComponent,
     NotificationComponent,
-    ConfirmationComponent
+    ConfirmationComponent,
+    RateplanComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

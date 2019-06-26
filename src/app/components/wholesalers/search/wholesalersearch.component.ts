@@ -70,7 +70,7 @@ export class WholesalerSearchComponent implements OnInit {
     const oninviteclick = params.onInviteClick;
     const onmessageclick = params.onCommunicationClick;
     const data = params.data;
-    const currentCompanyid = this.currentUser.companyid;
+    const currentCompanyid = parseInt(this.currentUser.companyid.toString(), 10);
     const currentCompanyName = this.currentUser.cname;
 
     // Add action element for inviting to suppliers / wholesalers

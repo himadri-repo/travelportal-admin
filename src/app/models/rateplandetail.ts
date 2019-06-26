@@ -15,4 +15,23 @@ export class RateplanDetail {
     created_on: string;
     created_by: number;
     created_by_name: string;
+
+    public constructor(companyid, createdBy, createdByName) {
+        this.id = -1;
+        this.planname = '';
+        this.assigned_to = -1;
+        this.companyid = companyid;
+        this.rateplanid = -1;
+        this.serialno = 0;
+        this.head_name = '';
+        this.head_code = '';
+        this.amount = 0;
+        this.amount_type = -1;
+        this.operation = -1;
+        this.calculation = '';
+        this.active = 1;
+        this.created_on = new Date().toString();
+        this.created_by = createdBy;
+        this.created_by_name = createdByName;
+    }
 }

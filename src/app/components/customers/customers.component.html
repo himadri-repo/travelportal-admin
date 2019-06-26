@@ -1,7 +1,10 @@
 <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 25px 5px 1px 5px; height:35px;">
     <span class="badge badge-info">{{message}}</span>
     <span class="example-spacer"></span>
-    <a class="btn btn-sm btn-success text-white" (click)="AddOrEditCustomer(this.currentUser.companyid, -1)" role="button"><i class="fa fa-plus" aria-hidden="true"></i> Add Customer</a>
+    <a class="btn btn-sm btn-success text-white" (click)="AddOrEditCustomer(this.currentUser.companyid, -1)" role="button"><i class="fa fa-plus" aria-hidden="true"></i> Add Customer</a>&nbsp;
+    <a class="btn btn-sm btn-success text-white" (click)="loadGrid()" role="button">
+        <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+    </a>  
     <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
     <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
 </mat-toolbar>

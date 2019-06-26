@@ -9,6 +9,7 @@ import { TicketsComponent } from './components/tickets/tickets.component';
 import { SuppliersearchComponent } from './components/suppliers/suppliersearch/suppliersearch.component';
 import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { RateplanComponent } from './components/general/rateplan/rateplan.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -26,7 +27,7 @@ const routes: Routes = [
   {path: 'admin/roles', component: UsersComponent},
   {path: 'admin/wholesalers', component: WholesalersComponent},
   {path: 'admin/wholesalers/search', component: WholesalerSearchComponent},
-  {path: 'admin/rateplan', component: UsersComponent},
+  {path: 'admin/rateplan', component: RateplanComponent},
   {path: 'admin/profile', component: UsersComponent},
   {path: 'admin/:uuid', component: AppComponent},
   {path: '**', component: AppComponent}

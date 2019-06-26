@@ -1,0 +1,98 @@
+<mat-tab-group animationDuration="2000ms" [selectedIndex]="tabindex" (selectedIndexChange)="onSelectedTabChanged($event)">
+  <mat-tab label="New Rate plan">
+    <form [formGroup]="rateplanform" autocomplete="off" (ngSubmit)="onSaveRatePlan()" novalidate style="width:98%;">
+      <input type="hidden" value="{{rateplanid}}"/>
+      <div class="container-fluid" style="margin: 15px 15px;">
+          <div class="row">
+              <div class="col-15">
+                <label for="fname">Rate plan name *</label>
+              </div>
+              <div class="col-35">
+                <label><input type="checkbox" ></label>
+              </div>
+              <!-- <div class="col-35">
+                  <div class="form-group">
+                      <label class="radio-inline"><input type="radio" name="transactiontype" value="1" formControlName="transactiontype">On Request</label>
+                      <label class="radio-inline"><input type="radio" name="transactiontype" value="2" formControlName="transactiontype">On Live</label>
+                  </div>
+              </div> -->
+          </div>
+          <div class="row">
+              <div class="col-20">
+                  <label for="rateplan">Select Rate plan *</label>
+              </div>
+              <div class="col-80">
+                  <select id="rateplan" name="rateplan" formControlName="rateplan">
+                      <option value="-1" selected>Select rateplan</option>
+                      <option *ngFor="let rateplan of rateplans" value="{{rateplan.id}}">{{rateplan.planname}}</option>
+                  </select>
+              </div>
+          </div>
+          <div class="row">                
+              <div class="col-20">
+                  <label for="country">Allow service feed *</label>
+              </div>
+              <div class="col-80">
+                  <div class="checkbox">
+                      <label><input type="checkbox" formControlName="allowFeed"></label>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-11" style="float:right; padding: 15ps 0px;">
+                  <div style="float:right">
+                      <button type="submit" class="btn btn-sm btn-primary active" style="margin: 0px 10px">Submit</button>
+                      <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Close</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </form>
+  </mat-tab>
+  <mat-tab label="Rate plans">
+    <mat-toolbar color="default" class="mat-elevation-z1" style="width: 98%; margin: 25px 5px 1px 5px; height:35px;">
+      <span class="badge badge-info">{{message}}</span>
+      <span class="example-spacer"></span>
+      <a class="btn btn-sm btn-success text-white" (click)="loadMessages('inbox')" role="button">
+          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+      </a>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Cancel</button>
+    </mat-toolbar>
+    <ag-grid-angular 
+        style="width: 98%; height: 200px; margin: 0px 5px 20px 5px;"
+        class="ag-theme-balham"
+        [rowData]="rateplans" 
+        [rowSelection]="rowSelection"
+        (rowSelected)="onRowSelected('rp',$event)"
+        [columnDefs]="rpcolumnDefs"
+        [components]="components"
+        [rowClassRules]="rprowClassRules"
+        [suppressCellSelection]="true"
+        (gridReady)="onRPGridReady($event)"
+        >
+    </ag-grid-angular>
+    <div class="row">
+      <div class="col-md-11"><span class="badge badge-info">Rate plan details</span></div>
+    </div>
+    <ag-grid-angular 
+        style="width: 98%; height: 400px; margin: 0px 5px 20px 5px;"
+        class="ag-theme-balham"
+        [rowData]="rateplanDetails" 
+        [rowSelection]="rowSelection"
+        (rowSelected)="onRowSelected('rpd',$event)"
+        [columnDefs]="rpdcolumnDefs"
+        [components]="components"
+        [rowClassRules]="rpdrowClassRules"
+        [suppressCellSelection]="true"
+        (gridReady)="onRPDGridReady($event)"
+        >
+    </ag-grid-angular>
+    <div class="row">
+      <div class="col-md-11" style="float:right; padding: 15ps 0px;">
+        <div style="float:right">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
