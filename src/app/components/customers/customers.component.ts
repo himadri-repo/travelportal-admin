@@ -8,6 +8,7 @@ import { AdminService } from 'src/app/services/admin.service';
 import { User } from 'src/app/models/user';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import { CustomerinfoComponent } from './customerinfo/customerinfo.component';
+import { Metadata } from 'src/app/models/metadata';
 
 @Component({
   selector: 'app-customers',
@@ -19,17 +20,20 @@ export class CustomersComponent implements OnInit {
   menuTitle = 'customers';
   message = '';
   matDialogRef: MatDialogRef<CustomerinfoComponent>;
+  public states: Metadata[];
 
   public columnDefs = [
     {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onClick: this.AddOrEditCustomer.bind(this)}},
-    {headerName: 'Code', field: 'user_id', sortable: true, filter: true, resizable: true, width: 70},
-    {headerName: 'Name', field: 'name', sortable: true, filter: true, resizable: true, width: 175},
-    {headerName: 'Email', field: 'email', sortable: true, filter: true, resizable: true, width: 225, cellRenderer: 'emailrenderer'},
-    {headerName: 'Mobile', field: 'mobile', sortable: true, filter: true, resizable: true, width: 100},
-    {headerName: 'Approved', field: 'active', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'activerenderer'},
-    {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'typerenderer'},
-    {headerName: 'Allow.Credit', field: 'credit_ac', sortable: true, filter: true, resizable: true, width: 90, cellRenderer: 'chkrenderer'},
-    {headerName: 'Rateplan', field: 'rateplan_name', sortable: true, filter: true, resizable: true, width: 200}
+    // {headerName: 'Code', field: 'user_id', sortable: true, filter: true, resizable: true, width: 70},
+    {headerName: 'Name', field: 'name', sortable: true, filter: true, resizable: true, width: 150},
+    {headerName: 'Email', field: 'email', sortable: true, filter: true, resizable: true, width: 190, cellRenderer: 'emailrenderer'},
+    {headerName: 'Mobile', field: 'mobile', sortable: true, filter: true, resizable: true, width: 90},
+    {headerName: 'Approved', field: 'active', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'activerenderer'},
+    {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'typerenderer'},
+    {headerName: 'Allow.Credit', field: 'credit_ac', sortable: true, filter: true, resizable: true, width: 120, cellRenderer: 'chkrenderer'},
+    {headerName: 'Rateplan', field: 'rateplan_name', sortable: true, filter: true, resizable: true, width: 120},
+    {headerName: 'State', field: 'state', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'staterenderer'},
+    {headerName: 'Address', field: 'address', sortable: true, filter: true, resizable: true, width: 300},
   ];
 
   public components = {
@@ -37,7 +41,8 @@ export class CustomersComponent implements OnInit {
     chkrenderer: this.chkrenderer.bind(this),
     typerenderer: this.typerenderer.bind(this),
     emailrenderer: this.emailrenderer.bind(this),
-    activerenderer: this.activerenderer.bind(this)
+    activerenderer: this.activerenderer.bind(this),
+    staterenderer: this.staterenderer.bind(this)
   };
 
   // [loadingOverlayComponent]="customLoadingOverlay"
@@ -57,6 +62,13 @@ export class CustomersComponent implements OnInit {
   ngOnInit() {
     this.commonService.setTitle('Customers Management');
     this.loadGrid();
+
+    this.currentUser = this.authenticationService.currentLoggedInUser;
+    this.adminService.getMetadata('state', this.currentUser.companyid).subscribe((result: Metadata[]) => {
+      this.states = result;
+    }, (error: any) => {
+      console.log(`Error : ${error}`);
+    })
   }
 
   loadGrid() {
@@ -99,6 +111,25 @@ export class CustomersComponent implements OnInit {
     // element.appendChild(imageElement);
     // // element.appendChild(document.createTextNode(params.value));
     // element.appendChild(document.createTextNode(params.value));
+    return element;
+  }
+
+  staterenderer(params): any {
+    const element = document.createElement('span');
+    element.setAttribute('style', 'font-size: 12px; color: #0000ff;');
+    const statecode = parseInt(params.value, 10);
+
+    if (statecode > 0) {
+      const state = this.states.find((val, idx) => {
+        return parseInt(val.id.toString(), 10) === statecode;
+      });
+      if (state !== null && state !== undefined) {
+        element.appendChild(document.createTextNode(state.datavalue));
+      }
+    } else {
+      // element.appendChild(document.createTextNode(params.value));
+    }
+
     return element;
   }
 

@@ -9,6 +9,7 @@ import { AdminService } from 'src/app/services/admin.service';
 import { User } from 'src/app/models/user';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Rateplan } from 'src/app/models/rateplan';
+import { Metadata } from 'src/app/models/metadata';
 
 @Component({
   selector: 'app-customerinfo',
@@ -21,6 +22,8 @@ export class CustomerinfoComponent implements OnInit {
   public submitted = false;
   public currentUser: User;
   public rateplans: Rateplan[];
+  public states: Metadata[];
+  public countries: Metadata[];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data, public dialogRef: MatDialogRef<CustomerinfoComponent>,
               private formBuilder: FormBuilder, private adminService: AdminService, private authenticationService: AuthenticationService) {
@@ -37,6 +40,9 @@ export class CustomerinfoComponent implements OnInit {
       this.customerInfoData.doj = moment().format('YYYY-MM-DD HH:mm:ss');
       this.customerInfoData.permission = 255;
       this.customerInfoData.is_admin = 0;
+      this.customerInfoData.state = -1;
+      this.customerInfoData.country = -1;
+      this.customerInfoData.address = '';
       this.customerInfoData.uid = uuid.v4();
     } else {
       this.customerInfoData = new Customer();
@@ -57,6 +63,9 @@ export class CustomerinfoComponent implements OnInit {
           this.customerInfoData.is_admin = 0;
           this.customerInfoData.uid = customer.uid;
           this.customerInfoData.rateplanid = customer.rateplanid;
+          this.customerInfoData.address = customer.address;
+          this.customerInfoData.state = customer.state;
+          this.customerInfoData.country = customer.country;
 
           this.f.name.setValue(customer.name);
           this.f.mobile.setValue(customer.mobile);
@@ -67,6 +76,9 @@ export class CustomerinfoComponent implements OnInit {
           this.f.password.setValue(customer.password);
           this.f.password1.setValue(customer.password);
           this.f.rateplanid.setValue(customer.rateplanid);
+          this.f.address.setValue(customer.address);
+          this.f.state.setValue(customer.state);
+          this.f.country.setValue(customer.country);
         }
       });
     }
@@ -76,6 +88,18 @@ export class CustomerinfoComponent implements OnInit {
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.adminService.getRatePlans(this.currentUser.companyid).subscribe((rps: Rateplan[]) => {
       this.rateplans = rps;
+    });
+
+    this.adminService.getMetadata('state', this.currentUser.companyid).subscribe((states: Metadata[]) => {
+      this.states = states;
+    }, (error: any) => {
+      console.log(`Error => ${error}`);
+    });
+
+    this.adminService.getMetadata('country', this.currentUser.companyid).subscribe((countries: Metadata[]) => {
+      this.countries = countries;
+    }, (error: any) => {
+      console.log(`Error => ${error}`);
     });
 
     this.custinfoform = this.formBuilder.group({
@@ -88,6 +112,9 @@ export class CustomerinfoComponent implements OnInit {
       type: new FormControl(this.customerInfoData.type, Validators.required),
       active: new FormControl(this.customerInfoData.active),
       rateplanid: new FormControl(this.customerInfoData.rateplanid),
+      address: new FormControl(this.customerInfoData.address),
+      state: new FormControl(this.customerInfoData.state),
+      country: new FormControl(this.customerInfoData.country),
     }, {
       validators: MustMatch('password', 'password1')
     });
@@ -112,6 +139,9 @@ export class CustomerinfoComponent implements OnInit {
       this.customerInfoData.credit_ac = postedForm.credit_ac;
       this.customerInfoData.password = postedForm.password;
       this.customerInfoData.rateplanid = postedForm.rateplanid;
+      this.customerInfoData.address = postedForm.address;
+      this.customerInfoData.state = postedForm.state;
+      this.customerInfoData.country = postedForm.country;
       const isValid = await this.adminService.is_valid(this.customerInfoData);
       if (isValid) {
         this.adminService.saveCustomer(this.customerInfoData, (msg) => {

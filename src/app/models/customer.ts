@@ -23,4 +23,7 @@ export class Customer {
     primary_user: number;
     company_type: number;
     rateplanid: number;
+    address: string;
+    state: number;
+    country: number;
 }

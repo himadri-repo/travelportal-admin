@@ -12,6 +12,7 @@ import { CommunicationDetail } from '../models/communication_details';
 import { Rateplan } from '../models/rateplan';
 import { RateplanDetail } from '../models/rateplandetail';
 import { Service } from '../models/service';
+import { Metadata } from '../models/metadata';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +60,11 @@ export class AdminService {
 
   public getCommunicationDetail(commdetailid): any {
     return this.httpClient.get<CommunicationDetail[]>(this.baseUrl + `/admin/communication_detail/${commdetailid}`);
+  }
+
+  public getMetadata(object_type, companyid): any {
+    // api/metadata/(:any)/(:num)
+    return this.httpClient.get<Metadata[]>(this.baseUrl + `/metadata/${object_type}/${companyid}`);
   }
 
   public getMessages(boxtype, communicationid): any {
