@@ -1,3 +1,6 @@
+import * as moment from 'moment';
+import * as uuid from 'uuid';
+
 export class RateplanDetail {
     id: number;
     planname: string;
@@ -15,9 +18,11 @@ export class RateplanDetail {
     created_on: string;
     created_by: number;
     created_by_name: string;
+    updated_on: string;
+    updated_by: number;
 
     public constructor(companyid, createdBy, createdByName) {
-        this.id = -1;
+        // this.id = ;
         this.planname = '';
         this.assigned_to = -1;
         this.companyid = companyid;
@@ -30,8 +35,9 @@ export class RateplanDetail {
         this.operation = -1;
         this.calculation = '';
         this.active = 1;
-        this.created_on = new Date().toString();
+        this.created_on = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         this.created_by = createdBy;
         this.created_by_name = createdByName;
+        this.updated_by = -1;
     }
 }

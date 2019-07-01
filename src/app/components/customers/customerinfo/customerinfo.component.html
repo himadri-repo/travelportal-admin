@@ -32,9 +32,13 @@
                 <div *ngIf="f.password.errors.required">Password can't be empty</div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="width: 50%; float: left;">
             <label>Active</label>
             <input type="checkbox" name="active" formControlName="active" class="form-check-input-control">
+        </div>
+        <div class="form-group" style="width: 50%; float: right;">
+          <label>Allow Credit</label>
+          <input type="checkbox" name="credit_ac" formControlName="credit_ac" class="form-check-input-control">
         </div>
       </div>
       <div class="col-md-6">
@@ -63,8 +67,11 @@
             </div>
         </div>
         <div class="form-group">
-            <label>Allow Credit</label>
-            <input type="checkbox" name="credit_ac" formControlName="credit_ac" class="form-check-input-control">
+          <label>Rateplan</label>
+          <select name="rateplanid" formControlName="rateplanid" class="form-control">
+            <option value="-1">-- Select --</option>
+            <option *ngFor="let rp of rateplans" value="{{rp.id}}">{{rp.planname}}</option>
+          </select>
         </div>
       </div>
     </div>

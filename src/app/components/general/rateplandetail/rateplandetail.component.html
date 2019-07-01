@@ -1,0 +1,93 @@
+<section>
+  <div class="card">
+    <div class="card-header">Rateplan : {{rateplandetail.planname}}</div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-2">
+          <span>Rateplan Name</span>
+        </div>
+        <div class="col-md-4">
+          <span>{{rateplandetail.planname}}</span>
+        </div>  
+        <div class="col-md-2">
+          <span>Assigned To</span>
+        </div>
+        <div class="col-md-4">
+          <span style="font-size: 12px; font-weight: 400;">{{getAssignedTo(rateplan.assigned_to)}}</span>
+        </div>  
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <span>Active</span>
+        </div>
+        <div class="col-md-4">
+          <span style='color: #189109' *ngIf="rateplan.active == 1"> Active</span>
+          <span style='color: #ff0000' *ngIf="rateplan.active == 0"> Inactive</span>
+          <!-- <span>{{rateplan.active == 1 ? ' Active' : ' Inactive'}}</span> -->
+        </div>  
+        <div class="col-md-2">
+          <span>Default</span>
+        </div>
+        <div class="col-md-4">
+          <span *ngIf="rateplan.default == 1"><i class='fa fa-check' aria-hidden='true'></i></span>
+        </div>  
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <span>Head Name</span>
+        </div>
+        <div class="col-md-4">
+          <span>{{rateplandetail.head_name}} ({{rateplandetail.serialno}})</span>
+        </div>  
+        <div class="col-md-2">
+          <span>Head Code</span>
+        </div>
+        <div class="col-md-4">
+            <span>{{rateplandetail.head_code}}</span>
+        </div>  
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <span>Amount</span>
+        </div>
+        <div class="col-md-4">
+          <span>
+            {{rateplandetail.amount}}
+            <span *ngIf="rateplandetail.amount_type == 1"><i class='fa fa-inr'></i></span>
+            <span *ngIf="rateplandetail.amount_type == 2">%</span>
+        </span>
+        </div>  
+        <div class="col-md-2">
+          <span>Operation</span>
+        </div>
+        <div class="col-md-4">
+          <span style='color: #189109' *ngIf="rateplandetail.operation == 1"><i class='fa fa-plus'></i></span>
+          <span style='color: #ff0000' *ngIf="rateplandetail.operation == 2"><i class='fa fa-minus'></i></span>
+        </div>  
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <span>Active Item</span>
+        </div>
+        <div class="col-md-4">
+            <span style='color: #189109' *ngIf="rateplandetail.active == 1"> Active Item</span>
+            <span style='color: #ff0000' *ngIf="rateplandetail.active == 0"> Inactive Item</span>
+        </div>  
+        <div class="col-md-2">
+          <span>Calculation</span>
+        </div>
+        <div class="col-md-4">
+          <span>{{rateplandetail.calculation}}</span>
+        </div>  
+      </div>
+    </div> 
+    <div class="card-footer">
+      <div style="width: 75%; display: inline-block;">{{rateplandetail.created_on}} - (by {{rateplandetail.created_by_name}})</div>
+      <div style="width: 20%; display: inline-block; float: right; margin: 0px 10px 0px 0px; text-align: right;">
+        <a class="btn btn-sm btn-success text-white" (click)="closeview()" role="button">
+            <i class="fa fa-times" aria-hidden="true"></i> Close
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

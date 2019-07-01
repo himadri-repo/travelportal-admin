@@ -6,6 +6,9 @@ import * as uuid from 'uuid';
 import { FormGroup, FormBuilder, FormControl, Validators, ValidatorFn } from '@angular/forms';
 import { MustMatch } from 'src/app/common/must-match-validator';
 import { AdminService } from 'src/app/services/admin.service';
+import { User } from 'src/app/models/user';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { Rateplan } from 'src/app/models/rateplan';
 
 @Component({
   selector: 'app-customerinfo',
@@ -16,9 +19,11 @@ export class CustomerinfoComponent implements OnInit {
   public customerInfoData: Customer;
   public custinfoform: FormGroup;
   public submitted = false;
+  public currentUser: User;
+  public rateplans: Rateplan[];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data, public dialogRef: MatDialogRef<CustomerinfoComponent>,
-              private formBuilder: FormBuilder, private adminService: AdminService) {
+              private formBuilder: FormBuilder, private adminService: AdminService, private authenticationService: AuthenticationService) {
     if (data.customerid === -1) {
       this.customerInfoData = new Customer();
       this.customerInfoData.user_id = 'USR' + Math.floor(10000 + (Math.random() * 100000));
@@ -51,6 +56,7 @@ export class CustomerinfoComponent implements OnInit {
           this.customerInfoData.permission = parseInt(customer.permission, 10);
           this.customerInfoData.is_admin = 0;
           this.customerInfoData.uid = customer.uid;
+          this.customerInfoData.rateplanid = customer.rateplanid;
 
           this.f.name.setValue(customer.name);
           this.f.mobile.setValue(customer.mobile);
@@ -59,12 +65,19 @@ export class CustomerinfoComponent implements OnInit {
           this.f.active.setValue(parseInt(customer.active, 10));
           this.f.credit_ac.setValue(parseInt(customer.credit_ac, 10));
           this.f.password.setValue(customer.password);
+          this.f.password1.setValue(customer.password);
+          this.f.rateplanid.setValue(customer.rateplanid);
         }
       });
     }
   }
 
   ngOnInit() {
+    this.currentUser = this.authenticationService.currentLoggedInUser;
+    this.adminService.getRatePlans(this.currentUser.companyid).subscribe((rps: Rateplan[]) => {
+      this.rateplans = rps;
+    });
+
     this.custinfoform = this.formBuilder.group({
       name: new FormControl(this.customerInfoData.name, Validators.required),
       email: new FormControl(this.customerInfoData.email, Validators.required),
@@ -74,6 +87,7 @@ export class CustomerinfoComponent implements OnInit {
       password1: new FormControl('', Validators.required),
       type: new FormControl(this.customerInfoData.type, Validators.required),
       active: new FormControl(this.customerInfoData.active),
+      rateplanid: new FormControl(this.customerInfoData.rateplanid),
     }, {
       validators: MustMatch('password', 'password1')
     });
@@ -97,6 +111,7 @@ export class CustomerinfoComponent implements OnInit {
       this.customerInfoData.type = postedForm.type;
       this.customerInfoData.credit_ac = postedForm.credit_ac;
       this.customerInfoData.password = postedForm.password;
+      this.customerInfoData.rateplanid = postedForm.rateplanid;
       const isValid = await this.adminService.is_valid(this.customerInfoData);
       if (isValid) {
         this.adminService.saveCustomer(this.customerInfoData, (msg) => {

@@ -41,6 +41,7 @@
       "trace"
     ],
     "no-empty": false,
+    "no-bitwise": false,
     "no-inferrable-types": [
       true,
       "ignore-params"

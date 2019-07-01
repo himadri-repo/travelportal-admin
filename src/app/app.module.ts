@@ -33,6 +33,8 @@ import { NotificationComponent } from './components/notification/notification.co
 import { ConfirmationComponent } from './components/shared/confirmation/confirmation.component';
 import { RateplanComponent } from './components/general/rateplan/rateplan.component';
 import { ProfileComponent } from './components/general/profile/profile.component';
+import { RateplandetailComponent } from './components/general/rateplandetail/rateplandetail.component';
+import { SafehtmlPipe } from './common/safehtml.pipe';
 
 @NgModule({
   declarations: [
@@ -52,7 +54,9 @@ import { ProfileComponent } from './components/general/profile/profile.component
     NotificationComponent,
     ConfirmationComponent,
     RateplanComponent,
-    ProfileComponent
+    ProfileComponent,
+    RateplandetailComponent,
+    SafehtmlPipe
   ],
   imports: [
     BrowserModule,

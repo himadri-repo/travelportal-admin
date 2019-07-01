@@ -8,8 +8,12 @@ import { AdminService } from 'src/app/services/admin.service';
 import { MatDialog } from '@angular/material';
 import { ConfirmationComponent } from '../../shared/confirmation/confirmation.component';
 import { Rateplan } from 'src/app/models/rateplan';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { RateplanDetail } from 'src/app/models/rateplandetail';
+import { ValidateAssignedTo, ValidateAccountHead } from 'src/app/common/must-match-validator';
+
+import * as moment from 'moment';
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-rateplan',
@@ -18,13 +22,22 @@ import { RateplanDetail } from 'src/app/models/rateplandetail';
 })
 export class RateplanComponent implements OnInit {
   public title = 'app';
+  public flag = false;
+  public errorMessage = '';
   menuTitle = 'suppliers';
   isediting = false;
   public tabindex = 0;
+  public selectedRateplan: Rateplan;
+  public selectedRateplanDetail: RateplanDetail;
+  public submiting = false;
   rateplans: Rateplan[] = [];
+  filtered_rateplans: Rateplan[] = [];
   rateplanDetails: RateplanDetail[] = [];
   currentRateplan: Rateplan;
   currentRateplanDetail: RateplanDetail;
+  public rateplan_message = 'New Rate plan';
+  public showRateplanDetails = false;
+  public submitted = false;
 
   private rpGridApi;
   private rpGridColumnApi;
@@ -34,42 +47,47 @@ export class RateplanComponent implements OnInit {
 
   public rpcolumnDefs = [
     // {headerName: 'Action', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
-    {headerName: 'Action', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
+    {headerName: 'Action', field: 'id', sortable: true, filter: true, resizable: true, width: 50, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this), type: 'rp'}},
     {headerName: 'Plan.Name', field: 'planname', sortable: true, filter: true, resizable: true, width: 150},
-    {headerName: 'Applicable.To', field: 'assigned_to', sortable: true, filter: true, resizable: true, width: 120},
-    {headerName: 'Active', field: 'active', sortable: true, filter: true, resizable: true, width: 175},
+    {headerName: 'Applicable.To', field: 'assigned_to', sortable: true, filter: true, resizable: true, width: 100, cellRenderer: 'applicabletorenderer'},
+    {headerName: 'Active', field: 'active', sortable: true, filter: true, resizable: true, width: 90, cellRenderer: 'activerenderer'},
+    {headerName: 'Default', field: 'default', sortable: true, filter: true, resizable: true, width: 90, cellRenderer: 'defaultrenderer'},
   ];
 
   public rpdcolumnDefs = [
     // {headerName: 'Action', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
-    {headerName: 'Action', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
+    {headerName: 'Action', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this), type: 'rpd'}},
     {headerName: 'Sl.#', field: 'serialno', sortable: true, filter: true, resizable: true, width: 70},
     {headerName: 'Head.Name', field: 'head_name', sortable: true, filter: true, resizable: true, width: 120},
     {headerName: 'A/C.Code', field: 'head_code', sortable: true, filter: true, resizable: true, width: 120},
-    {headerName: 'Type', field: 'amount_type', sortable: true, filter: true, resizable: true, width: 120},
+    {headerName: 'Type', field: 'amount_type', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'typerenderer'},
     {headerName: 'Amount', field: 'amount', sortable: true, filter: true, resizable: true, width: 100},
-    {headerName: 'Operation', field: 'operation', sortable: true, filter: true, resizable: true, width: 100},
-    {headerName: 'Calculation', field: 'calculation', sortable: true, filter: true, resizable: true, width: 100},
-    {headerName: 'Active', field: 'active', sortable: true, filter: true, resizable: true, width: 70},
+    {headerName: 'Operation', field: 'operation', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'operationrenderer'},
+    {headerName: 'Calculation', field: 'calculation', sortable: true, filter: true, resizable: true, width: 120},
+    {headerName: 'Active', field: 'active', sortable: true, filter: true, resizable: true, width: 90, cellRenderer: 'activerenderer'},
   ];
 
   public components = {
     chkrenderer: this.chkrenderer.bind(this),
-    emailrenderer: this.emailrenderer.bind(this),
+    // emailrenderer: this.emailrenderer.bind(this),
     actionrenderer: this.actionrenderer.bind(this),
-    feedrenderer: this.feedrenderer.bind(this),
-    transrenderer: this.transrenderer.bind(this)
+    activerenderer: this.activerenderer.bind(this),
+    transrenderer: this.transrenderer.bind(this),
+    applicabletorenderer: this.applicabletorenderer.bind(this),
+    defaultrenderer: this.defaultrenderer.bind(this),
+    operationrenderer: this.operationrenderer.bind(this),
+    typerenderer: this.typerenderer.bind(this)
   };
 
   public rprowClassRules = {
     'row-bold'(params) {
-      const toberead = parseInt(params.data.read, 10);
-      return toberead === 0;
-    },
-    'row-invite'(params) {
-      const type = parseInt(params.data.type, 10);
-      return type === 1;
+      const active = parseInt(params.data.active, 10);
+      return active === 1;
     }
+    // 'row-invite'(params) {
+    //   const active = parseInt(params.data.active, 10);
+    //   return type === 1;
+    // }
     // 'sick-days-breach': 'data.sickDays > 8'
   };
 
@@ -101,7 +119,7 @@ export class RateplanComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.commonService.setTitle('Suppliers Management');
+    this.commonService.setTitle('Settings :: Rateplan');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
 
@@ -112,23 +130,49 @@ export class RateplanComponent implements OnInit {
 
   init() {
     this.currentRateplan = new Rateplan(this.currentUser.companyid, this.currentUser.id, this.currentUser.name);
+    this.currentRateplanDetail = new RateplanDetail(this.currentUser.companyid, this.currentUser.id, this.currentUser.name);
+    this.currentRateplanDetail.head_code = '-1';
 
+    this.initRateplanForm();
+  }
+
+  initRateplanForm() {
     this.rateplanform = this.formBuilder.group({
-      supplierid: new FormControl(-1),
-      wholesalerid: new FormControl(this.currentUser.companyid),
-      allowFeed: new FormControl(0),
-      rateplan:  new FormControl(0),
-      transactiontype:  new FormControl(''),
-      walletid: new FormControl(-1),
-      relationid: new FormControl(-1)
-    }, {});
+      name: new FormControl(this.currentRateplan.planname, Validators.required),
+      assignedto_whl: new FormControl((this.currentRateplan.assigned_to & 2) === 2),
+      assignedto_ta: new FormControl((this.currentRateplan.assigned_to & 4) === 4),
+      assignedto_rc: new FormControl((this.currentRateplan.assigned_to & 8) === 8),
+      active: new FormControl(this.currentRateplan.active),
+      default: new FormControl(this.currentRateplan.default),
+      headname: new FormControl(this.currentRateplanDetail.head_name, Validators.required),
+      accounthead: new FormControl(this.currentRateplanDetail.head_code, [Validators.required, ValidateAccountHead]),
+      amount: new FormControl(this.currentRateplanDetail.amount, Validators.required),
+      amounttype: new FormControl(this.currentRateplanDetail.amount_type, Validators.required),
+      operation: new FormControl(this.currentRateplanDetail.operation, Validators.required),
+      calculation: new FormControl(this.currentRateplanDetail.calculation),
+    }, {
+      validators: ValidateAssignedTo()
+    });
   }
 
   loadRateplans() {
     const self = this;
+    this.showRateplanDetails = false;
+    this.rateplanDetails = [];
     if (this.currentUser.companyid > 0) {
       this.adminService.getRatePlans(this.currentUser.companyid).subscribe((res: Rateplan[]) => {
         self.rateplans = res;
+        self.filtered_rateplans = res;
+      });
+    }
+  }
+
+  loadDetailRateplans(rpid: number) {
+    const self = this;
+    this.showRateplanDetails = false;
+    if (rpid !== null && rpid !== undefined && this.currentUser.companyid > 0) {
+      this.adminService.getRatePlansDetails(rpid).subscribe((res: RateplanDetail[]) => {
+        self.rateplanDetails = res;
       });
     }
   }
@@ -142,31 +186,102 @@ export class RateplanComponent implements OnInit {
     return element;
   }
 
-  feedrenderer(params): any {
+  applicabletorenderer(params): any {
+    const container = document.createElement('span');
+    let element = document.createElement('i');
+    const data = params.data;
+
+    if (parseInt(params.value, 10) & 2) {
+      // wholesaler
+      element = document.createElement('i');
+      element.className = 'fa fa-truck';
+      element.setAttribute('style', 'font-size: 22px; color: #0d31ef; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
+      element.title = `Applicable to Wholesaler`;
+      container.appendChild(element);
+    }
+
+    if (parseInt(params.value, 10) & 4) {
+      // travel agent
+      element = document.createElement('i');
+      element.className = 'fa fa-user-o';
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
+      element.title = `Applicable to Travel Agent`;
+      container.appendChild(element);
+    }
+
+    if (parseInt(params.value, 10) & 8) {
+      // Retail Customer
+      element = document.createElement('i');
+      element.className = 'fa fa-users';
+      element.setAttribute('style', 'font-size: 22px; color: #faa61a; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
+      element.title = `Applicable to Retail Customers`;
+      container.appendChild(element);
+    }
+
+    return container;
+  }
+
+  activerenderer(params): any {
     const element = document.createElement('i');
     const data = params.data;
-    const onFeedChange = params.onFeedChange;
-    const currentCompanyid = this.currentUser.companyid;
-    const currentCompanyName = this.currentUser.cname;
 
     if (parseInt(params.value, 10) === 1) {
-      element.className = 'fa fa-link';
-      element.setAttribute('style', 'font-size: 22px; color: #00ff00; cursor: pointer; cursor: hand;');
-      element.title = `${data.display_name} is connected with you. Feeds are active`;
+      element.className = 'fa fa-check';
+      element.setAttribute('style', 'font-size: 22px; color: #28a745; cursor: pointer; cursor: hand;');
+      element.title = `Active`;
     } else {
-      element.className = 'fa fa-chain-broken';
+      element.className = 'fa fa-times';
       element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand;');
-      element.title = `${data.display_name} is connected with you but due to some reason feeds are not enabled yet.\nEither you suspended it or valid rate plan is not assigned yet.`;
+      element.title = `Inactive`;
     }
 
-    if (onFeedChange !== null) {
-      // this.handleFeedChange
-      element.addEventListener('click', (ev) => {
-        onFeedChange(parseInt(params.value, 10), parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
-      });
+    return element;
+  }
+
+  operationrenderer(params): any {
+    const element = document.createElement('i');
+    const data = params.data;
+
+    if (parseInt(params.value, 10) === 1) {
+      element.className = 'fa fa-plus';
+      element.setAttribute('style', 'font-size: 22px; color: #28a745; cursor: pointer; cursor: hand;');
+      element.title = `Add`;
+    } else {
+      element.className = 'fa fa-minus';
+      element.setAttribute('style', 'font-size: 22px; color: #ff0000; cursor: pointer; cursor: hand;');
+      element.title = `Subtract`;
     }
 
-    // element.appendChild(document.createTextNode(params.value));
+    return element;
+  }
+
+  typerenderer(params): any {
+    const element = document.createElement('i');
+    const data = params.data;
+
+    if (parseInt(params.value, 10) === 1) {
+      element.className = 'fa fa-inr';
+      element.setAttribute('style', 'font-size: 20px; color: #0000ff; cursor: pointer; cursor: hand;');
+      element.title = `Value type (i.e. 250 rupees)`;
+    } else {
+      element.className = 'fa fa-percent';
+      element.setAttribute('style', 'font-size: 20px; color: #0000ff; cursor: pointer; cursor: hand;');
+      element.title = `Percentage type (i.e. 10%)`;
+    }
+
+    return element;
+  }
+
+  defaultrenderer(params): any {
+    const element = document.createElement('i');
+    const data = params.data;
+
+    if (parseInt(params.value, 10) === 1) {
+      element.className = 'fa fa-circle';
+      element.setAttribute('style', 'font-size: 22px; color: #218809; cursor: pointer; cursor: hand;');
+      element.title = `Default rate plan`;
+    }
+
     return element;
   }
 
@@ -232,8 +347,7 @@ export class RateplanComponent implements OnInit {
     const edit_element = this.getInvitationLink(params, 'edit', (ev) => {
       // rateplanid:"1"
       // relationid:"1"
-      oneditclick('edit', parseInt(data.rateplanid, 10), parseInt(data.relationid, 10), parseInt(data.allowfeed, 10),
-        parseInt(data.transaction_type, 10), 1, parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
+      oneditclick('edit', params.type, parseInt(data.rateplanid, 10), parseInt(data.id, 10));
     });
 
     action_container.appendChild(edit_element);
@@ -259,21 +373,26 @@ export class RateplanComponent implements OnInit {
     return edit_element;
   }
 
-  handleEdit(action, rateplanid, relationid, allowfeed, transactiontype, walletid, companyid, company_name, currentCompanyid, currentCompanyName): any {
+  handleEdit(action, type, rateplanid, rateplanDetailId): any {
     // alert(`${company_name} - ${currentCompanyName}`);
-    this.isediting = true;
-    this.targetCompanyName = company_name;
-    this.rateplanid = rateplanid;
-    this.relationid = relationid;
 
-    this.supplierid = companyid;
-    this.wholesalerid = currentCompanyid;
+    if (action === 'edit' && type === 'rpd') {
+      this.isediting = true;
 
-    this.g.allowFeed.setValue(allowfeed);
-    this.g.rateplan.setValue(rateplanid);
-    this.g.transactiontype.setValue(`${transactiontype}`);
-    this.g.walletid.setValue(walletid);
+      this.reset();
 
+      this.selectedRateplanDetail = this.rateplanDetails.find((val, idx) => {
+        return (parseInt(val.id.toString(), 10) === parseInt(rateplanDetailId, 10));
+      });
+
+      this.currentRateplan = this.selectedRateplan;
+      this.currentRateplanDetail = this.selectedRateplanDetail;
+      this.rateplan_message = 'Rate plan : ' + this.selectedRateplan.planname;
+      this.initRateplanForm();
+      this.flag = false;
+      this.tabindex = 2;
+    }
+    console.log(JSON.stringify(this.currentRateplan));
     event.stopPropagation();
   }
 
@@ -312,8 +431,10 @@ export class RateplanComponent implements OnInit {
   }
 
   closeDialog() {
-    this.isediting = false;
-    this.targetCompanyName = '';
+    this.submiting = false;
+    this.submitted = false;
+    this.reset();
+    this.tabindex = 1;
   }
 
   loadMessages(boxtype) {
@@ -331,23 +452,126 @@ export class RateplanComponent implements OnInit {
   }
 
   onSaveRatePlan() {
-    this.isediting = false;
+    this.submitted = true;
+    if (!this.rateplanform.invalid && !this.submiting) {
+      this.submiting = true;
+      if (this.currentRateplan.id > 0) {
+        // Rate plan already present now just add line item in detail table.
+        this.adminService.getRatePlansDetails(this.currentRateplan.id).subscribe((res: RateplanDetail[]) => {
+          this.rateplanDetails = res;
+          const ratePlan: Rateplan = this.prepareRatePlan({'detailsCount': res.length + 1});
 
-    if (!this.rateplanform.invalid) {
-      this.adminService.saveLinkDetail({
-        'vendorType': 'supplier',
-        'relationid': this.relationid,
-        'allowFeed': this.g.allowFeed.value,
-        'rateplanid': this.g.rateplan.value,
-        'transactiontype': this.g.transactiontype.value,
-        'walletid': this.g.walletid.value,
-        'supplierid': this.supplierid,
-        'wholesalerid': this.wholesalerid
-      }).subscribe(data => {
-        console.log(`Result : ${data}`);
-        this.loadRateplans();
-      });
+          this.saveRateplan(ratePlan, (rtn) => {
+            this.submiting = false;
+            this.submitted = false;
+            if (rtn.status) {
+              this.reset();
+              this.tabindex = 1;
+              this.loadRateplans();
+            } else {
+              this.errorMessage = rtn.message;
+            }
+          });
+        });
+      } else {
+        const ratePlan: Rateplan = this.prepareRatePlan({'detailsCount': 1});
+
+        this.saveRateplan(ratePlan, (rtn) => {
+          if (rtn.status) {
+            this.reset();
+            this.tabindex = 1;
+            this.loadRateplans();
+          } else {
+            this.errorMessage = rtn.message;
+          }
+        });
+      }
+    } else {
+      if(this.submiting) {
+        this.errorMessage = 'Please wait form already submitted. Let that request persisted.';
+      } else {
+        this.errorMessage = 'Invalid form data. Unable to submit the form. Please check your input. All mandatory fields must be filled before submitting the form.';
+      }
     }
+  }
+
+  private reset() {
+    this.rateplanform.reset();
+    this.errorMessage = '';
+    this.currentRateplan = new Rateplan(this.currentUser.companyid, this.currentUser.id, this.currentUser.name);
+  }
+
+  private saveRateplan(ratePlan: Rateplan, callback) {
+    this.adminService.saveRateplan(ratePlan).subscribe((retrn: any) => {
+      console.log('Rateplan saved', retrn);
+      if (callback) {
+        callback({status: true, message: 'Rateplan saved', data: retrn});
+      }
+    }, (error: any) => {
+      console.log('Error', error);
+      if (callback) {
+        callback({status: false, message: `Error : ${error}`, data: error});
+      }
+    });
+  }
+
+  private prepareRatePlan(option) {
+    option = {'detailsCount': 1} || option;
+    const rpid = parseInt(this.currentRateplan.id.toString(), 10);
+    let rpdid = 0;
+
+    if (this.currentRateplanDetail !== null && this.currentRateplanDetail.id !== null) {
+      rpdid = parseInt(this.currentRateplanDetail.id.toString(), 10);
+    }
+
+    const detailRatePlan = new RateplanDetail(this.currentRateplan.companyid, this.currentRateplan.created_by, this.currentRateplan.created_by_name);
+    if (rpid > 0) {
+      detailRatePlan.rateplanid = rpid;
+    } else {
+      delete detailRatePlan.rateplanid;
+    }
+
+    if (rpdid > 0) {
+      detailRatePlan.id = rpdid;
+    }
+
+    detailRatePlan.active = 1;
+    const assigned_to = (this.g.assignedto_whl.value ? 2 : 0) + (this.g.assignedto_ta.value ? 4 : 0) + (this.g.assignedto_rc.value ? 8 : 0);
+
+    detailRatePlan.head_code = this.g.accounthead.value;
+    detailRatePlan.head_name = this.g.headname.value;
+    detailRatePlan.operation = this.g.operation.value;
+    detailRatePlan.amount = parseFloat(this.g.amount.value);
+    detailRatePlan.amount_type = parseInt(this.g.amounttype.value, 10);
+    detailRatePlan.calculation = this.g.calculation.value;
+    detailRatePlan.serialno = option.detailsCount;
+    delete detailRatePlan.created_by_name;
+    delete detailRatePlan.planname;
+    delete detailRatePlan.assigned_to;
+
+    const ratePlan = new Rateplan(this.currentRateplan.companyid, this.currentRateplan.created_by, this.currentRateplan.created_by_name);
+    if (rpid > 0) {
+      ratePlan.id = rpid;
+    } else {
+      delete ratePlan.id;
+    }
+
+    delete ratePlan.planname;
+    if (rpid <= 0) {
+      ratePlan['name'] = this.g.name.value;
+      ratePlan.display_name = this.g.name.value;
+    } else {
+      ratePlan.display_name = this.currentRateplan.planname;
+    }
+    ratePlan.assigned_to = assigned_to;
+    ratePlan.active = this.g.active.value ? 1 : 0;
+    ratePlan.default = this.g.default.value ? 1 : 0;
+    ratePlan.updated_by = this.currentUser.id;
+    ratePlan.updated_on = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    delete ratePlan.created_by_name;
+    ratePlan.details = [detailRatePlan];
+
+    return ratePlan;
   }
 
   onRPGridReady(params) {
@@ -366,12 +590,30 @@ export class RateplanComponent implements OnInit {
 
       if (gridtype === 'rp') {
         gridrow = row.data;
-      } else if (gridtype === 'rp') {
+        this.selectedRateplan = gridrow;
+        this.loadDetailRateplans(gridrow.id);
+        this.showRateplanDetails = false;
+      } else if (gridtype === 'rpd') {
         gridrow = row.data;
+        this.selectedRateplanDetail = gridrow;
+        this.rateplan_message = `Rateplan : ${this.selectedRateplan.planname}`;
+        this.showRateplanDetails = true;
       }
-
-      alert(JSON.stringify(gridrow));
     }
+  }
+
+  newDocument(type) {
+    this.reset();
+    if (type === 'rp') {
+      this.currentRateplan = new Rateplan(this.currentUser.companyid, this.currentUser.id, this.currentUser.name); // this.selectedRateplan;
+      this.currentRateplanDetail = new RateplanDetail(this.currentUser.companyid, this.currentUser.id, this.currentUser.name); // this.selectedRateplanDetail;
+    } else if (type === 'rpd') {
+      this.currentRateplan = new Rateplan(this.currentUser.companyid, this.currentUser.id, this.currentUser.name); // this.selectedRateplan;
+      this.currentRateplanDetail = new RateplanDetail(this.currentUser.companyid, this.currentUser.id, this.currentUser.name); // this.selectedRateplanDetail;
+    }
+    this.initRateplanForm();
+    this.tabindex = 2;
+    // event.stopPropagation();
   }
 
   onSelectedTabChanged(tabindex) {
@@ -379,5 +621,50 @@ export class RateplanComponent implements OnInit {
       // rateplans
       this.loadRateplans();
     }
+    // else {
+    //   this.reset();
+    //   this.initRateplanForm();
+    // }
+  }
+
+  onRateplanDetailClose(closeEvent) {
+    if (closeEvent.command === 'close') {
+      this.showRateplanDetails = false;
+    }
+  }
+
+  onrpchange(event) {
+    // rateplan_message = 'Rate plan : ' + $event.target.value
+    const rpname = event.target.value;
+
+    this.rateplan_message = 'Rate plan : ' + rpname;
+    this.filtered_rateplans = this.rateplans.filter((rp, idx) => {
+      return rp.planname.toLowerCase().indexOf(rpname.toLowerCase()) > -1;
+    });
+
+    if (this.filtered_rateplans.length === 0) {
+      this.currentRateplan.id = -1;
+      this.g.assignedto_whl.setValue(false);
+      this.g.assignedto_ta.setValue(false);
+      this.g.assignedto_rc.setValue(false);
+    }
+
+    this.flag = (rpname.length > 2 && this.filtered_rateplans.length > 0 && this.filtered_rateplans[0].planname.toLowerCase() !== rpname.toLowerCase()) ? true : false;
+    // this.flag = (rpname.length > 2 && this.filtered_rateplans.length > 0) ? true : false;
+  }
+
+  onSelectClick(rateplan) {
+    this.currentRateplan = rateplan;
+    this.rateplan_message = 'Rate plan : ' + rateplan.planname;
+    this.initRateplanForm();
+    this.flag = false;
+    console.log(JSON.stringify(rateplan));
+    // event.stopPropagation();
+  }
+
+  onrpnameblur(event) {
+    setTimeout(() => {
+      this.flag = false;
+    }, 300);
   }
 }

@@ -104,3 +104,32 @@ input[type=text], select, textarea{
       margin-top: 0;
     }
   }
+
+  .rateplan-detail {
+    width: 100%;
+    height: 0;
+    opacity: 0;
+    background: #ccc;
+  }
+
+  .transform {
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    -o-transition: all 2s ease;
+    -ms-transition: all 2s ease;
+    transition: all 2s ease;
+  }
+
+  .transform-active {
+    width: 100%;
+    height: 100%;
+    opacity: 100;
+  }
+
+  .field-head {
+    background-color: #322fca;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 0px 0px 10px;
+  }

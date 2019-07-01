@@ -8,7 +8,7 @@
 <!-- <h4 class="display-4"></h4>
 <hr> -->
 
-<mat-tab-group animationDuration="2000ms" [selectedIndex]="tabindex" (selectedIndexChange)="onSelectedTabChanged($event)">
+<mat-tab-group animationDuration="2000ms" [(selectedIndex)]="tabindex" (selectedIndexChange)="onSelectedTabChanged($event)">
   <mat-tab label="New Message">
     <form [formGroup]="communicationform" autocomplete="off" (ngSubmit)="onSubmit()" novalidate style="width:98%;">
         <div class="row">

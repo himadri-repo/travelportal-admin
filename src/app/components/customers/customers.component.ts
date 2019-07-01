@@ -28,7 +28,8 @@ export class CustomersComponent implements OnInit {
     {headerName: 'Mobile', field: 'mobile', sortable: true, filter: true, resizable: true, width: 100},
     {headerName: 'Approved', field: 'active', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'activerenderer'},
     {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'typerenderer'},
-    {headerName: 'Allow.Credit', field: 'credit_ac', sortable: true, filter: true, resizable: true, width: 350, cellRenderer: 'chkrenderer'}
+    {headerName: 'Allow.Credit', field: 'credit_ac', sortable: true, filter: true, resizable: true, width: 90, cellRenderer: 'chkrenderer'},
+    {headerName: 'Rateplan', field: 'rateplan_name', sortable: true, filter: true, resizable: true, width: 200}
   ];
 
   public components = {

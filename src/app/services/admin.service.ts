@@ -384,4 +384,17 @@ export class AdminService {
       return this.httpClient.post(this.baseUrl + `/admin/wholesaler/${targetCompanyid}/supplier/${sourceCompanyid}`, payload);
     }
   }
+
+  // api/admin/rateplan/save
+  public saveRateplan(rateplan: Rateplan): any {
+    // tslint:disable-next-line: object-literal-key-quotes
+    return this.httpClient.post(this.baseUrl + '/admin/rateplan/save', {'rateplan': rateplan});
+
+    // .subscribe(data => {
+    //   const msg = 'POST Request is successful ';
+    //   console.log(msg, data);
+    // }, error => {
+    //   console.log('Error', error);
+    // });
+  }
 }

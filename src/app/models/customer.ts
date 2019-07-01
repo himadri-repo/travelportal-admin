@@ -22,4 +22,5 @@ export class Customer {
     uid: string;
     primary_user: number;
     company_type: number;
+    rateplanid: number;
 }
