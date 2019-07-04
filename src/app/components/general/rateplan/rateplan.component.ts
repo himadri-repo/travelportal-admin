@@ -393,6 +393,7 @@ export class RateplanComponent implements OnInit {
       this.tabindex = 2;
     }
     console.log(JSON.stringify(this.currentRateplan));
+    // tslint:disable-next-line: deprecation
     event.stopPropagation();
   }
 
@@ -407,6 +408,7 @@ export class RateplanComponent implements OnInit {
         });
       }
     });
+    // tslint:disable-next-line: deprecation
     event.stopPropagation();
   }
 
@@ -487,7 +489,7 @@ export class RateplanComponent implements OnInit {
         });
       }
     } else {
-      if(this.submiting) {
+      if (this.submiting) {
         this.errorMessage = 'Please wait form already submitted. Let that request persisted.';
       } else {
         this.errorMessage = 'Invalid form data. Unable to submit the form. Please check your input. All mandatory fields must be filled before submitting the form.';
@@ -520,7 +522,8 @@ export class RateplanComponent implements OnInit {
     const rpid = parseInt(this.currentRateplan.id.toString(), 10);
     let rpdid = 0;
 
-    if (this.currentRateplanDetail !== null && this.currentRateplanDetail.id !== null) {
+    if (this.currentRateplanDetail !== null && this.currentRateplanDetail !== undefined
+      && this.currentRateplanDetail.id !== null && this.currentRateplanDetail.id !== undefined) {
       rpdid = parseInt(this.currentRateplanDetail.id.toString(), 10);
     }
 
@@ -558,6 +561,7 @@ export class RateplanComponent implements OnInit {
 
     delete ratePlan.planname;
     if (rpid <= 0) {
+      // tslint:disable-next-line: no-string-literal
       ratePlan['name'] = this.g.name.value;
       ratePlan.display_name = this.g.name.value;
     } else {
