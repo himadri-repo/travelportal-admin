@@ -479,6 +479,8 @@ export class RateplanComponent implements OnInit {
         const ratePlan: Rateplan = this.prepareRatePlan({'detailsCount': 1});
 
         this.saveRateplan(ratePlan, (rtn) => {
+          this.submiting = false;
+          this.submitted = false;
           if (rtn.status) {
             this.reset();
             this.tabindex = 1;
@@ -518,7 +520,7 @@ export class RateplanComponent implements OnInit {
   }
 
   private prepareRatePlan(option) {
-    option = {'detailsCount': 1} || option;
+    option = option || {'detailsCount': 1};
     const rpid = parseInt(this.currentRateplan.id.toString(), 10);
     let rpdid = 0;
 

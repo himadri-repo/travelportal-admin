@@ -31,6 +31,8 @@ export class InviteComponent implements OnInit {
   public tabindex = 0;
   public currentUser: User;
   public communicationDetails: CommunicationDetail[];
+  public allowInvitation = true;
+
 
   public inboxRowData: Message[] = [];
   public outboxRowData: Message[] = [];
@@ -110,41 +112,51 @@ export class InviteComponent implements OnInit {
       this.adminService.getCommunications(this.inviteeid, this.invitorid).subscribe(obsrv => {
         if (obsrv !== null && obsrv !== undefined && obsrv.length > 0) {
           self.communication = new Communication();
-          const communicationInfo = obsrv[0];
-          self.communication.id = communicationInfo.id;
-          self.communication.companyid = communicationInfo.companyid;
-          self.communication.active = communicationInfo.active;
-          self.communication.title = communicationInfo.title;
-          self.communication.created_by = communicationInfo.created_by;
-          self.communication.created_on = communicationInfo.created_on;
-          self.communication.invitee = communicationInfo.invitee;
-          self.communication.invitor = communicationInfo.invitor;
-          self.communication.msgcount = communicationInfo.msgcount;
 
-          self.f.title.setValue(communicationInfo.title);
-          self.f.type.setValue(1);
-          self.f.invitee.setValue(communicationInfo.invitee);
-          self.f.invitor.setValue(communicationInfo.invitor);
-
-          self.adminService.getCommunicationDetails(communicationInfo.id).subscribe(obsrv1 => {
-            if (obsrv1 !== null && obsrv1 !== undefined && obsrv1.length > 0) {
-              for (let index = 0; index < obsrv1.length; index++) {
-                const communicationDetail = new CommunicationDetail();
-              }
+          for (let index = 0; index < obsrv.length; index++) {
+            const comm = obsrv[index];
+            if (parseInt(comm.type, 10) === 1) {
+              this.allowInvitation = false;
+              break;
             }
-          });
-        } else {
-          self.communication.active = 1;
-          self.communication.title = '';
-          self.communication.created_by = this.currentUser.id;
-          self.communication.invitee = this.inviteename;
-          self.communication.invitor = this.invitorname;
+          }
+          //#region commented code
+          // const communicationInfo = obsrv[0];
+          // self.communication.id = communicationInfo.id;
+          // self.communication.companyid = communicationInfo.companyid;
+          // self.communication.active = communicationInfo.active;
+          // self.communication.title = communicationInfo.title;
+          // self.communication.created_by = communicationInfo.created_by;
+          // self.communication.created_on = communicationInfo.created_on;
+          // self.communication.invitee = communicationInfo.invitee;
+          // self.communication.invitor = communicationInfo.invitor;
+          // self.communication.msgcount = communicationInfo.msgcount;
 
-          self.f.title.setValue(self.communication.title);
-          self.f.type.setValue(1);
-          self.f.invitee.setValue(self.communication.invitee);
-          self.f.invitor.setValue(self.communication.invitor);
+          // self.f.title.setValue(communicationInfo.title);
+          // self.f.type.setValue(1);
+          // self.f.invitee.setValue(communicationInfo.invitee);
+          // self.f.invitor.setValue(communicationInfo.invitor);
+
+          // self.adminService.getCommunicationDetails(communicationInfo.id).subscribe(obsrv1 => {
+          //   if (obsrv1 !== null && obsrv1 !== undefined && obsrv1.length > 0) {
+          //     for (let index = 0; index < obsrv1.length; index++) {
+          //       const communicationDetail = new CommunicationDetail();
+          //     }
+          //   }
+          // });
+          //#endregion
         }
+
+        self.communication.active = 1;
+        self.communication.title = '';
+        self.communication.created_by = this.currentUser.id;
+        self.communication.invitee = this.inviteename;
+        self.communication.invitor = this.invitorname;
+
+        self.f.title.setValue(self.communication.title);
+        self.f.type.setValue(1);
+        self.f.invitee.setValue(self.communication.invitee);
+        self.f.invitor.setValue(self.communication.invitor);
       });
     }
   }

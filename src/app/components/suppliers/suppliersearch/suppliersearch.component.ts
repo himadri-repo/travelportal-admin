@@ -41,6 +41,7 @@ export class SuppliersearchComponent implements OnInit {
 
   public rowSelection = 'single';
   private currentUser: User;
+  private currentCompany: Company;
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
@@ -118,9 +119,12 @@ export class SuppliersearchComponent implements OnInit {
     this.commonService.setTitle('Supplier Management - Search');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
-    this.loadMySuppliers(msg => {
-      this.loadSuppliers();
-    });
+    this.currentCompany = this.authenticationService.currentCompany;
+
+    this.loadSuppliers();
+    // this.loadMySuppliers(msg => {
+    //   this.loadSuppliers();
+    // });
   }
 
   loadMySuppliers(callback) {
@@ -146,7 +150,12 @@ export class SuppliersearchComponent implements OnInit {
 
   sendMessage(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName) {
     // alert(companyid);
-    this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName, {showInvite: true, defaultTabIndex: 0});
+    if ((this.currentCompany.type & 4) === 4) {
+      // logged-in company is a wholesaler type. So can request for supplier
+      this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName, {showInvite: true, defaultTabIndex: 0});
+    } else {
+      alert("You are not a wholesaler. So can`t invite any supplier.If you want more inventory accrosse globe, please enhance your account as wholesaler.\nYou can have both wholesaler and supplier feature.");
+    }
   }
 
   readMessage(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName) {

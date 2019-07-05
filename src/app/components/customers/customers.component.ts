@@ -61,14 +61,14 @@ export class CustomersComponent implements OnInit {
 
   ngOnInit() {
     this.commonService.setTitle('Customers Management');
-    this.loadGrid();
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.adminService.getMetadata('state', this.currentUser.companyid).subscribe((result: Metadata[]) => {
       this.states = result;
+      this.loadGrid();
     }, (error: any) => {
       console.log(`Error : ${error}`);
-    })
+    });
   }
 
   loadGrid() {
