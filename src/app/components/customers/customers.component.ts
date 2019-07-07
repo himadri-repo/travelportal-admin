@@ -21,6 +21,10 @@ export class CustomersComponent implements OnInit {
   message = '';
   matDialogRef: MatDialogRef<CustomerinfoComponent>;
   public states: Metadata[];
+  public gridApi: any;
+  public gridColumnApi: any;
+  public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your customers are getting loaded ...</span>';
+  public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
 
   public columnDefs = [
     {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 70, cellRenderer: 'actionrenderer', cellRendererParams: {onClick: this.AddOrEditCustomer.bind(this)}},
@@ -72,11 +76,17 @@ export class CustomersComponent implements OnInit {
   }
 
   loadGrid() {
+    this.gridApi.showLoadingOverlay();
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.message = 'Please wait, loading customer data';
     this.adminService.getCustomersByCompany(this.currentUser.companyid).subscribe((res: Customer[]) => {
-      this.rowData = res;
-      this.message = '';
+      if (res !== null && res !== undefined && res.length > 0) {
+        this.gridApi.hideOverlay();
+        this.rowData = res;
+        this.message = '';
+      } else {
+        this.gridApi.showNoRowsOverlay();
+      }
     });
   }
 
@@ -202,5 +212,11 @@ export class CustomersComponent implements OnInit {
     this.matDialogRef.afterClosed().subscribe(obsrv => {
       this.loadGrid();
     });
+  }
+
+  onGridReady(params) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+    this.gridApi.hideOverlay();
   }
 }

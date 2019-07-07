@@ -17,5 +17,8 @@
     [rowSelection]="rowSelection"
     [columnDefs]="columnDefs"
     [components]="components"
-    [suppressCellSelection]="true">
+    [suppressCellSelection]="true"
+    [overlayLoadingTemplate]="overlayLoadingTemplate"
+    [overlayNoRowsTemplate]="overlayNoRowsTemplate"
+    (gridReady)="onGridReady($event)">
 </ag-grid-angular>

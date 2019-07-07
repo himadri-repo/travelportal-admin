@@ -159,6 +159,8 @@
         [components]="components"
         [rowClassRules]="ibrowClassRules"
         [suppressCellSelection]="true"
+        [overlayLoadingTemplate]="overlayLoadingTemplate"
+        [overlayNoRowsTemplate]="overlayNoRowsTemplate"
         (gridReady)="onInboxGridReady($event)"
         >
     </ag-grid-angular>
@@ -220,6 +222,8 @@
         (rowSelected)="onRowSelected('outbox', $event)"
         [rowClassRules]="obrowClassRules"
         [components]="components"
+        [overlayLoadingTemplate]="overlayLoadingTemplate"
+        [overlayNoRowsTemplate]="overlayNoRowsTemplate"
         (gridReady)="onOutboxGridReady($event)"
         [suppressCellSelection]="true">
     </ag-grid-angular>

@@ -19,6 +19,10 @@ export class TicketsComponent implements OnInit {
   public title = 'app';
   menuTitle = 'inventory';
   message = '';
+  public gridApi: any;
+  public gridColumnApi: any;
+  public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your tickets are getting loaded ...</span>';
+  public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
 
   public columnDefs = [
     {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 75},
@@ -67,14 +71,27 @@ export class TicketsComponent implements OnInit {
     this.commonService.setTitle('Inventory Management');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
-    this.RefreshData(this.currentUser.companyid);
+
+    setTimeout( () => {
+      this.RefreshData(this.currentUser.companyid);
+    }, 300);
   }
 
   RefreshData(companyid) {
-    let self = this;
-    self.rowData = [];
+    const self = this;
+
+    // self.rowData = [];
+    if (this.gridApi !== null && this.gridApi !== undefined) {
+      this.gridApi.showLoadingOverlay();
+    }
+
     this.adminService.getTicketsByCompany(companyid).subscribe((res: Ticket[]) => {
-      self.rowData = res;
+      if (res !== null && res !== undefined && res.length > 0) {
+        this.gridApi.hideOverlay();
+        self.rowData = res;
+      } else {
+        this.gridApi.showNoRowsOverlay();
+      }
     });
   }
 
@@ -168,7 +185,7 @@ export class TicketsComponent implements OnInit {
     const action_container = document.createElement('span');
     action_container.setAttribute('style', 'text-align: cneter');
     const edit_element = document.createElement('i');
-    let id = parseInt(params.value, 10);
+    const id = parseInt(params.value, 10);
 
     edit_element.className = 'fa fa-pencil-square-o';
     edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
@@ -179,5 +196,11 @@ export class TicketsComponent implements OnInit {
     action_container.appendChild(edit_element);
 
     return action_container;
+  }
+
+  onGridReady(params) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+    this.gridApi.hideOverlay();
   }
 }

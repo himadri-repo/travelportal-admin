@@ -15,6 +15,7 @@ import { Company } from 'src/app/models/company';
 import { Supplier } from 'src/app/models/supplier';
 import { Wholesaler } from 'src/app/models/wholesaler';
 import { Rateplan } from 'src/app/models/rateplan';
+import { setTime } from 'ngx-bootstrap/chronos/utils/date-setters';
 
 @Component({
   selector: 'app-notification',
@@ -59,6 +60,9 @@ export class NotificationComponent implements OnInit {
   public options: any = {};
   public invitation_for = '';
   public invitation_by = '';
+
+  public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your notifications are getting loaded ...</span>';
+  public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
 
   public invitationHandle: any = {};
 
@@ -131,7 +135,7 @@ export class NotificationComponent implements OnInit {
   }
 
   init() {
-    let self = this;
+    const self = this;
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.authenticationService.getCompany(this.currentUser.companyid).subscribe(obsrv => {
       self.currentCompany = obsrv;
@@ -177,10 +181,14 @@ export class NotificationComponent implements OnInit {
 
     if (this.tabindex === 1) {
       // inbox
-      this.loadMessages('inbox');
+      setTimeout( () => {
+        this.loadMessages('inbox');
+      }, 300);
     } else if (this.tabindex === 2) {
       // outbox
-      this.loadMessages('outbox');
+      setTimeout( () => {
+        this.loadMessages('outbox');
+      }, 300);
     }
   }
 
@@ -380,14 +388,30 @@ export class NotificationComponent implements OnInit {
   loadMessages(boxtype) {
     // this.currentUser = this.authenticationService.currentLoggedInUser;
     // this.message = 'Please wait, loading customer data';
-    this.inboxRowData = this.outboxRowData = [];
+    if (boxtype === 'inbox') {
+      this.inboxGridApi.showLoadingOverlay();
+    } else if (boxtype === 'outbox') {
+      this.outboxGridApi.showLoadingOverlay();
+    }
+
+    // this.inboxRowData = this.outboxRowData = [];
     this.inboxRowSelected = false;
     this.handleRowInvitation = false;
     this.adminService.getMessages(boxtype, this.currentUser.companyid).subscribe((res: Message[]) => {
       if (boxtype === 'inbox') {
-        this.inboxRowData = res;
+        if (res !== null && res !== undefined && res.length > 0) {
+          this.inboxGridApi.hideOverlay();
+          this.inboxRowData = res;
+        } else {
+          this.inboxGridApi.showNoRowsOverlay();
+        }
       } else if (boxtype === 'outbox') {
-        this.outboxRowData = res;
+        if (res !== null && res !== undefined && res.length > 0) {
+          this.outboxGridApi.hideOverlay();
+          this.outboxRowData = res;
+        } else {
+          this.outboxGridApi.showNoRowsOverlay();
+        }
       }
     });
   }
@@ -458,10 +482,12 @@ export class NotificationComponent implements OnInit {
   onInboxGridReady(params) {
     this.inboxGridApi = params.api;
     this.inboxGridColumnApi = params.columnApi;
+    this.inboxGridApi.hideOverlay();
   }
 
   onOutboxGridReady(params) {
     this.outboxGridApi = params.api;
     this.outboxGridColumnApi = params.columnApi;
+    this.outboxGridApi.hideOverlay();
   }
 }
