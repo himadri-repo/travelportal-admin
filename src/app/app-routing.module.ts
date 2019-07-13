@@ -10,6 +10,7 @@ import { SuppliersearchComponent } from './components/suppliers/suppliersearch/s
 import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { RateplanComponent } from './components/general/rateplan/rateplan.component';
+import { BookingsComponent } from './components/sales/bookings/bookings.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -19,7 +20,7 @@ const routes: Routes = [
   {path: 'admin/finance/accounts', component: UsersComponent},
   {path: 'admin/services', component: UsersComponent},
   {path: 'admin/tickets', component: TicketsComponent},
-  {path: 'admin/sales/bookings', component: UsersComponent},
+  {path: 'admin/sales/bookings', component: BookingsComponent},
   {path: 'admin/sales/ledger', component: UsersComponent},
   {path: 'admin/suppliers', component: SuppliersComponent},
   {path: 'admin/suppliers/search', component: SuppliersearchComponent},

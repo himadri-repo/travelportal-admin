@@ -35,6 +35,8 @@ import { RateplanComponent } from './components/general/rateplan/rateplan.compon
 import { ProfileComponent } from './components/general/profile/profile.component';
 import { RateplandetailComponent } from './components/general/rateplandetail/rateplandetail.component';
 import { SafehtmlPipe } from './common/safehtml.pipe';
+import { BookingsComponent } from './components/sales/bookings/bookings.component';
+import { DatediffPipe } from './common/datediff.pipe';
 
 @NgModule({
   declarations: [
@@ -56,7 +58,9 @@ import { SafehtmlPipe } from './common/safehtml.pipe';
     RateplanComponent,
     ProfileComponent,
     RateplandetailComponent,
-    SafehtmlPipe
+    SafehtmlPipe,
+    BookingsComponent,
+    DatediffPipe
   ],
   imports: [
     BrowserModule,

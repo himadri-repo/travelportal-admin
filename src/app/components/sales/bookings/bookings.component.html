@@ -1,0 +1,228 @@
+<div *ngIf="mode==='noshow'">
+  <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 25px 5px 1px 5px; height:35px;">
+    <span class="badge badge-info">{{message}}</span>
+    <span class="example-spacer"></span>
+    <!-- <a class="btn btn-sm btn-success text-white" (click)="UploadTickets(this.currentUser.companyid)" role="button">
+        <i class="fa fa-plus" aria-hidden="true"></i> Upload Tickets
+    </a> -->
+    <a class="btn btn-sm btn-success text-white" (click)="RefreshData(this.currentUser.companyid)" role="button">
+        <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+    </a>
+    <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
+    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
+  </mat-toolbar>
+  <ag-grid-angular 
+    style="width: 100%; height: 300px; margin: 0px 5px 20px 5px;"
+    class="ag-theme-balham"
+    [rowData]="bookings" 
+    [rowSelection]="rowSelection"
+    [columnDefs]="columnDefs"
+    [components]="components"
+    [suppressCellSelection]="true"
+    [overlayLoadingTemplate]="overlayLoadingTemplate"
+    [overlayNoRowsTemplate]="overlayNoRowsTemplate"
+    (rowSelected)="onRowSelected('edit',$event)"
+    (gridReady)="onGridReady($event)">
+  </ag-grid-angular>
+</div>
+<div class="main-content" *ngIf="mode==='edit' || mode==='show'">
+  <div class="main-content-inner">
+    <div class="page-content">
+      <div class="page-header page-title" id="header">
+        <!--.page-header -->
+        <h1 style="font-weight: 100; font-size: 1.5vw; color: #0000ff; width: 80%; display: inline-block">
+          {{booking.source_city}} TO {{booking.destination_city}} ( {{booking.trip_type}} WAY ) - {{booking.status}}
+        </h1>
+        <button (click)="onBack($event)" class="btn btn-primary" style="float:right"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Bookings</button>
+      </div><!-- /.page-header -->
+      <form [formGroup]="handlebookingform" autocomplete="off" (ngSubmit)="onHandleChangeBooking()" novalidate>
+        <input type="hidden" name="booking_id" value="3"/>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12">
+            <!--Widget col-md-8 start-->
+            <div style="">
+              <h3 style="color:#2679b5;font-size:18px">PASSENGER DETAILS</h3>
+              <hr style="margin:0" />
+              <table id="dynamic-table" class="table table-striped table-bordered table-hover"
+                style="margin-bottom:20px">
+                <thead class="column-head">
+                  <tr>
+                    <th>Si No.</th>
+                    <th>Passenger Name</th>
+                    <th>Age</th>
+                    <th>Mobile No.</th>
+                    <th>Email</th>
+                    <th>PNR</th>
+                  </tr>
+                </thead>
+                <tbody id="grid1" formArrayName="customers" *ngFor="let customer of handlebookingform.get('customers').controls; let i = index;">
+                  <tr [formGroup]="customer">
+                    <td>{{i+1}}</td>
+                    <td>{{customer.controls.name.value}}</td>
+                    <td>{{customer.controls.age.value}}</td>
+                    <td>{{customer.controls.mobile.value}}</td>
+                    <td>{{customer.controls.email.value}}</td>
+                    <td>
+                      <input formControlName="pnr" placeholder="Please provide PNR"/>
+                      <input id="cust-{{customer.controls.id.value}}" name="customer-{{customer.controls.id.value}}"type="hidden" formControlName="id"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 style="color:#2679b5;font-size:18px">GOING FLIGHT DETAILS</h3>
+              <hr style="margin:0" />
+              <table id="dynamic-table" class="table table-striped table-bordered table-hover"
+                style="margin-bottom:20px">
+                <thead class="column-head">
+                  <tr>
+                    <th>Dep</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Duration</th>
+                    <th>Airline</th>
+                    <th>Class</th>
+                    <th>Flight No.</th>
+                    <th>Dep Term</th>
+                    <th>Arr Term</th>
+                  </tr>
+                </thead>
+                <tbody id="grid1">
+                  <tr>
+                    <td>{{booking.ticket.departure_date_time | date:'dd-MMM-yyyy hh:mm:ss aa'}}</td>
+                    <td>{{booking.source_city}}</td>
+                    <td>{{booking.destination_city}}</td>
+                    <td>{{booking.ticket.departure_date_time | datediff:booking.ticket.arrival_date_time}}</td>
+                    <td>{{booking.ticket.aircode}}</td>
+                    <td>{{booking.ticket.class}}</td>
+                    <td>{{booking.ticket.flight_no}}</td>
+                    <td>NA</td>
+                    <td>NA</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 style="color:#2679b5;font-size:18px">BOOKING DETAILS</h3>
+              <hr style="margin:0" />
+              <table id="dynamic-table" class="table table-striped table-bordered table-hover" style="margin-bottom:20px">
+                <tr>
+                  <th class="column-head"><div class="column-left">Booking Request No.</div><div class="column-right">{{booking.id}}</div></th>
+                  <th class="column-head">Price Summary</th>
+                </tr>
+                <tr>
+                  <th class="column-head"><div class="column-left">Booking Date.</div><div class="column-right">{{booking.date | date:'dd-MMM-yyyy hh:mm:ss aa'}}</div></th>
+                  <td rowspan="2" style="padding: 0px;">
+                    <div class="column-left column-head column-title">Ticket Rate</div><div class="column-right">{{booking.rate}}</div>
+                    <div class="column-left column-head column-title">Qty</div><div class="column-right">{{booking.qty}}</div>
+                    <div class="column-left column-head column-title">Sub Total</div><div class="column-right">{{booking.amount}}</div>
+                    <div class="column-left column-head column-title">Service Charge</div><div class="column-right">{{booking.service_charge}}</div>
+                    <div class="column-left column-head column-title">GST</div><div class="column-right">{{booking.igst}}</div>
+                    <div class="column-left column-head column-title">Grand Total</div><div class="column-right">{{booking.total}}</div>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="column-head"><div class="column-left">Customer Name</div><div class="column-right">{{booking.name}}</div></th>
+                </tr>
+                <tr>
+                  <th class="column-head"><div class="column-left">Seller Name</div><div class="column-right">{{booking.seller}}</div></th>
+                  <th class="column-head"><div class="column-left">Status</div><div class="column-right">{{booking.status}}</div></th>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12">
+            <!--Widget col-md-8 start-->
+            <h3 style="color:#2679b5;font-size:18px">ASSIGNED SELLERS</h3>
+            <hr style="margin:0" />
+            <input type="hidden" name="booking_request_id" value="3">
+            <table id="dynamic-table" class="table table-striped table-bordered table-hover" style="margin-bottom:20px">
+              <thead>
+                <tr>
+                  <th>T.No</th>
+                  <th>Journey</th>
+                  <th>Status</th>
+                  <th>Travel Date</th>
+                  <th>Airline</th>
+                  <th>Class</th>
+                  <th>Rate</th>
+                  <th>Ord.Seats</th>
+                  <th>Agent</th>
+                  <th>Ord.Date</th>
+                </tr>
+              </thead>
+              <tbody id="grid1">
+                <tr style="background:#fff">
+                  <td colspan="10"><span>No sellers has been assigned yet</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-sm-12">
+            <!--Widget col-md-8 start-->
+            <h3 style="color:#2679b5;font-size:18px">ASSIGN BOOKING TO SELLERS</h3>
+            <hr style="margin:0" />
+            <input type="hidden" name="booking_request_id" value="3">
+            <table id="dynamic-table" class="table table-striped table-bordered table-hover" style="margin-bottom:20px">
+              <thead>
+                <tr>
+                  <th>T.No</th>
+                  <th>Journey</th>
+                  <th>Type</th>
+                  <th>Travel Date</th>
+                  <th>Airline</th>
+                  <th>Class</th>
+                  <th>Rate</th>
+                  <th>Avl.Seats</th>
+                  <th>Agent</th>
+                  <th>Book.Seats</th>
+                </tr>
+              </thead>
+              <tbody id="grid1">
+                <tr style="background:#fff">
+                  <td>6566</td>
+                  <td>
+                    <div>Mumbai ( India ) BOM</div>
+                    <div>Kolkata ( India ) CCU</div>
+                  </td>
+                  <td>ONE WAY</td>
+                  <td>
+                    <i class="fa fa-plane"
+                      style="font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i><span
+                      class="date">11th Jul 19 </span>(11:10 pm)<br />
+                    <i class="fa fa-plane"
+                      style="transform:rotate(83deg);font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i><span
+                      class="date">12th Jul 19 </span>(01:55 am)
+                  </td>
+                  <td>GoAir</td>
+                  <td>ECONOMY</td>
+                  <td><b>Supplier Rate : </b>3145.00<br> <b>Portal Rate : </b>3445</td>
+                  <td>5</td>
+                  <td>Sumit Agarwal<br>OXY001</td>
+                  <td>
+                    <input type="hidden" name="seller_id" value="104">
+                    <input type="hidden" name="ticket_no" value="6566">
+                    <input type="number" name="no_of_person" class="col-xs-12 col-sm-12" value="1" style="width:50px">
+                  </td>
+                </tr>
+              </tbody>
+              <tbody id="grid1">
+                <tr style="background:#fff">
+                  <td colspan="5"><button type="button" id="btnReject" name="btnReject" class="btn btn-primary"
+                      style="display:none">Reject</button></td>
+                  <td colspan="5"><button type="button" id="btnBook" name="btnBook" class="btn btn-primary"
+                      style="float:right">Send to seller</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!--sellers grid1-->
+        </div> <!-- end of list of sellers row -->
+        <!--row-->
+        <input type="hidden" name="existing_seller_id" id="existing_seller_id" value="104"/>
+      </form>
+    </div> <!-- /.page-content -->
+  </div> <!-- /.main-content-inner -->
+</div> <!-- /.main-content -->

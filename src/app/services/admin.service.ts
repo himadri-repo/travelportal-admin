@@ -403,4 +403,13 @@ export class AdminService {
     //   console.log('Error', error);
     // });
   }
+
+  public getBookings(companyid = 0, userid = 0): any {
+    // tslint:disable-next-line: object-literal-key-quotes
+    if (userid === undefined || userid === null || userid === 0) {
+      return this.httpClient.get(this.baseUrl + `/bookings/${companyid}`);
+    } else if (companyid === undefined || companyid === null || companyid === 0) {
+      return this.httpClient.get(this.baseUrl + `/bookings/-1/${userid}`);
+    }
+  }
 }

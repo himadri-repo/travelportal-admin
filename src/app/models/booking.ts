@@ -1,0 +1,73 @@
+import { BookingActivity } from './booking_activity';
+import { User } from './user';
+import { Company } from './company';
+import { Rateplan } from './rateplan';
+import { CustomerInfo } from './customerInfo';
+import { Ticket } from './ticket';
+
+export class Booking {
+    id: number;
+    date: string;
+    process_date: string;
+    departure_date_time: string;
+    arrival_date_time: string;
+    pnr: string;
+    rate: number;
+    qty: number;
+    amount: number;
+    igst: number;
+    service_charge: number;
+    total: number;
+    trip_type: string;
+    user_id: string;
+    name: string;
+    seller: string;
+    seller_id: string;
+    ticket_id: number;
+    ticket: Ticket;
+    customer_userid: number;
+    customer_user: User;
+    customer_companyid: number;
+    customer_company: Company;
+    seller_userid: number;
+    seller_user: User;
+    seller_companyid: number;
+    seller_company: Company;
+    admin_markup: number;
+    markup: number;
+    srvchg: number;
+    cgst: number;
+    sgst: number;
+    discount: number;
+    costprice: number;
+    adult: number;
+    child: number;
+    infant: number;
+    refund_amount: number;
+    refund_date: string;
+    refundid: number;
+    source_city: string;
+    destination_city: string;
+    flight_no: string;
+    aircode: string;
+    ticket_no: string;
+    class: string;
+    status: string;
+    parent_booking_id: number;
+    notes: string;
+    rateplanid: number;
+    rateplan: Rateplan;
+    customers: CustomerInfo[];
+    booking_activities: BookingActivity[];
+    created_by: number;
+    created_on: string;
+    updated_by: number;
+    updated_on: string;
+
+    constructor() {
+        this.id = -1;
+        this.date = new Date().toString();
+        this.customers = [];
+        this.booking_activities = [];
+    }
+}

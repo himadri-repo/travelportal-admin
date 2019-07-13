@@ -121,8 +121,7 @@ export class NotificationComponent implements OnInit {
   public rowSelection = 'single';
 
   constructor(private authenticationService: AuthenticationService,
-              private formBuilder: FormBuilder, private adminService: AdminService)
-  {
+              private formBuilder: FormBuilder, private adminService: AdminService) {
     const self = this;
 
     this.tabindex = 1;
