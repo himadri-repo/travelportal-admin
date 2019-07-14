@@ -12,7 +12,7 @@ export class DatediffPipe implements PipeTransform {
       diff = moment(args).diff(value, 'hours', true);
 
       const hour = Math.floor(diff);
-      const minutes = (diff - hour) * 60;
+      const minutes = Math.round((diff - hour) * 60);
 
       if (hour > 0) {
         diff = `${hour} Hour(s) `;

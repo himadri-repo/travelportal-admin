@@ -23,4 +23,5 @@ export class CustomerInfo {
     created_on: string;
     updated_by: number;
     updated_on: string;
+    airline_ticket_no: string;
 }

@@ -1,4 +1,5 @@
 export class Ticket {
+    [x: string]: any;
     id: number;
     source: string;
     destination: string;

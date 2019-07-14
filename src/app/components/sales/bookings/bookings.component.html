@@ -28,7 +28,7 @@
 <div class="main-content" *ngIf="mode==='edit' || mode==='show'">
   <div class="main-content-inner">
     <div class="page-content">
-      <div class="page-header page-title" id="header">
+      <div class="page-header page-title page-title-section" id="header">
         <!--.page-header -->
         <h1 style="font-weight: 100; font-size: 1.5vw; color: #0000ff; width: 80%; display: inline-block">
           {{booking.source_city}} TO {{booking.destination_city}} ( {{booking.trip_type}} WAY ) - {{booking.status}}
@@ -53,6 +53,7 @@
                     <th>Mobile No.</th>
                     <th>Email</th>
                     <th>PNR</th>
+                    <th>Airline Ticket#</th>
                   </tr>
                 </thead>
                 <tbody id="grid1" formArrayName="customers" *ngFor="let customer of handlebookingform.get('customers').controls; let i = index;">
@@ -63,8 +64,11 @@
                     <td>{{customer.controls.mobile.value}}</td>
                     <td>{{customer.controls.email.value}}</td>
                     <td>
-                      <input formControlName="pnr" placeholder="Please provide PNR"/>
+                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;"/>
                       <input id="cust-{{customer.controls.id.value}}" name="customer-{{customer.controls.id.value}}"type="hidden" formControlName="id"/>
+                    </td>
+                    <td>
+                      <input formControlName="airline_ticket_no" placeholder="Please provide Airline Ticket Number" style="width: 100%;"/>
                     </td>
                   </tr>
                 </tbody>
@@ -136,7 +140,7 @@
             <hr style="margin:0" />
             <input type="hidden" name="booking_request_id" value="3">
             <table id="dynamic-table" class="table table-striped table-bordered table-hover" style="margin-bottom:20px">
-              <thead>
+              <thead class="column-head">
                 <tr>
                   <th>T.No</th>
                   <th>Journey</th>
@@ -166,7 +170,7 @@
             <hr style="margin:0" />
             <input type="hidden" name="booking_request_id" value="3">
             <table id="dynamic-table" class="table table-striped table-bordered table-hover" style="margin-bottom:20px">
-              <thead>
+              <thead class="column-head">
                 <tr>
                   <th>T.No</th>
                   <th>Journey</th>
@@ -180,40 +184,40 @@
                   <th>Book.Seats</th>
                 </tr>
               </thead>
-              <tbody id="grid1">
-                <tr style="background:#fff">
-                  <td>6566</td>
+              <tbody id="grid2" formArrayName="tickets" *ngFor="let ticket of handlebookingform.get('tickets').controls; let i = index;">
+                <tr [formGroup]="ticket">
+                  <td>{{ticket.controls.tktid.value}}</td>
                   <td>
-                    <div>Mumbai ( India ) BOM</div>
-                    <div>Kolkata ( India ) CCU</div>
+                    <div>{{ticket.controls.source.value}}</div>
+                    <div>{{ticket.controls.destination.value}}</div>
                   </td>
-                  <td>ONE WAY</td>
+                  <td>{{ticket.controls.type.value}}</td>
                   <td>
-                    <i class="fa fa-plane"
-                      style="font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i><span
-                      class="date">11th Jul 19 </span>(11:10 pm)<br />
-                    <i class="fa fa-plane"
-                      style="transform:rotate(83deg);font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i><span
-                      class="date">12th Jul 19 </span>(01:55 am)
+                    <i class="fa fa-plane" style="font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
+                    <span class="date">{{ticket.controls.departure_date_time.value}}</span><br />
+                    <i class="fa fa-plane" style="transform:rotate(83deg);font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
+                    <span class="date">{{ticket.controls.arrival_date_time.value}}</span>
                   </td>
-                  <td>GoAir</td>
-                  <td>ECONOMY</td>
-                  <td><b>Supplier Rate : </b>3145.00<br> <b>Portal Rate : </b>3445</td>
-                  <td>5</td>
-                  <td>Sumit Agarwal<br>OXY001</td>
+                  <td>{{ticket.controls.flight_no.value}}</td>
+                  <td>{{ticket.controls.class.value}}</td>
+                  <td><b>Supplier Rate : </b>{{ticket.controls.price.value}}<br> <b>Portal Rate : </b>{{ticket.controls.total.value}}</td>
+                  <td>{{ticket.controls.no_of_person.value}}</td>
+                  <td>{{ticket.controls.supplier.value}}</td>
                   <td>
-                    <input type="hidden" name="seller_id" value="104">
-                    <input type="hidden" name="ticket_no" value="6566">
-                    <input type="number" name="no_of_person" class="col-xs-12 col-sm-12" value="1" style="width:50px">
+                    <input type="hidden" name="seller_id" value="1">
+                    <input type="hidden" name="ticket_no" value="{{ticket.controls.tktid.value}}">
+                    <input type="number" name="no_of_person" class="col-xs-12 col-sm-12" value="{{i === 0?booking.qty:0}}" style="width:100%">
                   </td>
                 </tr>
               </tbody>
-              <tbody id="grid1">
+              <tbody id="grid3">
                 <tr style="background:#fff">
-                  <td colspan="5"><button type="button" id="btnReject" name="btnReject" class="btn btn-primary"
-                      style="display:none">Reject</button></td>
-                  <td colspan="5"><button type="button" id="btnBook" name="btnBook" class="btn btn-primary"
-                      style="float:right">Send to seller</button></td>
+                  <td colspan="5">
+                    <button type="button" id="btnReject" name="btnReject" class="btn btn-primary" style="display:none">Reject</button>
+                  </td>
+                  <td colspan="5">
+                    <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" style="float:right">Send to seller</button>
+                  </td>
                 </tr>
               </tbody>
             </table>

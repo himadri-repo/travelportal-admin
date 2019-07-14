@@ -10,7 +10,7 @@ import { Ticket } from 'src/app/models/ticket';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import * as moment from 'moment';
 import { Booking } from 'src/app/models/booking';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
 import { CustomerInfo } from 'src/app/models/customerInfo';
 import { DatediffPipe } from 'src/app/common/datediff.pipe';
 
@@ -57,6 +57,7 @@ export class BookingsComponent implements OnInit {
   public rowSelection = 'single';
   currentUser: User;
   public booking: Booking;
+  public tickets: Ticket[];
   public mode = 'noshow';
   public handlebookingform: FormGroup;
   // @Output() navigationChangeEvent = new EventEmitter<string>();
@@ -70,19 +71,21 @@ export class BookingsComponent implements OnInit {
     this.commonService.setTitle('My Bookings');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
+    this.tickets = [];
 
-    this.init(new Booking());
+    this.init(new Booking(), this.tickets);
 
     setTimeout( () => {
       this.RefreshData(this.currentUser.companyid);
     }, 300);
   }
 
-  init(booking) {
+  init(booking, tickets) {
     this.handlebookingform = this.formBuilder.group({
       id: new FormControl(booking.id),
       pnr: new FormControl(booking.pnr),
-      customers: this.formBuilder.array(this.createCustomerControls(booking.customers))
+      customers: this.formBuilder.array(this.createCustomerControls(booking.customers)),
+      tickets: this.formBuilder.array(this.createTicketControls(tickets))
     }, {});
   }
 
@@ -98,8 +101,35 @@ export class BookingsComponent implements OnInit {
         mobile: new FormControl(`${customer.mobile_no}`),
         email: new FormControl(customer.email),
         pnr: new FormControl(customer.pnr),
+        airline_ticket_no: new FormControl(customer.airline_ticket_no),
       }));
     });
+    return formGroups;
+  }
+
+  createTicketControls(tickets: Ticket[]): FormGroup[] {
+    const formGroups = [];
+    // const ticketControls = this.handlebookingform.get('tickets') as FormArray;
+
+    tickets.forEach((ticket, idx) => {
+      formGroups.push(this.formBuilder.group({
+        tktid: new FormControl(ticket.id),
+        source: new FormControl(ticket.source_city),
+        destination: new FormControl(ticket.destination_city),
+        type: new FormControl(`${ticket.trip_type} WAY`),
+        departure_date_time: new FormControl(ticket.departure_date_time),
+        arrival_date_time: new FormControl(ticket.arrival_date_time),
+        flight_no: new FormControl(ticket.flight_no),
+        class: new FormControl(ticket.class),
+        supplier: new FormControl(ticket.companyname),
+        price: new FormControl(ticket.price),
+        total: new FormControl(ticket.total),
+        no_of_person: new FormControl(ticket.no_of_person)
+      }));
+    });
+
+    // ticketControls.push(ticketControls);
+
     return formGroups;
   }
 
@@ -204,11 +234,36 @@ export class BookingsComponent implements OnInit {
 
   onRowSelected(mode, row) {
     if (row.node.selected) {
-      this.init(row.data);
+      const self = this;
       this.booking = row.data;
+
+      const query = {
+        'companyid': this.currentUser.companyid,
+        'source': parseInt(this.booking.ticket.source, 10),
+        'destination': parseInt(this.booking.ticket.destination, 10),
+        'from_date': moment(this.booking.departure_date_time).format('YYYY-MM-DD'),
+        'to_date': moment(this.booking.arrival_date_time).format('YYYY-MM-DD'),
+        'trip_type': 'ONE',
+        'approved': 1,
+        'available': 'YES',
+        'no_of_person': 1,
+      };
+      this.getTickets(query).subscribe((res: any[]) => {
+        if (res !== null && res !== undefined && res.length > 0) {
+          self.tickets = res;
+          self.init(row.data, self.tickets);
+
+          // self.createTicketControls(self.tickets);
+        }
+      });
+
       this.mode = 'edit';
       // alert(inboxMessage.message);
     }
+  }
+
+  getTickets(query) {
+    return this.adminService.getTickets(query);
   }
 
   onHandleChangeBooking() {

@@ -412,4 +412,8 @@ export class AdminService {
       return this.httpClient.get(this.baseUrl + `/bookings/-1/${userid}`);
     }
   }
+
+  public getTickets(query: any): any {
+    return this.httpClient.post(this.baseUrl + `/company/open_tickets`, query);
+  }
 }
