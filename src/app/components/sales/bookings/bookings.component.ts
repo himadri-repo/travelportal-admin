@@ -224,6 +224,7 @@ export class BookingsComponent implements OnInit {
       this.message = 'Invalid booking id.';
     }
 
+    // tslint:disable-next-line: deprecation
     event.stopPropagation();
   }
 
