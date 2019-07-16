@@ -395,13 +395,6 @@ export class AdminService {
   public saveRateplan(rateplan: Rateplan): any {
     // tslint:disable-next-line: object-literal-key-quotes
     return this.httpClient.post(this.baseUrl + '/admin/rateplan/save', {'rateplan': rateplan});
-
-    // .subscribe(data => {
-    //   const msg = 'POST Request is successful ';
-    //   console.log(msg, data);
-    // }, error => {
-    //   console.log('Error', error);
-    // });
   }
 
   public getBookings(companyid = 0, userid = 0): any {
@@ -413,7 +406,16 @@ export class AdminService {
     }
   }
 
+  public getBookingsByQuery(query: any): any {
+    // tslint:disable-next-line: object-literal-key-quotes
+    return this.httpClient.get(this.baseUrl + `/bookings`, query);
+  }
+
   public getTickets(query: any): any {
     return this.httpClient.post(this.baseUrl + `/company/open_tickets`, query);
+  }
+
+  public getAssignedSuppliers(query: any): any {
+    return this.httpClient.post(this.baseUrl + `/query/bookings`, query);
   }
 }

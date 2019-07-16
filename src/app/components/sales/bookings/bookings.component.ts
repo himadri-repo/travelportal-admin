@@ -55,9 +55,10 @@ export class BookingsComponent implements OnInit {
   public bookings: Booking[] = [];
 
   public rowSelection = 'single';
-  currentUser: User;
+  public currentUser: User;
   public booking: Booking;
   public tickets: Ticket[];
+  public assignedSuppliers: Booking[];
   public mode = 'noshow';
   public handlebookingform: FormGroup;
   // @Output() navigationChangeEvent = new EventEmitter<string>();
@@ -123,8 +124,10 @@ export class BookingsComponent implements OnInit {
         class: new FormControl(ticket.class),
         supplier: new FormControl(ticket.companyname),
         price: new FormControl(ticket.price),
-        total: new FormControl(ticket.total),
-        no_of_person: new FormControl(ticket.no_of_person)
+        costprice: new FormControl(ticket.cost_price),
+        no_of_person: new FormControl(ticket.no_of_person),
+        order_qty: new FormControl(this.booking.qty),
+        status:  new FormControl(0)
       }));
     });
 
@@ -132,6 +135,8 @@ export class BookingsComponent implements OnInit {
 
     return formGroups;
   }
+
+  get f() { return this.handlebookingform.controls; }
 
   RefreshData(companyid = 0, userid = 0) {
     const self = this;
@@ -249,13 +254,22 @@ export class BookingsComponent implements OnInit {
         'available': 'YES',
         'no_of_person': 1,
       };
-      this.getTickets(query).subscribe((res: any[]) => {
-        if (res !== null && res !== undefined && res.length > 0) {
-          self.tickets = res;
-          self.init(row.data, self.tickets);
 
-          // self.createTicketControls(self.tickets);
+      this.getAssignedSuppliers({'pbooking_id': this.booking.id}).subscribe((res: any[]) => {
+        if (res !== null && res !== undefined && res.length > 0) {
+          self.assignedSuppliers = res;
+        } else {
+          self.assignedSuppliers = [];
         }
+        this.getTickets(query).subscribe((res1: any[]) => {
+          if (res1 !== null && res1 !== undefined && res1.length > 0) {
+            self.tickets = res1;
+          } else {
+            self.tickets = [];
+          }
+
+          self.init(row.data, self.tickets);
+        });
       });
 
       this.mode = 'edit';
@@ -265,6 +279,10 @@ export class BookingsComponent implements OnInit {
 
   getTickets(query) {
     return this.adminService.getTickets(query);
+  }
+
+  getAssignedSuppliers(arg) {
+    return this.adminService.getAssignedSuppliers(arg);
   }
 
   onHandleChangeBooking() {
