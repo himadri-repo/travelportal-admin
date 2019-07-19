@@ -13,6 +13,7 @@ import { Booking } from 'src/app/models/booking';
 import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
 import { CustomerInfo } from 'src/app/models/customerInfo';
 import { DatediffPipe } from 'src/app/common/datediff.pipe';
+import { BookingActivity } from 'src/app/models/booking_activity';
 
 @Component({
   selector: 'app-bookings',
@@ -30,12 +31,12 @@ export class BookingsComponent implements OnInit {
 
   public columnDefs = [
     {headerName: 'Booking.ID#', field: 'id', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Booking.Date', field: 'date', sortable: true, filter: true, resizable: true, width: 140},
+    {headerName: 'Booking.Date', field: 'date', sortable: true, filter: true, resizable: true, width: 140, cellRenderer: 'journeyrenderer'},
     {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Travel.Date', field: 'departure_date_time', sortable: true, filter: true, resizable: true, width: 140},
+    {headerName: 'Travel.Date', field: 'departure_date_time', sortable: true, filter: true, resizable: true, width: 140, cellRenderer: 'journeyrenderer'},
     {headerName: 'Trip.Type', field: 'trip_type', sortable: true, filter: true, resizable: true, width: 75},
     {headerName: 'Customer', field: 'name', sortable: true, filter: true, resizable: true, width: 80},
-    {headerName: 'Departing.City', field: 'source_city', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'journeyrenderer'},
+    {headerName: 'Departing.City', field: 'source_city', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Arriving.City', field: 'destination_city', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Flight#', field: 'flight_no', sortable: true, filter: true, resizable: true, width: 75},
     {headerName: 'Aircode', field: 'flight_no', sortable: true, filter: true, resizable: true, width: 75},
@@ -60,6 +61,7 @@ export class BookingsComponent implements OnInit {
   public tickets: Ticket[];
   public assignedSuppliers: Booking[];
   public mode = 'noshow';
+  public fullyProcessed = false;
   public handlebookingform: FormGroup;
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
@@ -103,6 +105,8 @@ export class BookingsComponent implements OnInit {
         email: new FormControl(customer.email),
         pnr: new FormControl(customer.pnr),
         airline_ticket_no: new FormControl(customer.airline_ticket_no),
+        refrence_id: new FormControl(customer.refrence_id),
+        booking_id: new FormControl(customer.booking_id),
       }));
     });
     return formGroups;
@@ -242,6 +246,7 @@ export class BookingsComponent implements OnInit {
     if (row.node.selected) {
       const self = this;
       this.booking = row.data;
+      self.init(row.data, self.tickets);
 
       const query = {
         'companyid': this.currentUser.companyid,
@@ -261,15 +266,30 @@ export class BookingsComponent implements OnInit {
         } else {
           self.assignedSuppliers = [];
         }
-        this.getTickets(query).subscribe((res1: any[]) => {
-          if (res1 !== null && res1 !== undefined && res1.length > 0) {
-            self.tickets = res1;
-          } else {
-            self.tickets = [];
-          }
-
-          self.init(row.data, self.tickets);
+        let processedQty = 0;
+        const bookingQty = parseInt(this.booking.qty.toString(), 10);
+        self.assignedSuppliers.forEach(supplier => {
+          processedQty += parseInt(supplier.qty.toString(), 10);
         });
+
+        if (processedQty < bookingQty && parseInt(self.booking.parent_booking_id.toString(), 10) === 0) {
+          this.booking.qty = (bookingQty - processedQty);
+          (row.data as Booking).qty = (bookingQty - processedQty);
+          this.fullyProcessed = false;
+          this.getTickets(query).subscribe((res1: any[]) => {
+            if (res1 !== null && res1 !== undefined && res1.length > 0) {
+              self.tickets = res1;
+            } else {
+              self.tickets = [];
+            }
+
+            self.init(row.data, self.tickets);
+          });
+        } else {
+          this.fullyProcessed = true;
+          self.tickets = [];
+          self.init(row.data, self.tickets);
+        }
       });
 
       this.mode = 'edit';
@@ -294,5 +314,140 @@ export class BookingsComponent implements OnInit {
     setTimeout( () => {
       this.RefreshData(this.currentUser.companyid);
     }, 300);
+  }
+
+  onSendToSeller(ev) {
+    const companyid = this.currentUser.companyid;
+    const customers = this.f.customers.value;
+    const tickets = this.f.tickets.value;
+    const booking = this.booking;
+
+    const orderedOwnTickets = [];
+    const orderedOthersTickets = [];
+    let orderedQty = 0;
+
+    // seperated out own orders and other supplier's orders
+    tickets.forEach(ticket => {
+      const tktid = parseInt(ticket.tktid, 10);
+      this.tickets.forEach(tkt => {
+        if (tktid === parseInt(tkt.id.toString(), 10) && ticket.status === '2' && parseInt(ticket.order_qty, 10) > 0) {
+          // only approved with qty assigned ticket should be considered for processing.
+          tkt.ordered_qty = ticket.order_qty;
+          tkt.ordered_status = ticket.status;
+
+          orderedQty += parseInt(ticket.order_qty, 10);
+          if (tkt.companyid === companyid) {
+            // own ticket
+            orderedOwnTickets.push(tkt);
+          } else {
+            // other's ticket
+            orderedOthersTickets.push(tkt);
+          }
+        }
+      });
+    });
+
+    if (orderedOwnTickets.length === 0 && orderedOthersTickets.length === 0 && orderedQty <= this.booking.qty) {
+      alert('Before placing order selective seller(s) should be [APPROVED] and some qty should be assigned. Please also note that sum of ordered quantity should not be more than total ordered quantity.');
+      return;
+    }
+
+    if (orderedOwnTickets.length > 0) {
+      // Hey we have some qty assigned to himself.
+      // So if the status is "Approved" then it will be auto approved and send to customer. No parallel booking will be created.
+      // But in this case we need to check PNR is set for those qty or not. If not then raise alarts and send back.
+    }
+
+    if (orderedOthersTickets.length > 0) {
+      // Ok so this is other supplier. In that case another booking to be raised and change the current booking status as [Processing]
+      // and the new booking will be ticket wise and supplier wise.
+
+      const bookings = [];
+      orderedOthersTickets.forEach(ticket => {
+        const refBooking = this.getBookingFromSelectedTicket(ticket, this.booking.customers);
+        bookings.push(refBooking);
+      });
+
+      if (bookings.length > 0) {
+        this.adminService.saveBooking(bookings).subscribe((res: any) => {
+          // I think response has come. Now we should change the status of originiting booking
+          const mainBooking: any = {};
+          mainBooking.id = this.booking.id;
+          mainBooking.status = 4; // Processing
+          mainBooking.pnr = this.booking.pnr;
+          this.adminService.saveBooking([mainBooking]).subscribe((res1: any) => {
+            this.onBack(ev);
+          });
+        });
+      }
+    }
+  }
+
+  getBookingFromSelectedTicket(ticket, customers) {
+    const refBooking: any = {}; // new Booking();
+    refBooking.activity = [{}]; // [new BookingActivity()];
+
+    refBooking.id = -1;
+    refBooking.qty = parseInt(ticket.ordered_qty, 10);
+    refBooking.status = '0'; // This will be pending for the supplier
+    refBooking.booking_date = moment().format('YYYY-MM-DD HH:mm:ss');
+    refBooking.pbooking_id = this.booking.id;
+    refBooking.ticket_id = ticket.id;
+    refBooking.customer_userid = this.currentUser.id;
+    refBooking.customer_companyid = this.currentUser.companyid;
+    refBooking.seller_userid = ticket.user_id;
+    refBooking.seller_companyid = ticket.companyid;
+    refBooking.message = '';
+    refBooking.price = parseFloat(ticket.total);
+    refBooking.markup = parseFloat(ticket.spl_markup);
+    refBooking.srvchg = parseFloat(ticket.spl_srvchg);
+    refBooking.cgst = parseFloat(ticket.spl_cgst);
+    refBooking.sgst = parseFloat(ticket.spl_sgst);
+    refBooking.igst = parseFloat(ticket.spl_igst);
+    refBooking.total = (refBooking.price + refBooking.markup + refBooking.srvchg + refBooking.cgst + refBooking.sgst) - parseFloat(ticket.spl_disc);
+    refBooking.costprice = parseFloat(ticket.total);
+    refBooking.rateplanid = ticket.rate_plan_id;
+    refBooking.adult = refBooking.qty;
+    refBooking.created_by = this.currentUser.id;
+    refBooking.created_on = moment().format('YYYY-MM-DD HH:mm:ss');
+
+    // Booking Activity
+    refBooking.activity[0].activity_id = -1;
+    refBooking.activity[0].booking_id = -1;
+    refBooking.activity[0].activity_date = moment().format('YYYY-MM-DD HH:mm:ss');
+    refBooking.activity[0].source_userid = this.currentUser.id;
+    refBooking.activity[0].source_companyid = this.currentUser.companyid;
+    refBooking.activity[0].requesting_by = 4;
+    refBooking.activity[0].target_userid = ticket.user_id;
+    refBooking.activity[0].target_companyid = ticket.companyid;
+    refBooking.activity[0].requesting_to = 8;
+    refBooking.activity[0].status = 0;
+    refBooking.activity[0].created_by = ticket.user_id;
+    refBooking.activity[0].created_on = moment().format('YYYY-MM-DD HH:mm:ss');
+    refBooking.activity[0].charge_amount = 0;
+
+    let indx = 0;
+    let processedIndx = 0;
+    const selectedCustomers: any = [];
+    while (customers && customers.length > 0 && indx < customers.length && processedIndx < refBooking.qty) {
+      if (customers[indx].refrence_id > -1 ) {
+        const selectedCustomer: any = {};
+        customers[indx].refrence_id = 0;
+        selectedCustomer.id = customers[indx].id;
+        selectedCustomer.refrence_id = -1;
+
+        selectedCustomers.push(selectedCustomer);
+
+        processedIndx++;
+      }
+      indx++;
+    }
+
+    refBooking.customers = selectedCustomers;
+
+    // delete refBooking.customers;
+    // delete refBooking.booking_activities;
+
+    return refBooking;
   }
 }

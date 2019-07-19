@@ -418,4 +418,8 @@ export class AdminService {
   public getAssignedSuppliers(query: any): any {
     return this.httpClient.post(this.baseUrl + `/query/bookings`, query);
   }
+
+  public saveBooking(bookings: any): any {
+    return this.httpClient.post(this.baseUrl + `/save/bookings`, bookings);
+  }
 }

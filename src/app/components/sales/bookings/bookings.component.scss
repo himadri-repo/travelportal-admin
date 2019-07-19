@@ -46,3 +46,17 @@
     box-shadow: 4px 4px 3px 4px #888888 !important;
     padding: 10px;    
 }
+
+.blink_me {
+    color: #1c6d11;
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px;
+    animation: blinker 2s linear infinite;
+}
+  
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}

@@ -6,6 +6,7 @@ import { CustomerInfo } from './customerInfo';
 import { Ticket } from './ticket';
 
 export class Booking {
+    [x: string]: any;
     id: number;
     date: string;
     process_date: string;

@@ -43,8 +43,7 @@
             <div>
               <h3 style="color:#2679b5;font-size:18px">PASSENGER DETAILS</h3>
               <hr style="margin:0" />
-              <table id="dynamic-table" class="table table-striped table-bordered table-hover"
-                style="margin-bottom:20px">
+              <table id="dynamic-table" class="table table-striped table-bordered table-hover" style="margin-bottom:20px">
                 <thead class="column-head">
                   <tr>
                     <th>Si No.</th>
@@ -57,7 +56,7 @@
                   </tr>
                 </thead>
                 <tbody id="grid1" formArrayName="customers" *ngFor="let customer of handlebookingform.get('customers').controls; let i = index;">
-                  <tr [formGroup]="customer">
+                  <tr [formGroup]="customer" *ngIf="(booking.id == customer.controls.booking_id.value) || (booking.id == customer.controls.refrence_id.value)">
                     <td>{{i+1}}</td>
                     <td>{{customer.controls.name.value}}</td>
                     <td>{{customer.controls.age.value}}</td>
@@ -127,13 +126,13 @@
                 </tr>
                 <tr>
                   <th class="column-head"><div class="column-left">Seller Name</div><div class="column-right">{{booking.seller}}</div></th>
-                  <th class="column-head"><div class="column-left">Status</div><div class="column-right">{{booking.status}}</div></th>
+                  <th class="column-head"><div class="column-left">Status</div><div class="column-right blink_me">{{booking.status}}</div></th>
                 </tr>
               </table>
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row" *ngIf="booking.parent_booking_id == 0">
           <div class="col-xs-12 col-sm-12">
             <!--Widget col-md-8 start-->
             <h3 style="color:#2679b5;font-size:18px">ASSIGNED SELLERS</h3>
@@ -170,7 +169,7 @@
                   <td>{{supplierBooking.class}}</td>
                   <td>{{supplierBooking.total/supplierBooking.qty}}</td>
                   <td>{{supplierBooking.qty}}</td>
-                  <td>{{supplierBooking.seller_company}}</td>
+                  <td>{{supplierBooking.seller_companyname}}</td>
                   <td>{{supplierBooking.date}}</td>
                 </tr>
               </tbody>
@@ -178,7 +177,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" *ngIf="booking.parent_booking_id == 0">
           <div class="col-xs-12 col-sm-12">
             <!--Widget col-md-8 start-->
             <h3 style="color:#2679b5;font-size:18px">ASSIGN BOOKING TO SELLERS</h3>
@@ -200,6 +199,11 @@
                   <th>Action</th>
                 </tr>
               </thead>
+              <tbody id="grid3" *ngIf="fullyProcessed === true">
+                <tr>
+                  <td colspan="11">Order fully processed. No more quantity left.</td>
+                </tr>
+              </tbody>
               <tbody id="grid2" formArrayName="tickets" *ngFor="let ticket of handlebookingform.get('tickets').controls; let i = index;">
                 <tr [formGroup]="ticket">
                   <td>{{ticket.controls.tktid.value}}</td>
@@ -231,27 +235,35 @@
                         <option value="0">Pending</option>
                         <option value="1">Hold</option>
                         <option value="2">Approved</option>
-                        <!-- <option value="4">Rejected</option>
-                        <option value="8">Cancelled</option> -->
+                        <!-- 
+                        <option value="4">Processing</option>
+                        <option value="8">Rejected</option>
+                        <option value="16">Cancelled</option> 
+                        -->
                       </select>
                     </div>
                   </td>
                 </tr>
               </tbody>
-              <tbody id="grid3">
+              <!-- <tbody id="grid3">
                 <tr style="background:#fff">
                   <td colspan="5">
                     <button type="button" id="btnReject" name="btnReject" class="btn btn-primary" style="display:none">Reject</button>
                   </td>
                   <td colspan="6">
-                    <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" style="float:right">Send to seller</button>
+                    <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" (click)="onSendToSeller($event);" style="float:right" *ngIf="fullyProcessed === false && booking.parent_booking_id == 0">Send to seller</button>
                   </td>
                 </tr>
-              </tbody>
+              </tbody> -->
             </table>
           </div>
           <!--sellers grid1-->
         </div> <!-- end of list of sellers row -->
+
+        <!-- Action area where all buttons should be placed-->
+        <div style="width: 100%;">
+            <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" (click)="onSendToSeller($event);" style="float:right" *ngIf="fullyProcessed === false && booking.parent_booking_id == 0">Send to seller</button>
+        </div>
         <!--row-->
         <input type="hidden" name="existing_seller_id" id="existing_seller_id" value="104"/>
       </form>
