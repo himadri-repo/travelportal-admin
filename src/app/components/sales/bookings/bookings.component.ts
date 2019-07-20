@@ -49,8 +49,8 @@ export class BookingsComponent implements OnInit {
 ];
 
   public components = {
-    linkedbookingrenderer: this.linkedbookingrenderer,
-    journeyrenderer: this.journeyrenderer
+    linkedbookingrenderer: this.linkedbookingrenderer.bind(this),
+    journeyrenderer: this.journeyrenderer.bind(this)
   };
 
   public bookings: Booking[] = [];
@@ -62,6 +62,7 @@ export class BookingsComponent implements OnInit {
   public assignedSuppliers: Booking[];
   public mode = 'noshow';
   public fullyProcessed = false;
+  public allApproved = false;
   public handlebookingform: FormGroup;
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
@@ -88,7 +89,8 @@ export class BookingsComponent implements OnInit {
       id: new FormControl(booking.id),
       pnr: new FormControl(booking.pnr),
       customers: this.formBuilder.array(this.createCustomerControls(booking.customers)),
-      tickets: this.formBuilder.array(this.createTicketControls(tickets))
+      tickets: this.formBuilder.array(this.createTicketControls(tickets)),
+      notes: new FormControl(booking.notes),
     }, {});
   }
 
@@ -107,6 +109,8 @@ export class BookingsComponent implements OnInit {
         airline_ticket_no: new FormControl(customer.airline_ticket_no),
         refrence_id: new FormControl(customer.refrence_id),
         booking_id: new FormControl(customer.booking_id),
+        status: new FormControl(customer.status),
+        action: new FormControl(customer.status)
       }));
     });
     return formGroups;
@@ -145,7 +149,7 @@ export class BookingsComponent implements OnInit {
   RefreshData(companyid = 0, userid = 0) {
     const self = this;
 
-    // self.rowData = [];
+    // parentObj.rowData = [];
     if (this.gridApi !== null && this.gridApi !== undefined) {
       this.gridApi.showLoadingOverlay();
     }
@@ -244,9 +248,9 @@ export class BookingsComponent implements OnInit {
 
   onRowSelected(mode, row) {
     if (row.node.selected) {
-      const self = this;
-      this.booking = row.data;
-      self.init(row.data, self.tickets);
+      const parentObj = this;
+      parentObj.booking = row.data;
+      parentObj.init(row.data, parentObj.tickets);
 
       const query = {
         'companyid': this.currentUser.companyid,
@@ -262,33 +266,51 @@ export class BookingsComponent implements OnInit {
 
       this.getAssignedSuppliers({'pbooking_id': this.booking.id}).subscribe((res: any[]) => {
         if (res !== null && res !== undefined && res.length > 0) {
-          self.assignedSuppliers = res;
+          parentObj.assignedSuppliers = res;
         } else {
-          self.assignedSuppliers = [];
+          parentObj.assignedSuppliers = [];
         }
         let processedQty = 0;
-        const bookingQty = parseInt(this.booking.qty.toString(), 10);
-        self.assignedSuppliers.forEach(supplier => {
-          processedQty += parseInt(supplier.qty.toString(), 10);
-        });
+        let approvedQty = 0;
+        const bookingQty = parseInt(parentObj.booking.qty.toString(), 10);
 
-        if (processedQty < bookingQty && parseInt(self.booking.parent_booking_id.toString(), 10) === 0) {
-          this.booking.qty = (bookingQty - processedQty);
+        row.data.customers.forEach((customer, idx) => {
+          if (parseInt(customer.status, 10) !== 3 && parseInt(customer.status, 10) !== 4) {
+            // 3 = Rejected | 4 = Cancelled
+            // processedQty += parseInt(supplier.qty.toString(), 10);
+            processedQty++;
+            if (parseInt(customer.status, 10) === 2) {
+              // Approved one
+              approvedQty++;
+            }
+          }
+        });
+        // parentObj.assignedSuppliers.forEach(supplier => {
+        //   if (supplier.status !== 'REJECTED' && supplier.status !== 'CANCELLED') {
+        //     processedQty += parseInt(supplier.qty.toString(), 10);
+        //   }
+        // });
+
+        if (processedQty < bookingQty && parseInt(parentObj.booking.parent_booking_id.toString(), 10) === 0) {
+          parentObj.booking.qty = (bookingQty - processedQty);
           (row.data as Booking).qty = (bookingQty - processedQty);
-          this.fullyProcessed = false;
+          parentObj.fullyProcessed = false;
           this.getTickets(query).subscribe((res1: any[]) => {
             if (res1 !== null && res1 !== undefined && res1.length > 0) {
-              self.tickets = res1;
+              parentObj.tickets = res1;
             } else {
-              self.tickets = [];
+              parentObj.tickets = [];
             }
 
-            self.init(row.data, self.tickets);
+            parentObj.init(row.data, parentObj.tickets);
           });
         } else {
-          this.fullyProcessed = true;
-          self.tickets = [];
-          self.init(row.data, self.tickets);
+          parentObj.fullyProcessed = true;
+          if (approvedQty === bookingQty) {
+            parentObj.allApproved = true;
+          }
+          parentObj.tickets = [];
+          parentObj.init(row.data, parentObj.tickets);
         }
       });
 
@@ -336,13 +358,13 @@ export class BookingsComponent implements OnInit {
           tkt.ordered_status = ticket.status;
 
           orderedQty += parseInt(ticket.order_qty, 10);
-          if (tkt.companyid === companyid) {
-            // own ticket
-            orderedOwnTickets.push(tkt);
-          } else {
+          // if (tkt.companyid === companyid) {
+          //   // own ticket
+          //   orderedOwnTickets.push(tkt);
+          // } else {
             // other's ticket
-            orderedOthersTickets.push(tkt);
-          }
+          orderedOthersTickets.push(tkt);
+          // }
         }
       });
     });
@@ -375,12 +397,79 @@ export class BookingsComponent implements OnInit {
           mainBooking.id = this.booking.id;
           mainBooking.status = 4; // Processing
           mainBooking.pnr = this.booking.pnr;
+          mainBooking.notes = this.f.notes.value;
           this.adminService.saveBooking([mainBooking]).subscribe((res1: any) => {
             this.onBack(ev);
           });
         });
       }
     }
+  }
+
+  onSellerAction(mode = '', ev) {
+    const customers = this.f.customers.value;
+    const processedCustomers = [];
+    const mainbooking: any = Object.assign({}, this.booking);
+
+    if (mode === '') {
+      alert('System error. Please contact with system administrator');
+      return;
+    }
+
+    customers.forEach((customer, idx) => {
+      processedCustomers.push(customer);
+      if (mainbooking.customers.length > idx) {
+        let action = parseInt(customer.action, 10);
+        if (action < 2) {
+          if (customer.pnr !== null && customer.pnr !== '') {
+            action = 2;
+          } else {
+            action = 3;
+          }
+        } else if (action === 2 && (customer.pnr === null || customer.pnr === '')) {
+          alert('If approving booking against a customer, then please provide PNR value. Approval with empty PNR doesn\'t allow');
+          return;
+        }
+
+        mainbooking.customers[idx].status = (customer.pnr !== null && customer.pnr !== '') ? action : 3;
+        mainbooking.customers[idx].pnr = customer.pnr;
+        mainbooking.customers[idx].airline_ticket_no = customer.airline_ticket_no;
+      }
+    });
+
+    if (processedCustomers.length > 0) {
+      // if (processedCustomers.length !== customers.length) {
+        if (processedCustomers.length === customers.length) {
+          // alert('Going to approve for those PNR provided. Rest will be rejected.');
+          this.booking.notes = this.f.notes.value;
+          mainbooking.notes = this.f.notes.value;
+          mainbooking.status = (mode === 'approve') ? '2' : '8'; // 2
+          delete mainbooking.booking_activities;
+          mainbooking.activity = Object.assign([], this.booking.booking_activities);
+          if (mainbooking.activity.length > 0) {
+            mainbooking.activity[0].status = (mode === 'approve') ? '32' : '2'; // 32 = Processed | 2 = rejected;
+            if (mainbooking.activity[0].notes === null || mainbooking.activity[0].notes === undefined) {
+              mainbooking.activity[0].notes = `\n${mainbooking.notes}`;
+            } else {
+              mainbooking.activity[0].notes += `\n${mainbooking.notes}`;
+            }
+          }
+
+          this.adminService.saveBooking([mainbooking]).subscribe((res1: any) => {
+            this.onBack(ev);
+          });
+        }
+      // } else {
+      //  alert('Going to approve the booking from seller\'s end');
+      // }
+    } else {
+      alert('Please provide PNR details for at least one customer to process.');
+    }
+  }
+
+  onSellerReject(ev) {
+    const customers = this.f.customers.value;
+    alert('Going to reject the booking from seller\'s end');
   }
 
   getBookingFromSelectedTicket(ticket, customers) {
@@ -430,11 +519,12 @@ export class BookingsComponent implements OnInit {
     let processedIndx = 0;
     const selectedCustomers: any = [];
     while (customers && customers.length > 0 && indx < customers.length && processedIndx < refBooking.qty) {
-      if (customers[indx].refrence_id > -1 ) {
+      if (parseInt(customers[indx].refrence_id, 10) === 0 || parseInt(customers[indx].status, 10) === 3) {
         const selectedCustomer: any = {};
         customers[indx].refrence_id = 0;
         selectedCustomer.id = customers[indx].id;
         selectedCustomer.refrence_id = -1;
+        selectedCustomer.status = 1;
 
         selectedCustomers.push(selectedCustomer);
 

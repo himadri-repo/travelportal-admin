@@ -53,21 +53,35 @@
                     <th>Email</th>
                     <th>PNR</th>
                     <th>Airline Ticket#</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody id="grid1" formArrayName="customers" *ngFor="let customer of handlebookingform.get('customers').controls; let i = index;">
-                  <tr [formGroup]="customer" *ngIf="(booking.id == customer.controls.booking_id.value) || (booking.id == customer.controls.refrence_id.value)">
+                  <tr [formGroup]="customer" class="{{customer.controls.status.value == 2 ? 'processed-customer' : (customer.controls.status.value == 3 ? 'rejected-customer' : '')}}" *ngIf="(booking.id == customer.controls.booking_id.value) || (booking.id == customer.controls.refrence_id.value)">
                     <td>{{i+1}}</td>
-                    <td>{{customer.controls.name.value}}</td>
+                    <td>{{customer.controls.name.value}}<div class="fyi-notes" *ngIf="customer.controls.status.value!=1">Ref.Booking Id: {{customer.controls.refrence_id.value}}</div></td>
                     <td>{{customer.controls.age.value}}</td>
-                    <td>{{customer.controls.mobile.value}}</td>
-                    <td>{{customer.controls.email.value}}</td>
+                    <td>{{booking.parent_booking_id == 0 ? customer.controls.mobile.value : 'XXXXXXXXXX'}}</td>
+                    <td>{{booking.parent_booking_id == 0 ? customer.controls.email.value : 'XXXXXXXXXX@XXXXX.com'}}</td>
                     <td>
-                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;"/>
+                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;" *ngIf="customer.controls.status.value==1"/>
+                      <span *ngIf="customer.controls.status.value!=1">{{customer.controls.pnr.value}}</span>
                       <input id="cust-{{customer.controls.id.value}}" name="customer-{{customer.controls.id.value}}" type="hidden" formControlName="id"/>
                     </td>
                     <td>
-                      <input formControlName="airline_ticket_no" placeholder="Please provide Airline Ticket Number" style="width: 100%;"/>
+                      <input formControlName="airline_ticket_no" placeholder="Please provide Airline Ticket Number" style="width: 100%;" *ngIf="customer.controls.status.value==1"/>
+                      <span *ngIf="customer.controls.status.value!=1">{{customer.controls.airline_ticket_no.value}}</span>
+                    </td>
+                    <td>
+                      <div class="" *ngIf="(booking.parent_booking_id > 0 && (customer.controls.status.value==1)) || (booking.parent_booking_id==0 && customer.controls.status.value!=2)">
+                        <select id="action" class="form-control" formControlName="action">
+                          <option value="0"> -- Select --</option>
+                          <option value="1">Pending</option>
+                          <option value="2">Approved</option>
+                          <option value="3">Rejected</option>
+                        </select>
+                      </div>
+                      <div *ngIf="!((booking.parent_booking_id > 0 && (customer.controls.status.value==1)) || (booking.parent_booking_id==0 && customer.controls.status.value!=2))" class="fyi-notes" style="font-size: 18px;">{{customer.controls.status.value == 2 ? 'Approved' : 'Reject'}}</div>
                     </td>
                   </tr>
                 </tbody>
@@ -85,8 +99,8 @@
                     <th>Airline</th>
                     <th>Class</th>
                     <th>Flight No.</th>
-                    <th>Dep Term</th>
-                    <th>Arr Term</th>
+                    <th>Ticket#</th>
+                    <th>Seats.Available</th>
                   </tr>
                 </thead>
                 <tbody id="grid1">
@@ -98,8 +112,8 @@
                     <td>{{booking.ticket.aircode}}</td>
                     <td>{{booking.ticket.class}}</td>
                     <td>{{booking.ticket.flight_no}}</td>
-                    <td>NA</td>
-                    <td>NA</td>
+                    <td>TKT-{{booking.ticket.id}}</td>
+                    <td>{{booking.ticket.no_of_person}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -122,10 +136,10 @@
                   </td>
                 </tr>
                 <tr>
-                  <th class="column-head"><div class="column-left">Customer Name</div><div class="column-right">{{booking.name}}</div></th>
+                  <th class="column-head"><div class="column-left">Customer Name</div><div class="column-right">{{booking.name}}</div><div class="column-right">({{booking.customer_companyname}})</div></th>
                 </tr>
                 <tr>
-                  <th class="column-head"><div class="column-left">Seller Name</div><div class="column-right">{{booking.seller}}</div></th>
+                  <th class="column-head"><div class="column-left">Seller Name</div><div class="column-right">{{booking.seller}}</div><div class="column-right">({{booking.seller_companyname}})</div></th>
                   <th class="column-head"><div class="column-left">Status</div><div class="column-right blink_me">{{booking.status}}</div></th>
                 </tr>
               </table>
@@ -156,7 +170,7 @@
                 <tr  style="background:#fff" *ngIf="assignedSuppliers===null || assignedSuppliers===undefined || assignedSuppliers.length === 0">
                   <td colspan="9"><span>No supplier(s) assigned yet</span></td>
                 </tr>
-                <tr style="background:#fff" *ngFor="let supplierBooking of assignedSuppliers; let i = index;">
+                <tr style="background:#fff" *ngFor="let supplierBooking of assignedSuppliers; let i = index;" class="{{supplierBooking.status === 'APPROVED' ? 'processed-customer' : (supplierBooking.status === 'REJECTED' ? 'rejected-customer' : '')}}">
                   <td>{{supplierBooking.ticket_id}}</td>
                   <td>
                     <i class="fa fa-plane" style="font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
@@ -259,10 +273,25 @@
           </div>
           <!--sellers grid1-->
         </div> <!-- end of list of sellers row -->
+        <div style="width: 100%;">
+          <div class="form-group">
+            <h3 style="color:#2679b5;font-size:18px">Notes</h3>
+            <hr style="margin:0" />
+            <textarea name="notes" id="notes" formControlName="notes" class="form-control" required rows="2" cols="10" placeholder="Please provide any notes/instructions to seller/supplier"></textarea>
+          </div>
+        </div>
 
         <!-- Action area where all buttons should be placed-->
         <div style="width: 100%;">
             <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" (click)="onSendToSeller($event);" style="float:right" *ngIf="fullyProcessed === false && booking.parent_booking_id == 0">Send to seller</button>
+            <div id="supplier_actions" *ngIf="booking.parent_booking_id > 0 && (booking.status==0 || booking.status=='PENDING')">
+              <button type="button" id="btnApprove" name="btnApprove" class="btn btn-primary" (click)="onSellerAction('approve', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Approve</button>
+              <button type="button" id="btnReject" name="btnReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Reject</button>
+            </div>
+            <div id="seller_actions" *ngIf="(fullyProcessed === true && allApproved === true) && (booking.status==4 || booking.status=='PROCESSING')">
+              <button type="button" id="btnCustomerApprove" name="btnCustomerApprove" class="btn btn-primary" (click)="onSellerAction('approve', $event);" style="float:right; margin: 3px 10px;" *ngIf="fullyProcessed === true && allApproved === true"> Approve</button>
+              <button type="button" id="btnCustomerReject" name="btnCustomerReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="fullyProcessed === true && allApproved === true"> Reject</button>
+            </div>
         </div>
         <!--row-->
         <input type="hidden" name="existing_seller_id" id="existing_seller_id" value="104"/>
