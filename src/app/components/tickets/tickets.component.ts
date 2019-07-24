@@ -9,6 +9,11 @@ import { Supplier } from 'src/app/models/supplier';
 import { Ticket } from 'src/app/models/ticket';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import * as moment from 'moment';
+import { City } from 'src/app/models/city';
+import { Airline } from 'src/app/models/airline';
+
+import * as $ from 'jquery';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-tickets',
@@ -19,6 +24,7 @@ export class TicketsComponent implements OnInit {
   public title = 'app';
   menuTitle = 'inventory';
   message = '';
+  public handleticketform: FormGroup;
   public gridApi: any;
   public gridColumnApi: any;
   public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your tickets are getting loaded ...</span>';
@@ -38,12 +44,12 @@ export class TicketsComponent implements OnInit {
     {headerName: 'Aircode', field: 'aircode', sortable: true, filter: true, resizable: true, width: 80},
     {headerName: 'Price', field: 'price', sortable: true, filter: true, resizable: true, width: 75},
     {headerName: 'Admin.Markup', field: 'admin_markup', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 150},
-    {headerName: 'Markup', field: 'markup_rate', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'CGST', field: 'cgst_rate', sortable: true, filter: true, resizable: true, width: 50},
-    {headerName: 'SGST', field: 'sgst_rate', sortable: true, filter: true, resizable: true, width: 50},
-    {headerName: 'IGST', field: 'igst_rate', sortable: true, filter: true, resizable: true, width: 50},
-    {headerName: 'Tag', field: 'data_collected_from', sortable: true, filter: true, resizable: true, width: 75},
+    // {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 150},
+    // {headerName: 'Markup', field: 'markup_rate', sortable: true, filter: true, resizable: true, width: 75},
+    // {headerName: 'CGST', field: 'cgst_rate', sortable: true, filter: true, resizable: true, width: 50},
+    // {headerName: 'SGST', field: 'sgst_rate', sortable: true, filter: true, resizable: true, width: 50},
+    // {headerName: 'IGST', field: 'igst_rate', sortable: true, filter: true, resizable: true, width: 50},
+    // {headerName: 'Tag', field: 'data_collected_from', sortable: true, filter: true, resizable: true, width: 75},
     {headerName: 'Updated.On', field: 'updated_on', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'utcdaterenderer'},
     {headerName: 'Approved', field: 'approved', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'approverenderer'},
 ];
@@ -56,10 +62,26 @@ export class TicketsComponent implements OnInit {
   // [loadingOverlayComponent]="customLoadingOverlay"
   // [noRowsOverlayComponent]="customNoRowsOverlay"
 
+  // public rowClassRules = {
+  //   'matched-row': (params) => {
+  //     const toberead = params.data.departure_date_time;
+  //     // this.booking.departure_date_time
+
+  //     return toberead === 0;
+  //   }
+  //   // 'sick-days-breach': 'data.sickDays > 8'
+  // };
+
   public rowData: Ticket[] = [];
 
   public rowSelection = 'single';
-  currentUser: User;
+  public currentUser: User;
+  public selectedTicket: Ticket;
+  public ticket: Ticket;
+  public mode = 'noshow';
+  public cities: City[] = [];
+  public airlines: Airline[] = [];
+
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
@@ -71,10 +93,24 @@ export class TicketsComponent implements OnInit {
     this.commonService.setTitle('Inventory Management');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
+    this.selectedTicket = new Ticket();
+    this.ticket = new Ticket();
 
     setTimeout( () => {
       this.RefreshData(this.currentUser.companyid);
     }, 300);
+  }
+
+  loadCities() {
+    this.adminService.getCities().subscribe((res: any) => {
+      this.cities = res;
+    });
+  }
+
+  loadAirlines() {
+    this.adminService.getAirlines().subscribe((res: any) => {
+      this.airlines = res;
+    });
   }
 
   RefreshData(companyid) {
@@ -93,6 +129,13 @@ export class TicketsComponent implements OnInit {
         this.gridApi.showNoRowsOverlay();
       }
     });
+  }
+
+  onBack(ev) {
+    this.mode = 'noshow';
+    setTimeout( () => {
+      this.RefreshData(this.currentUser.companyid);
+    }, 300);
   }
 
   UploadTickets(companyid) {
@@ -202,5 +245,40 @@ export class TicketsComponent implements OnInit {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     this.gridApi.hideOverlay();
+  }
+
+  onRowSelected(mode, row) {
+    if (row.node.selected) {
+      const parentObj = this;
+      parentObj.selectedTicket = row.data;
+      // parentObj.init(row.data, parentObj.tickets);
+
+      // const query = {
+      //   'companyid': this.currentUser.companyid,
+      //   'source': parseInt(this.booking.ticket.source, 10),
+      //   'destination': parseInt(this.booking.ticket.destination, 10),
+      //   'from_date': moment(this.booking.departure_date_time).format('YYYY-MM-DD'),
+      //   'to_date': moment(this.booking.arrival_date_time).format('YYYY-MM-DD'),
+      //   'trip_type': 'ONE',
+      //   'approved': 1,
+      //   'available': 'YES',
+      //   'no_of_person': 1,
+      // };
+
+      this.adminService.getTicket(row.data.id).subscribe((res: any) => {
+        if (res && res.length > 0) {
+          parentObj.ticket = res[0];
+        } else {
+          parentObj.ticket = new Ticket();
+        }
+        this.mode = 'edit';
+      });
+
+      // alert(inboxMessage.message);
+    }
+  }
+
+  onHandleChangeTicket() {
+
   }
 }

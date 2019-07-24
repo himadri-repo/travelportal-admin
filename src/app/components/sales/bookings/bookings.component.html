@@ -178,7 +178,7 @@
                     <i class="fa fa-plane" style="transform:rotate(83deg);font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
                     <span class="date">{{supplierBooking.destination_city}} ({{supplierBooking.arrival_date_time}})</span>
                   </td>
-                  <td>{{supplierBooking.status}}</td>
+                  <td><div>{{supplierBooking.status}}</div><div>(Booking Id: {{supplierBooking.id}})</div></td>
                   <td>{{supplierBooking.flight_no}}</td>
                   <td>{{supplierBooking.class}}</td>
                   <td>{{supplierBooking.total/supplierBooking.qty}}</td>
@@ -219,7 +219,7 @@
                 </tr>
               </tbody>
               <tbody id="grid2" formArrayName="tickets" *ngFor="let ticket of handlebookingform.get('tickets').controls; let i = index;">
-                <tr [formGroup]="ticket">
+                <tr [formGroup]="ticket" class="{{(booking.departure_date_time == ticket.controls.departure_date_time.value) ? 'exact_matched': 'not_matched'}}">
                   <td>{{ticket.controls.tktid.value}}</td>
                   <td>
                     <div>{{ticket.controls.source.value}}</div>
@@ -243,7 +243,7 @@
                     <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%;" value="{{i === 0?booking.qty:0}}"/>
                   </td>
                   <td>
-                    <div class="form-group">
+                    <div class="form-group" style="display: inline-block">
                       <select id="status" class="form-control" formControlName="status">
                         <option value="-1"> -- Select --</option>
                         <option value="0">Pending</option>
@@ -256,6 +256,9 @@
                         -->
                       </select>
                     </div>
+                    <i class="fa fa-exclamation-triangle" title="Customer's expected departure date & time is not matching with selected ticket's departure date & time" 
+                      style="font-size:16px; height:auto;width:auto;margin-left:10px;display: inline-block; cursor: pointer; cursor: hand; color: #ff0000;" 
+                      *ngIf="booking.departure_date_time !== ticket.controls.departure_date_time.value && (ticket.controls.status.value==2 || ticket.controls.status.value==1)"></i>
                   </td>
                 </tr>
               </tbody>

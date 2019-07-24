@@ -276,9 +276,16 @@ export class BookingsComponent implements OnInit {
 
         row.data.customers.forEach((customer, idx) => {
           if (parseInt(customer.status, 10) !== 3 && parseInt(customer.status, 10) !== 4) {
-            // 3 = Rejected | 4 = Cancelled
+            // 1 = Pending | 3 = Rejected | 4 = Cancelled
             // processedQty += parseInt(supplier.qty.toString(), 10);
-            processedQty++;
+            if (parseInt(customer.status, 10) === 1) {
+              if (row.data.status === 'PROCESSING') {
+                processedQty++;
+              }
+            } else {
+              processedQty++;
+            }
+
             if (parseInt(customer.status, 10) === 2) {
               // Approved one
               approvedQty++;

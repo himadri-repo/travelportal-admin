@@ -415,11 +415,23 @@ export class AdminService {
     return this.httpClient.post(this.baseUrl + `/company/open_tickets`, query);
   }
 
+  public getTicket(ticketid: number): any {
+    return this.httpClient.get(this.baseUrl + `/company/ticket/${ticketid}`);
+  }
+
   public getAssignedSuppliers(query: any): any {
     return this.httpClient.post(this.baseUrl + `/query/bookings`, query);
   }
 
   public saveBooking(bookings: any): any {
     return this.httpClient.post(this.baseUrl + `/save/bookings`, bookings);
+  }
+
+  public getCities(): any {
+    return this.httpClient.get(this.baseUrl + `/admin/cities`);
+  }
+
+  public getAirlines(): any {
+    return this.httpClient.get(this.baseUrl + `/admin/airlines`);
   }
 }

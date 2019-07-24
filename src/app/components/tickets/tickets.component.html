@@ -1,24 +1,157 @@
-<mat-toolbar color="default" class="mat-elevation-z1" style="margin: 25px 5px 1px 5px; height:35px;">
-    <span class="badge badge-info">{{message}}</span>
-    <span class="example-spacer"></span>
-    <a class="btn btn-sm btn-success text-white" (click)="UploadTickets(this.currentUser.companyid)" role="button">
-        <i class="fa fa-plus" aria-hidden="true"></i> Upload Tickets
-    </a>
-    <a class="btn btn-sm btn-success text-white" (click)="RefreshData(this.currentUser.companyid)" role="button">
-        <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
-    </a>
-    <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
-    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
-</mat-toolbar>
-<ag-grid-angular 
-    style="width: 100%; height: 400px; margin: 0px 5px 20px 5px;"
-    class="ag-theme-balham"
-    [rowData]="rowData" 
-    [rowSelection]="rowSelection"
-    [columnDefs]="columnDefs"
-    [components]="components"
-    [suppressCellSelection]="true"
-    [overlayLoadingTemplate]="overlayLoadingTemplate"
-    [overlayNoRowsTemplate]="overlayNoRowsTemplate"
-    (gridReady)="onGridReady($event)">
-</ag-grid-angular>
+<div *ngIf="mode==='noshow'">
+    <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 25px 5px 1px 5px; height:35px;">
+        <span class="badge badge-info">{{message}}</span>
+        <span class="example-spacer"></span>
+        <a class="btn btn-sm btn-success text-white" (click)="UploadTickets(this.currentUser.companyid)" role="button">
+            <i class="fa fa-plus" aria-hidden="true"></i> Upload Tickets
+        </a>
+        <a class="btn btn-sm btn-success text-white" (click)="RefreshData(this.currentUser.companyid)" role="button">
+            <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+        </a>
+        <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
+    </mat-toolbar>
+    <ag-grid-angular 
+        style="width: 100%; height: 400px; margin: 0px 5px 20px 5px;"
+        class="ag-theme-balham"
+        [rowData]="rowData" 
+        [rowSelection]="rowSelection"
+        [columnDefs]="columnDefs"
+        [components]="components"
+        [suppressCellSelection]="true"
+        [overlayLoadingTemplate]="overlayLoadingTemplate"
+        [overlayNoRowsTemplate]="overlayNoRowsTemplate"
+        (rowSelected)="onRowSelected('edit',$event)"
+        (gridReady)="onGridReady($event)">
+    </ag-grid-angular>
+</div>
+<div class="main-content" *ngIf="mode==='edit' || mode==='show'">
+    <div class="main-content-inner">
+        <div class="page-content">
+          <div class="page-header page-title page-title-section" id="header">
+            <!--.page-header -->
+            <h1 style="font-weight: 100; font-size: 1.5vw; color: #0000ff; width: 80%; display: inline-block">
+              {{selectedTicket.source}} TO {{selectedTicket.destination}} ( {{selectedTicket.trip_type}} WAY ) - {{selectedTicket.approved === '1' ? 'Approved' : 'Not Approved'}}
+            </h1>
+            <button (click)="onBack($event)" class="btn btn-primary" style="float:right"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Bookings</button>
+          </div><!-- /.page-header -->
+          <!-- <form [formGroup]="handleticketform" autocomplete="off" (ngSubmit)="onHandleChangeTicket()" novalidate> -->
+            <!-- <input type="hidden" name="id" value="{{ticket.id}}"/> -->
+            <div class="row">
+              <div class="col-xs-12 col-sm-12">
+                <!--Widget col-md-8 start-->
+                <div class="">
+                    <!-- <h3 class="title-heading">GENERAL INFORMATION</h3>
+                    <hr style="margin:0" /> -->
+                    <div class="card">
+                        <h4 class="card-header text-white bg-primary">GENERAL INFORMATION</h4>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">Ticket #</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.ticket_no}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Supplier</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.supplier}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Contact Person</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.name}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">Available ?</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.available}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Approved ?</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.approved}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Data.Collected</div>
+                                <div class="col-xs-2 col-sm-2">{{(currentUser.companyid === ticket.companyid) ? ticket.data_collected_from : 'XXXXXX'}}</div>
+                            </div>
+                        </div>                        
+                    </div>
+                    <!-- <hr style="margin:0" /> -->
+                    <div class="card">
+                        <!-- <h4 class="title-heading">SCHEDULE INFORMATION</h4> -->
+                        <h4 class="card-header text-white bg-primary">SCHEDULE INFORMATION</h4>
+                        <!-- <hr style="margin:0" /> -->
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">Source</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.source_city}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Destination</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.destination_city}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Airline</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.airline_name}} ({{ticket.aircode}})</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">Departure.Time</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.departure_date_time}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Arrival.Time</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.arrival_date_time}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Flight # / Terminal</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.flight_no}} ({{ticket.terminal}})</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <!-- <hr style="margin:0" /> -->
+                        <h4 class="card-header text-white bg-primary">INVENTORY INFORMATION</h4>
+                        <!-- <hr style="margin:0" /> -->
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">Class</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.class}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">PNR</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.pnr}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Refundable ?</div>
+                                <div class="col-xs-2 col-sm-2">{{(ticket.refundable==='N') ? 'No' : 'Yes' }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">No of stops</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.no_of_stops}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">PAX Left</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.no_of_person}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Total PAX bought</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.max_no_of_person}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <!-- <hr style="margin:0" /> -->
+                        <h4 class="card-header text-white bg-primary">FINANCIAL INFORMATION</h4>
+                        <!-- <hr style="margin:0" /> -->
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">Price</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.price}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Admin.Markup</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.admin_markup}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Other.Charges</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.baggage + ticket.meal}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-2 field-title">Discount</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.discount}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Total</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.total}}</div>
+                                <div class="col-xs-2 col-sm-2 field-title">Sale Type</div>
+                                <div class="col-xs-2 col-sm-2">{{ticket.sale_type}}</div>
+                            </div>
+                            <!-- <hr style="margin:0" /> -->
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <!-- Action area where all buttons should be placed-->
+            <!-- <div style="width: 100%;">
+                <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" (click)="onSendToSeller($event);" style="float:right" *ngIf="fullyProcessed === false && booking.parent_booking_id == 0">Send to seller</button>
+                <div id="supplier_actions" *ngIf="booking.parent_booking_id > 0 && (booking.status==0 || booking.status=='PENDING')">
+                  <button type="button" id="btnApprove" name="btnApprove" class="btn btn-primary" (click)="onSellerAction('approve', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Approve</button>
+                  <button type="button" id="btnReject" name="btnReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Reject</button>
+                </div>
+                <div id="seller_actions" *ngIf="(fullyProcessed === true && allApproved === true) && (booking.status==4 || booking.status=='PROCESSING')">
+                  <button type="button" id="btnCustomerApprove" name="btnCustomerApprove" class="btn btn-primary" (click)="onSellerAction('approve', $event);" style="float:right; margin: 3px 10px;" *ngIf="fullyProcessed === true && allApproved === true"> Approve</button>
+                  <button type="button" id="btnCustomerReject" name="btnCustomerReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="fullyProcessed === true && allApproved === true"> Reject</button>
+                </div>
+            </div> -->
+            <!--row-->
+          <!-- </form> -->
+        </div> <!-- /.page-content -->
+    </div> <!-- /.main-content-inner -->
+</div> <!-- /.main-content -->
