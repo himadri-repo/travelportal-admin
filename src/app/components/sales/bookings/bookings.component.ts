@@ -359,7 +359,7 @@ export class BookingsComponent implements OnInit {
     tickets.forEach(ticket => {
       const tktid = parseInt(ticket.tktid, 10);
       this.tickets.forEach(tkt => {
-        if (tktid === parseInt(tkt.id.toString(), 10) && ticket.status === '2' && parseInt(ticket.order_qty, 10) > 0) {
+        if (tktid === parseInt(tkt.id.toString(), 10) && (ticket.status === '2' || ticket.status === '1') && parseInt(ticket.order_qty, 10) > 0) {
           // only approved with qty assigned ticket should be considered for processing.
           tkt.ordered_qty = ticket.order_qty;
           tkt.ordered_status = ticket.status;
@@ -376,8 +376,8 @@ export class BookingsComponent implements OnInit {
       });
     });
 
-    if (orderedOwnTickets.length === 0 && orderedOthersTickets.length === 0 && orderedQty <= this.booking.qty) {
-      alert('Before placing order selective seller(s) should be [APPROVED] and some qty should be assigned. Please also note that sum of ordered quantity should not be more than total ordered quantity.');
+    if (orderedOthersTickets.length === 0 ||  (orderedQty > this.booking.qty)) {
+      alert('Before placing order selective seller(s) should be [APPROVED] | [HOLD] and some qty should be assigned. Please also note that sum of ordered quantity should not be more than total ordered quantity.');
       return;
     }
 
@@ -403,6 +403,7 @@ export class BookingsComponent implements OnInit {
           const mainBooking: any = {};
           mainBooking.id = this.booking.id;
           mainBooking.status = 4; // Processing
+          mainBooking.parent_booking_id = this.booking.parent_booking_id;
           mainBooking.pnr = this.booking.pnr;
           mainBooking.notes = this.f.notes.value;
           this.adminService.saveBooking([mainBooking]).subscribe((res1: any) => {

@@ -251,6 +251,26 @@ export class TicketsComponent implements OnInit {
     if (row.node.selected) {
       const parentObj = this;
       parentObj.selectedTicket = row.data;
+      const tkt = row.data;
+
+      parentObj.selectedTicket.cost = {};
+      parentObj.selectedTicket.sale = {};
+      parentObj.selectedTicket.cost.price = parseInt(tkt.price, 10) + parseInt(tkt.markup_rate, 10);
+      parentObj.selectedTicket.cost.markup = 0;
+      parentObj.selectedTicket.cost.srvchg = parseInt(tkt.srvchg_rate, 10);
+      parentObj.selectedTicket.cost.cgst = Math.round(parseInt(tkt.srvchg_rate, 10) * parseFloat(tkt.cgst_rate));
+      parentObj.selectedTicket.cost.sgst = Math.round(parseInt(tkt.srvchg_rate, 10) * parseFloat(tkt.sgst_rate));
+      parentObj.selectedTicket.cost.gst = parentObj.selectedTicket.cost.cgst + parentObj.selectedTicket.cost.sgst;
+      parentObj.selectedTicket.cost.total = parentObj.selectedTicket.cost.price + parentObj.selectedTicket.cost.markup + parentObj.selectedTicket.cost.srvchg + parentObj.selectedTicket.cost.gst;
+
+      parentObj.selectedTicket.sale.price = parseInt(tkt.price, 10) + parseInt(tkt.markup_rate, 10);
+      parentObj.selectedTicket.sale.markup = parseInt(tkt.wsl_markup_rate, 10);
+      parentObj.selectedTicket.sale.srvchg = parseInt(tkt.wsl_srvchg_rate, 10) + parentObj.selectedTicket.cost.srvchg;
+      parentObj.selectedTicket.sale.cgst = parentObj.selectedTicket.cost.cgst + Math.round(parseInt(tkt.wsl_srvchg_rate, 10) * parseFloat(tkt.wsl_cgst_rate));
+      parentObj.selectedTicket.sale.sgst = parentObj.selectedTicket.cost.sgst + Math.round(parseInt(tkt.wsl_srvchg_rate, 10) * parseFloat(tkt.wsl_sgst_rate));
+      parentObj.selectedTicket.sale.gst = parentObj.selectedTicket.sale.cgst + parentObj.selectedTicket.sale.sgst;
+      parentObj.selectedTicket.sale.total = parentObj.selectedTicket.sale.price + parentObj.selectedTicket.sale.markup + parentObj.selectedTicket.sale.srvchg + parentObj.selectedTicket.sale.gst;
+
       // parentObj.init(row.data, parentObj.tickets);
 
       // const query = {
@@ -265,13 +285,13 @@ export class TicketsComponent implements OnInit {
       //   'no_of_person': 1,
       // };
 
+      this.mode = 'edit';
       this.adminService.getTicket(row.data.id).subscribe((res: any) => {
         if (res && res.length > 0) {
           parentObj.ticket = res[0];
         } else {
           parentObj.ticket = new Ticket();
         }
-        this.mode = 'edit';
       });
 
       // alert(inboxMessage.message);
