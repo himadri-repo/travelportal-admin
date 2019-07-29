@@ -39,24 +39,27 @@ export class TicketsComponent implements OnInit {
     {headerName: 'Arrv.Time', field: 'arrival_date_time', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Flight#', field: 'flight_no', sortable: true, filter: true, resizable: true, width: 75},
     {headerName: 'Seats', field: 'no_of_person', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Class', field: 'class', sortable: true, filter: true, resizable: true, width: 80},
+    // {headerName: 'Class', field: 'class', sortable: true, filter: true, resizable: true, width: 80},
+    {headerName: 'PNR', field: 'pnr', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'pnrrenderer'},
+    {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 80},
     {headerName: 'Airline', field: 'airline', sortable: true, filter: true, resizable: true, width: 80},
-    {headerName: 'Aircode', field: 'aircode', sortable: true, filter: true, resizable: true, width: 80},
+    // {headerName: 'Aircode', field: 'aircode', sortable: true, filter: true, resizable: true, width: 80},
     {headerName: 'Price', field: 'price', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Admin.Markup', field: 'admin_markup', sortable: true, filter: true, resizable: true, width: 75},
+    // {headerName: 'Admin.Markup', field: 'admin_markup', sortable: true, filter: true, resizable: true, width: 75},
     // {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 150},
     // {headerName: 'Markup', field: 'markup_rate', sortable: true, filter: true, resizable: true, width: 75},
     // {headerName: 'CGST', field: 'cgst_rate', sortable: true, filter: true, resizable: true, width: 50},
     // {headerName: 'SGST', field: 'sgst_rate', sortable: true, filter: true, resizable: true, width: 50},
     // {headerName: 'IGST', field: 'igst_rate', sortable: true, filter: true, resizable: true, width: 50},
     // {headerName: 'Tag', field: 'data_collected_from', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Updated.On', field: 'updated_on', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'utcdaterenderer'},
+    // {headerName: 'Updated.On', field: 'updated_on', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'utcdaterenderer'},
     {headerName: 'Approved', field: 'approved', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'approverenderer'},
 ];
 
   public components = {
-    utcdaterenderer: this.utcdaterenderer,
-    approverenderer: this.approverenderer
+    pnrrenderer: this.pnrrenderer.bind(this),
+    utcdaterenderer: this.utcdaterenderer.bind(this),
+    approverenderer: this.approverenderer.bind(this)
   };
 
   // [loadingOverlayComponent]="customLoadingOverlay"
@@ -147,6 +150,21 @@ export class TicketsComponent implements OnInit {
     element.href = 'mailto: ' + params.value;
     element.appendChild(document.createTextNode(params.value));
     return element;
+  }
+
+  pnrrenderer(params): any {
+    const data = params.data;
+    let value = params.value;
+
+    if (data.companyid !== this.currentUser.companyid) {
+      value = 'XXXXXX';
+    }
+    const action_container = document.createElement('span');
+    action_container.setAttribute('style', 'text-align: cneter');
+
+    action_container.appendChild(document.createTextNode(value));
+
+    return action_container;
   }
 
   utcdaterenderer(params): any {
@@ -250,6 +268,11 @@ export class TicketsComponent implements OnInit {
   onRowSelected(mode, row) {
     if (row.node.selected) {
       const parentObj = this;
+      parentObj.ticket = new Ticket();
+      parentObj.ticket.ticket_no = 'Loading ...';
+      parentObj.ticket.supplier = 'Loading ...';
+      parentObj.ticket.name = 'Loading ...';
+
       parentObj.selectedTicket = row.data;
       const tkt = row.data;
 

@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { HttpClientModule} from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { UsersComponent } from './components/users/users.component';
 import { HeaderbarComponent } from './headerbar/headerbar.component';
@@ -37,6 +37,7 @@ import { RateplandetailComponent } from './components/general/rateplandetail/rat
 import { SafehtmlPipe } from './common/safehtml.pipe';
 import { BookingsComponent } from './components/sales/bookings/bookings.component';
 import { DatediffPipe } from './common/datediff.pipe';
+import { CacheInterceptor } from './common/cache-inspector';
 
 @NgModule({
   declarations: [
@@ -86,7 +87,9 @@ import { DatediffPipe } from './common/datediff.pipe';
     InviteComponent,
     ConfirmationComponent
   ],
-  providers: [CommonService],
+  providers: [CommonService,
+      { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

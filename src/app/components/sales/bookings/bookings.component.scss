@@ -70,8 +70,9 @@
 }
 
 .fyi-notes {
-    color: #142bd6;
-    font-size: 12px;
+    font-size: 14px; 
+    font-weight: 600; 
+    color:#05078a
 }
 
 .exact_matched {
@@ -79,4 +80,8 @@
 }
 .not_matched {
     background-color: #f3f053 !important;
+}
+
+.table td, .table th {
+    padding: .20rem;
 }

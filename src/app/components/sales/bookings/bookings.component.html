@@ -57,23 +57,23 @@
                   </tr>
                 </thead>
                 <tbody id="grid1" formArrayName="customers" *ngFor="let customer of handlebookingform.get('customers').controls; let i = index;">
-                  <tr [formGroup]="customer" class="{{customer.controls.status.value == 2 ? 'processed-customer' : (customer.controls.status.value == 3 ? 'rejected-customer' : '')}}" *ngIf="(booking.id == customer.controls.booking_id.value) || (booking.id == customer.controls.refrence_id.value)">
+                  <tr [formGroup]="customer" class="{{customer.controls.status.value == 2 ? 'processed-customer' : (customer.controls.status.value == 3 ? 'rejected-customer' : '')}}" *ngIf="(booking.id == customer.controls.cus_booking_id.value) || (booking.parent_booking_id == customer.controls.cus_booking_id.value)">
                     <td>{{i+1}}</td>
                     <td>{{customer.controls.name.value}}<div class="fyi-notes" *ngIf="customer.controls.status.value!=1">Ref.Booking Id: {{customer.controls.refrence_id.value}}</div></td>
                     <td>{{customer.controls.age.value}}</td>
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.mobile.value : 'XXXXXXXXXX'}}</td>
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.email.value : 'XXXXXXXXXX@XXXXX.com'}}</td>
                     <td>
-                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;" *ngIf="customer.controls.status.value==1"/>
-                      <span *ngIf="customer.controls.status.value!=1">{{customer.controls.pnr.value}}</span>
+                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;" *ngIf="customer.controls.status.value==1 || customer.controls.status.value==8"/>
+                      <span *ngIf="!(customer.controls.status.value==1 || customer.controls.status.value==8)">{{customer.controls.pnr.value}}</span>
                       <input id="cust-{{customer.controls.id.value}}" name="customer-{{customer.controls.id.value}}" type="hidden" formControlName="id"/>
                     </td>
                     <td>
-                      <input formControlName="airline_ticket_no" placeholder="Please provide Airline Ticket Number" style="width: 100%;" *ngIf="customer.controls.status.value==1"/>
-                      <span *ngIf="customer.controls.status.value!=1">{{customer.controls.airline_ticket_no.value}}</span>
+                      <input formControlName="airline_ticket_no" placeholder="Please provide Airline Ticket Number" style="width: 100%;" *ngIf="customer.controls.status.value==1 || customer.controls.status.value==8"/>
+                      <span *ngIf="!(customer.controls.status.value==1 || customer.controls.status.value==8)">{{customer.controls.airline_ticket_no.value}}</span>
                     </td>
                     <td>
-                      <div class="" *ngIf="(booking.parent_booking_id > 0 && (customer.controls.status.value==1)) || (booking.parent_booking_id==0 && customer.controls.status.value!=2)">
+                      <div class="" *ngIf="customer.controls.status.value==1 || customer.controls.status.value==8">
                         <select id="action" class="form-control" formControlName="action">
                           <option value="0"> -- Select --</option>
                           <option value="1">Pending</option>
@@ -81,7 +81,7 @@
                           <option value="3">Rejected</option>
                         </select>
                       </div>
-                      <div *ngIf="!((booking.parent_booking_id > 0 && (customer.controls.status.value==1)) || (booking.parent_booking_id==0 && customer.controls.status.value!=2))" class="fyi-notes" style="font-size: 18px;">{{customer.controls.status.value == 2 ? 'Approved' : 'Reject'}}</div>
+                      <div *ngIf="!(customer.controls.status.value==1 || customer.controls.status.value==8)" class="fyi-notes" style="font-size: 18px;">{{getStatus(customer.controls.status.value)}}</div>
                     </td>
                   </tr>
                 </tbody>
@@ -170,22 +170,29 @@
                 <tr  style="background:#fff" *ngIf="assignedSuppliers===null || assignedSuppliers===undefined || assignedSuppliers.length === 0">
                   <td colspan="9"><span>No supplier(s) assigned yet</span></td>
                 </tr>
-                <tr style="background:#fff" *ngFor="let supplierBooking of assignedSuppliers; let i = index;" class="{{supplierBooking.status === 'APPROVED' ? 'processed-customer' : (supplierBooking.status === 'REJECTED' ? 'rejected-customer' : '')}}">
-                  <td>{{supplierBooking.ticket_id}}</td>
-                  <td>
-                    <i class="fa fa-plane" style="font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
-                    <span class="date">{{supplierBooking.source_city}} ({{supplierBooking.departure_date_time}})</span><br />
-                    <i class="fa fa-plane" style="transform:rotate(83deg);font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
-                    <span class="date">{{supplierBooking.destination_city}} ({{supplierBooking.arrival_date_time}})</span>
-                  </td>
-                  <td><div>{{supplierBooking.status}}</div><div>(Booking Id: {{supplierBooking.id}})</div></td>
-                  <td>{{supplierBooking.flight_no}}</td>
-                  <td>{{supplierBooking.class}}</td>
-                  <td>{{supplierBooking.total/supplierBooking.qty}}</td>
-                  <td>{{supplierBooking.qty}}</td>
-                  <td>{{supplierBooking.seller_companyname}}</td>
-                  <td>{{supplierBooking.date}}</td>
-                </tr>
+                <ng-container *ngFor="let supplierBooking of assignedSuppliers; let i = index;">
+                  <tr style="background:#fff" class="{{supplierBooking.status === 'APPROVED' ? 'processed-customer' : (supplierBooking.status === 'REJECTED' ? 'rejected-customer' : '')}}">
+                    <td rowspan="2">{{supplierBooking.ticket_id}}</td>
+                    <td rowspan="2">
+                      <i class="fa fa-plane" style="font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
+                      <span class="date">{{supplierBooking.source_city}} ({{supplierBooking.departure_date_time}})</span><br />
+                      <i class="fa fa-plane" style="transform:rotate(83deg);font-size:14px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin-right:10px"></i>
+                      <span class="date">{{supplierBooking.destination_city}} ({{supplierBooking.arrival_date_time}})</span>
+                    </td>
+                    <td rowspan="2"><div>{{supplierBooking.status}}</div><div>(Booking Id: {{supplierBooking.id}})</div></td>
+                    <td>{{supplierBooking.flight_no}}</td>
+                    <td>{{supplierBooking.class}}</td>
+                    <td>{{supplierBooking.total/supplierBooking.qty}}</td>
+                    <td>{{supplierBooking.qty}}</td>
+                    <td>{{supplierBooking.seller_companyname}}</td>
+                    <td>{{supplierBooking.date}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="6">
+                      <span class="fyi-notes">{{supplierBooking.notes}}</span>
+                    </td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
@@ -287,8 +294,12 @@
         <!-- Action area where all buttons should be placed-->
         <div style="width: 100%;">
             <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" (click)="onSendToSeller($event);" style="float:right" *ngIf="fullyProcessed === false && booking.parent_booking_id == 0">Send to seller</button>
-            <div id="supplier_actions" *ngIf="booking.parent_booking_id > 0 && (booking.status==0 || booking.status=='PENDING')">
+            <div id="supplier_actions" *ngIf="booking.parent_booking_id > 0 && ((booking.status==0 || booking.status=='PENDING') || (booking.status==1 || booking.status=='HOLD'))">
               <button type="button" id="btnApprove" name="btnApprove" class="btn btn-primary" (click)="onSellerAction('approve', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Approve</button>
+              <button type="button" id="btnReject" name="btnReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Reject</button>
+            </div>
+            <div id="supplier_actions_1" *ngIf="booking.parent_booking_id > 0 && ((booking.status==64 || booking.status=='REQUEST FOR HOLD'))">
+              <button type="button" id="btnHold" name="btnHold" class="btn btn-primary" (click)="onSellerAction('hold', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Hold</button>
               <button type="button" id="btnReject" name="btnReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Reject</button>
             </div>
             <div id="seller_actions" *ngIf="(fullyProcessed === true && allApproved === true) && (booking.status==4 || booking.status=='PROCESSING')">

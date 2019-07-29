@@ -110,7 +110,8 @@ export class BookingsComponent implements OnInit {
         refrence_id: new FormControl(customer.refrence_id),
         booking_id: new FormControl(customer.booking_id),
         status: new FormControl(customer.status),
-        action: new FormControl(customer.status)
+        action: new FormControl(customer.status),
+        cus_booking_id: new FormControl(customer.cus_booking_id)
       }));
     });
     return formGroups;
@@ -428,20 +429,28 @@ export class BookingsComponent implements OnInit {
       processedCustomers.push(customer);
       if (mainbooking.customers.length > idx) {
         let action = parseInt(customer.action, 10);
-        if (action < 2) {
-          if (customer.pnr !== null && customer.pnr !== '') {
-            action = 2;
-          } else {
-            action = 3;
+        if (mode !== 'hold') {
+          if (action < 2) {
+            if (customer.pnr !== null && customer.pnr !== '') {
+              action = 2;
+            } else {
+              action = 3;
+            }
+          } else if (action === 2 && (customer.pnr === null || customer.pnr === '')) {
+            alert('If approving booking against a customer, then please provide PNR value. Approval with empty PNR doesn\'t allow');
+            return;
           }
-        } else if (action === 2 && (customer.pnr === null || customer.pnr === '')) {
-          alert('If approving booking against a customer, then please provide PNR value. Approval with empty PNR doesn\'t allow');
-          return;
+        } else {
+          action = 8;
         }
 
-        mainbooking.customers[idx].status = (customer.pnr !== null && customer.pnr !== '') ? action : 3;
-        mainbooking.customers[idx].pnr = customer.pnr;
-        mainbooking.customers[idx].airline_ticket_no = customer.airline_ticket_no;
+        if (mode !== 'hold') {
+          mainbooking.customers[idx].status = (customer.pnr !== null && customer.pnr !== '') ? action : 3;
+          mainbooking.customers[idx].pnr = customer.pnr;
+          mainbooking.customers[idx].airline_ticket_no = customer.airline_ticket_no;
+        } else {
+          mainbooking.customers[idx].status = action;
+        }
       }
     });
 
@@ -451,11 +460,12 @@ export class BookingsComponent implements OnInit {
           // alert('Going to approve for those PNR provided. Rest will be rejected.');
           this.booking.notes = this.f.notes.value;
           mainbooking.notes = this.f.notes.value;
-          mainbooking.status = (mode === 'approve') ? '2' : '8'; // 2
+          mainbooking.status = (mode === 'approve') ? '2' : (mode === 'hold' ? '1' : '8'); // 2
           delete mainbooking.booking_activities;
           mainbooking.activity = Object.assign([], this.booking.booking_activities);
           if (mainbooking.activity.length > 0) {
-            mainbooking.activity[0].status = (mode === 'approve') ? '32' : '2'; // 32 = Processed | 2 = rejected;
+            // mainbooking.activity[0].status = (mode === 'approve') ? '32' : '2'; // 32 = Processed | 2 = rejected;
+            mainbooking.activity[0].status = (mode === 'approve') ? '32' : (mode === 'hold' ? '1' : '2'); // 32 = Processed | 2 = rejected;
             if (mainbooking.activity[0].notes === null || mainbooking.activity[0].notes === undefined) {
               mainbooking.activity[0].notes = `\n${mainbooking.notes}`;
             } else {
@@ -486,7 +496,13 @@ export class BookingsComponent implements OnInit {
 
     refBooking.id = -1;
     refBooking.qty = parseInt(ticket.ordered_qty, 10);
-    refBooking.status = '0'; // This will be pending for the supplier
+
+    if (parseInt(ticket.ordered_status, 10) === 1) {
+      refBooking.status = '64'; // This will be request for hold
+    } else {
+      refBooking.status = '0'; // This will be pending for the supplier
+    }
+
     refBooking.booking_date = moment().format('YYYY-MM-DD HH:mm:ss');
     refBooking.pbooking_id = this.booking.id;
     refBooking.ticket_id = ticket.id;
@@ -518,7 +534,12 @@ export class BookingsComponent implements OnInit {
     refBooking.activity[0].target_userid = ticket.user_id;
     refBooking.activity[0].target_companyid = ticket.companyid;
     refBooking.activity[0].requesting_to = 8;
-    refBooking.activity[0].status = 0;
+
+    if (refBooking.status === '64') {
+      refBooking.activity[0].status = 128;
+    } else {
+      refBooking.activity[0].status = 0;
+    }
     refBooking.activity[0].created_by = ticket.user_id;
     refBooking.activity[0].created_on = moment().format('YYYY-MM-DD HH:mm:ss');
     refBooking.activity[0].charge_amount = 0;
@@ -529,10 +550,17 @@ export class BookingsComponent implements OnInit {
     while (customers && customers.length > 0 && indx < customers.length && processedIndx < refBooking.qty) {
       if (parseInt(customers[indx].refrence_id, 10) === 0 || parseInt(customers[indx].status, 10) === 3) {
         const selectedCustomer: any = {};
-        customers[indx].refrence_id = 0;
+        customers[indx].refrence_id = -1;
         selectedCustomer.id = customers[indx].id;
         selectedCustomer.refrence_id = -1;
-        selectedCustomer.status = 1;
+
+        if (refBooking.status === '64') {
+          selectedCustomer.status = 16;
+          customers[indx].status = 16;
+        } else {
+          selectedCustomer.status = 1;
+          customers[indx].status = 1;
+        }
 
         selectedCustomers.push(selectedCustomer);
 
@@ -547,5 +575,12 @@ export class BookingsComponent implements OnInit {
     // delete refBooking.booking_activities;
 
     return refBooking;
+  }
+
+  getStatus(status) {
+    status = parseInt(status, 10);
+    const statusCode = (status === 2 ? 'Approved' : (status === 8 ? 'Hold' : (status === 4 ? 'Reject' : (status === 16 ? 'Request For Hold' : ''))));
+
+    return statusCode;
   }
 }
