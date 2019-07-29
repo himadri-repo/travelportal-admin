@@ -25,6 +25,7 @@ export class BookingsComponent implements OnInit {
   menuTitle = 'inventory';
   public message = '';
   public gridApi: any;
+  public current_url: string;
   public gridColumnApi: any;
   public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your bookings are getting loaded ...</span>';
   public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
@@ -68,7 +69,6 @@ export class BookingsComponent implements OnInit {
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
               private usersService: UsersService, private adminService: AdminService, private formBuilder: FormBuilder) {
-
   }
 
   ngOnInit() {
@@ -76,6 +76,7 @@ export class BookingsComponent implements OnInit {
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.tickets = [];
+    this.current_url = this.router.url;
 
     this.init(new Booking(), this.tickets);
 
@@ -276,10 +277,11 @@ export class BookingsComponent implements OnInit {
         const bookingQty = parseInt(parentObj.booking.qty.toString(), 10);
 
         row.data.customers.forEach((customer, idx) => {
-          if (parseInt(customer.status, 10) !== 3 && parseInt(customer.status, 10) !== 4) {
+          const customerStauts = parseInt(customer.status, 10);
+          if (customerStauts !== 3 && customerStauts !== 4) {
             // 1 = Pending | 3 = Rejected | 4 = Cancelled
             // processedQty += parseInt(supplier.qty.toString(), 10);
-            if (parseInt(customer.status, 10) === 1) {
+            if (customerStauts === 1) {
               if (row.data.status === 'PROCESSING') {
                 processedQty++;
               }
@@ -287,7 +289,9 @@ export class BookingsComponent implements OnInit {
               processedQty++;
             }
 
-            if (parseInt(customer.status, 10) === 2) {
+            if (customerStauts === 2 || customerStauts === 3 || customerStauts === 4) {
+              // Mainly settled one.
+              // Settlement can be done either by Approve, Reject or Cancel the booking.
               // Approved one
               approvedQty++;
             }
@@ -316,6 +320,8 @@ export class BookingsComponent implements OnInit {
           parentObj.fullyProcessed = true;
           if (approvedQty === bookingQty) {
             parentObj.allApproved = true;
+          } else {
+            parentObj.allApproved = false;
           }
           parentObj.tickets = [];
           parentObj.init(row.data, parentObj.tickets);
@@ -419,6 +425,8 @@ export class BookingsComponent implements OnInit {
     const customers = this.f.customers.value;
     const processedCustomers = [];
     const mainbooking: any = Object.assign({}, this.booking);
+    let proceedFlag = true;
+    let errorMsg = 'Please provide PNR details for at least one customer to process.';
 
     if (mode === '') {
       alert('System error. Please contact with system administrator');
@@ -437,7 +445,8 @@ export class BookingsComponent implements OnInit {
               action = 3;
             }
           } else if (action === 2 && (customer.pnr === null || customer.pnr === '')) {
-            alert('If approving booking against a customer, then please provide PNR value. Approval with empty PNR doesn\'t allow');
+            errorMsg = 'If approving booking against a customer, then please provide PNR value. Approval with empty PNR doesn\'t allow';
+            proceedFlag = false;
             return;
           }
         } else {
@@ -454,7 +463,7 @@ export class BookingsComponent implements OnInit {
       }
     });
 
-    if (processedCustomers.length > 0) {
+    if (processedCustomers.length > 0 && proceedFlag) {
       // if (processedCustomers.length !== customers.length) {
         if (processedCustomers.length === customers.length) {
           // alert('Going to approve for those PNR provided. Rest will be rejected.');
@@ -481,7 +490,8 @@ export class BookingsComponent implements OnInit {
       //  alert('Going to approve the booking from seller\'s end');
       // }
     } else {
-      alert('Please provide PNR details for at least one customer to process.');
+      alert(errorMsg);
+      // alert('Please provide PNR details for at least one customer to process.');
     }
   }
 
@@ -579,7 +589,30 @@ export class BookingsComponent implements OnInit {
 
   getStatus(status) {
     status = parseInt(status, 10);
-    const statusCode = (status === 2 ? 'Approved' : (status === 8 ? 'Hold' : (status === 4 ? 'Reject' : (status === 16 ? 'Request For Hold' : ''))));
+    let statusCode = ''; // (status === 2 ? 'Approved' : (status === 8 ? 'Hold' : (status === 3 ? 'Reject' : (status === 16 ? 'Request For Hold' : ''))));
+
+    switch (status) {
+      case 2:
+        statusCode = 'Approved';
+        break;
+      case 3:
+        statusCode = 'Rejected';
+        break;
+      case 4:
+        statusCode = 'Cancelled';
+        break;
+      case 8:
+        statusCode = 'Hold';
+        break;
+      case 16:
+        statusCode = 'Request For Hold';
+        break;
+      case 32:
+        statusCode = 'Request For Cancel';
+        break;
+      default:
+        break;
+    }
 
     return statusCode;
   }
