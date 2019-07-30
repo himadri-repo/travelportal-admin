@@ -293,18 +293,21 @@
 
         <!-- Action area where all buttons should be placed-->
         <div style="width: 100%;">
-            <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" (click)="onSendToSeller($event);" style="float:right" *ngIf="fullyProcessed === false && booking.parent_booking_id == 0">Send to seller</button>
             <div id="supplier_actions" *ngIf="booking.parent_booking_id > 0 && ((booking.status==0 || booking.status=='PENDING') || (booking.status==1 || booking.status=='HOLD'))">
               <button type="button" id="btnApprove" name="btnApprove" class="btn btn-primary" (click)="onSellerAction('approve', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Approve</button>
               <button type="button" id="btnReject" name="btnReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Reject</button>
             </div>
             <div id="supplier_actions_1" *ngIf="booking.parent_booking_id > 0 && ((booking.status==64 || booking.status=='REQUEST FOR HOLD'))">
               <button type="button" id="btnHold" name="btnHold" class="btn btn-primary" (click)="onSellerAction('hold', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Hold</button>
-              <button type="button" id="btnReject" name="btnReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Reject</button>
+              <button type="button" id="btnReject1" name="btnReject1" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="booking.parent_booking_id > 0"> Reject</button>
             </div>
             <div id="seller_actions" *ngIf="(fullyProcessed === true && allApproved === true) && (booking.status==4 || booking.status=='PROCESSING')">
               <button type="button" id="btnCustomerApprove" name="btnCustomerApprove" class="btn btn-primary" (click)="onSellerAction('approve', $event);" style="float:right; margin: 3px 10px;" *ngIf="fullyProcessed === true && allApproved === true"> Approve</button>
               <button type="button" id="btnCustomerReject" name="btnCustomerReject" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;" *ngIf="fullyProcessed === true && allApproved === true"> Reject</button>
+            </div>
+            <div id="seller_actions_1" *ngIf="fullyProcessed === false && booking.parent_booking_id == 0">
+              <button type="button" id="btnBook" name="btnBook" class="btn btn-primary" (click)="onSendToSeller($event);" style="float:right">Send to seller</button>
+              <button type="button" id="btnReject2" name="btnReject2" class="btn btn-secondary" (click)="onSellerAction('reject', $event);" style="float:right; margin: 3px 10px;"> Reject</button>
             </div>
         </div>
         <!--row-->

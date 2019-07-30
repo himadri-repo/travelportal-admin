@@ -31,6 +31,7 @@ export class TicketsComponent implements OnInit {
   public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
 
   public columnDefs = [
+    {headerName: '', field: 'id', sortable: true, filter: true, resizable: true, width: 50, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
     {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 75},
     {headerName: 'Dept.City', field: 'source', sortable: true, filter: true, resizable: true, width: 140},
     {headerName: 'Arrv.City', field: 'destination', sortable: true, filter: true, resizable: true, width: 140},
@@ -57,6 +58,7 @@ export class TicketsComponent implements OnInit {
 ];
 
   public components = {
+    actionrenderer: this.actionrenderer.bind(this),
     pnrrenderer: this.pnrrenderer.bind(this),
     utcdaterenderer: this.utcdaterenderer.bind(this),
     approverenderer: this.approverenderer.bind(this)
@@ -114,6 +116,24 @@ export class TicketsComponent implements OnInit {
     this.adminService.getAirlines().subscribe((res: any) => {
       this.airlines = res;
     });
+  }
+
+  handleEdit(id): any {
+    // alert(`${company_name} - ${currentCompanyName}`);
+    this.mode = 'edit';
+    const parentObj = this;
+    const rowNode = this.gridApi.getRowNode(id);
+    this.selectedTicket = this.setSelectedTicket(rowNode.data);
+
+    this.adminService.getTicket(rowNode.data.id).subscribe((res: any) => {
+      if (res && res.length > 0) {
+        parentObj.ticket = res[0];
+      } else {
+        parentObj.ticket = new Ticket();
+      }
+    });
+
+    event.stopPropagation();
   }
 
   RefreshData(companyid) {
@@ -243,20 +263,59 @@ export class TicketsComponent implements OnInit {
   }
 
   actionrenderer(params): any {
+    // const action_container = document.createElement('span');
+    // action_container.setAttribute('style', 'text-align: cneter');
+    // const edit_element = document.createElement('i');
+    // const id = parseInt(params.value, 10);
+
+    // edit_element.className = 'fa fa-pencil-square-o';
+    // edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
+    // edit_element.addEventListener('click', (ev) => {
+    //   alert(`Id : ${id}`);
+    // });
+
+    // action_container.appendChild(edit_element);
+
+    // return action_container;
+
     const action_container = document.createElement('span');
     action_container.setAttribute('style', 'text-align: cneter');
-    const edit_element = document.createElement('i');
     const id = parseInt(params.value, 10);
+    const oneditclick = params.onEdit;
+    // const onrejectclick = params.onRejectInvitation;
+    const data = params.data;
+    const currentCompanyid = this.currentUser.companyid;
+    const currentCompanyName = this.currentUser.cname;
 
-    edit_element.className = 'fa fa-pencil-square-o';
-    edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
-    edit_element.addEventListener('click', (ev) => {
-      alert(`Id : ${id}`);
+    // Add action element for inviting to suppliers / wholesalers
+    const edit_element = this.getInvitationLink(params, 'edit', (ev) => {
+      // rateplanid:"1"
+      // relationid:"1"
+      oneditclick('edit', parseInt(data.rateplanid, 10), parseInt(data.relationid, 10), parseInt(data.allowfeed, 10),
+        parseInt(data.transaction_type, 10), 1, parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
     });
 
     action_container.appendChild(edit_element);
 
     return action_container;
+  }
+
+  public getInvitationLink(params, actionName, callback) {
+    const edit_element = document.createElement('i');
+
+    if (actionName.toLowerCase() === 'edit') {
+      edit_element.title = `Edit the record`;
+      edit_element.className = 'fa fa-pencil-square-o actionicon actionicon-bl';
+    } else if (actionName.toLowerCase() === 'reject') {
+      edit_element.title = `Reject the invitation.`;
+      edit_element.className = 'fa fa-thumbs-down actionicon actionicon-rd';
+    }
+    edit_element.setAttribute('style', 'font-size: 18px; color: #000000; cursor: pointer; cursor: hand; margin: 0px 3px 0px 3px;');
+
+    if (callback !== null) {
+      edit_element.addEventListener('click', callback);
+    }
+    return edit_element;
   }
 
   onGridReady(params) {
@@ -267,32 +326,16 @@ export class TicketsComponent implements OnInit {
 
   onRowSelected(mode, row) {
     if (row.node.selected) {
-      const parentObj = this;
+      let parentObj = this;
       parentObj.ticket = new Ticket();
       parentObj.ticket.ticket_no = 'Loading ...';
       parentObj.ticket.supplier = 'Loading ...';
       parentObj.ticket.name = 'Loading ...';
 
-      parentObj.selectedTicket = row.data;
+      // parentObj.selectedTicket = row.data;
       const tkt = row.data;
 
-      parentObj.selectedTicket.cost = {};
-      parentObj.selectedTicket.sale = {};
-      parentObj.selectedTicket.cost.price = parseInt(tkt.price, 10) + parseInt(tkt.markup_rate, 10);
-      parentObj.selectedTicket.cost.markup = 0;
-      parentObj.selectedTicket.cost.srvchg = parseInt(tkt.srvchg_rate, 10);
-      parentObj.selectedTicket.cost.cgst = Math.round(parseInt(tkt.srvchg_rate, 10) * parseFloat(tkt.cgst_rate));
-      parentObj.selectedTicket.cost.sgst = Math.round(parseInt(tkt.srvchg_rate, 10) * parseFloat(tkt.sgst_rate));
-      parentObj.selectedTicket.cost.gst = parentObj.selectedTicket.cost.cgst + parentObj.selectedTicket.cost.sgst;
-      parentObj.selectedTicket.cost.total = parentObj.selectedTicket.cost.price + parentObj.selectedTicket.cost.markup + parentObj.selectedTicket.cost.srvchg + parentObj.selectedTicket.cost.gst;
-
-      parentObj.selectedTicket.sale.price = parseInt(tkt.price, 10) + parseInt(tkt.markup_rate, 10);
-      parentObj.selectedTicket.sale.markup = parseInt(tkt.wsl_markup_rate, 10);
-      parentObj.selectedTicket.sale.srvchg = parseInt(tkt.wsl_srvchg_rate, 10) + parentObj.selectedTicket.cost.srvchg;
-      parentObj.selectedTicket.sale.cgst = parentObj.selectedTicket.cost.cgst + Math.round(parseInt(tkt.wsl_srvchg_rate, 10) * parseFloat(tkt.wsl_cgst_rate));
-      parentObj.selectedTicket.sale.sgst = parentObj.selectedTicket.cost.sgst + Math.round(parseInt(tkt.wsl_srvchg_rate, 10) * parseFloat(tkt.wsl_sgst_rate));
-      parentObj.selectedTicket.sale.gst = parentObj.selectedTicket.sale.cgst + parentObj.selectedTicket.sale.sgst;
-      parentObj.selectedTicket.sale.total = parentObj.selectedTicket.sale.price + parentObj.selectedTicket.sale.markup + parentObj.selectedTicket.sale.srvchg + parentObj.selectedTicket.sale.gst;
+      parentObj = this.setSelectedTicket(tkt);
 
       // parentObj.init(row.data, parentObj.tickets);
 
@@ -308,7 +351,7 @@ export class TicketsComponent implements OnInit {
       //   'no_of_person': 1,
       // };
 
-      this.mode = 'edit';
+      this.mode = 'view';
       this.adminService.getTicket(row.data.id).subscribe((res: any) => {
         if (res && res.length > 0) {
           parentObj.ticket = res[0];
@@ -321,7 +364,31 @@ export class TicketsComponent implements OnInit {
     }
   }
 
-  onHandleChangeTicket() {
+  setSelectedTicket(tkt) {
+    const parentObj: any = {};
+    parentObj.selectedTicket = tkt;
+    parentObj.selectedTicket.cost = {};
+    parentObj.selectedTicket.sale = {};
+    parentObj.selectedTicket.cost.price = parseInt(tkt.price, 10) + parseInt(tkt.markup_rate, 10);
+    parentObj.selectedTicket.cost.markup = 0;
+    parentObj.selectedTicket.cost.srvchg = parseInt(tkt.srvchg_rate, 10);
+    parentObj.selectedTicket.cost.cgst = Math.round(parseInt(tkt.srvchg_rate, 10) * parseFloat(tkt.cgst_rate));
+    parentObj.selectedTicket.cost.sgst = Math.round(parseInt(tkt.srvchg_rate, 10) * parseFloat(tkt.sgst_rate));
+    parentObj.selectedTicket.cost.gst = parentObj.selectedTicket.cost.cgst + parentObj.selectedTicket.cost.sgst;
+    parentObj.selectedTicket.cost.total = parentObj.selectedTicket.cost.price + parentObj.selectedTicket.cost.markup + parentObj.selectedTicket.cost.srvchg + parentObj.selectedTicket.cost.gst;
+
+    parentObj.selectedTicket.sale.price = parseInt(tkt.price, 10) + parseInt(tkt.markup_rate, 10);
+    parentObj.selectedTicket.sale.markup = parseInt(tkt.wsl_markup_rate, 10);
+    parentObj.selectedTicket.sale.srvchg = parseInt(tkt.wsl_srvchg_rate, 10) + parentObj.selectedTicket.cost.srvchg;
+    parentObj.selectedTicket.sale.cgst = parentObj.selectedTicket.cost.cgst + Math.round(parseInt(tkt.wsl_srvchg_rate, 10) * parseFloat(tkt.wsl_cgst_rate));
+    parentObj.selectedTicket.sale.sgst = parentObj.selectedTicket.cost.sgst + Math.round(parseInt(tkt.wsl_srvchg_rate, 10) * parseFloat(tkt.wsl_sgst_rate));
+    parentObj.selectedTicket.sale.gst = parentObj.selectedTicket.sale.cgst + parentObj.selectedTicket.sale.sgst;
+    parentObj.selectedTicket.sale.total = parentObj.selectedTicket.sale.price + parentObj.selectedTicket.sale.markup + parentObj.selectedTicket.sale.srvchg + parentObj.selectedTicket.sale.gst;
+
+    return parentObj;
+  }
+
+  onHandleChangeTicket(rowParams, mode, callback) {
 
   }
 }

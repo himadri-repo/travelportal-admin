@@ -380,7 +380,7 @@ export class AdminService {
         'rate_plan_id': rateplanid,
         'transaction_type': transactiontype
       }
-    }
+    };
 
     if (vendorType === 'supplier') {
       // tslint:disable-next-line: object-literal-key-quotes

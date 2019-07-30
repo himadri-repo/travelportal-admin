@@ -295,6 +295,8 @@ export class BookingsComponent implements OnInit {
               // Approved one
               approvedQty++;
             }
+          } else if (customerStauts === 3 || customerStauts === 4) {
+            processedQty++; // count rejected and cancelled one also.
           }
         });
         // parentObj.assignedSuppliers.forEach(supplier => {
