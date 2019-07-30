@@ -277,11 +277,12 @@ export class BookingsComponent implements OnInit {
         const bookingQty = parseInt(parentObj.booking.qty.toString(), 10);
 
         row.data.customers.forEach((customer, idx) => {
-          const customerStauts = parseInt(customer.status, 10);
-          if (customerStauts !== 3 && customerStauts !== 4) {
+          const customerStatus = parseInt(customer.status, 10);
+          const refid = parseInt(customer.refrence_id, 10);
+          if (customerStatus !== 3 && customerStatus !== 4) {
             // 1 = Pending | 3 = Rejected | 4 = Cancelled
             // processedQty += parseInt(supplier.qty.toString(), 10);
-            if (customerStauts === 1) {
+            if (customerStatus === 1) {
               if (row.data.status === 'PROCESSING') {
                 processedQty++;
               }
@@ -289,13 +290,13 @@ export class BookingsComponent implements OnInit {
               processedQty++;
             }
 
-            if (customerStauts === 2 || customerStauts === 3 || customerStauts === 4) {
+            if (customerStatus === 2 || customerStatus === 3 || customerStatus === 4) {
               // Mainly settled one.
               // Settlement can be done either by Approve, Reject or Cancel the booking.
               // Approved one
               approvedQty++;
             }
-          } else if (customerStauts === 3 || customerStauts === 4) {
+          } else if ((customerStatus === 3 || customerStatus === 4) && refid === 0) {
             processedQty++; // count rejected and cancelled one also.
           }
         });
@@ -347,6 +348,31 @@ export class BookingsComponent implements OnInit {
 
   }
 
+  deleteCustomer(bookingid, customerid) {
+    const parentObj = this;
+    const customers = this.f.customers.value;
+
+    if (confirm('Are you sure want to delete this customer?')) {
+      this.adminService.deleteBookingCustomer(bookingid, customerid).subscribe((res: any) => {
+        if (res) {
+          parentObj.booking.customers.forEach((customer, idx) => {
+            if (parseInt(customer.id.toString(), 10) === parseInt(customerid, 10)) {
+              customer.status = 127;
+              customers[idx].status = 127;
+              customers[idx].action = 127; // deleted customer
+
+            }
+          });
+          parentObj.init(parentObj.booking, parentObj.tickets);
+        }
+      });
+    } else {
+      // tslint:disable-next-line: deprecation
+      event.preventDefault();
+    }
+
+  }
+
   onBack(ev) {
     this.mode = 'noshow';
     setTimeout( () => {
@@ -363,6 +389,20 @@ export class BookingsComponent implements OnInit {
     const orderedOwnTickets = [];
     const orderedOthersTickets = [];
     let orderedQty = 0;
+    let pendingQty = this.booking.qty;
+
+
+    if (customers !== null && customers.length > 0) {
+      pendingQty = 0;
+      customers.forEach((customer, idx) => {
+        this.booking.customers[idx].status = customer.action;
+        const status = parseInt(this.booking.customers[idx].status.toString(), 10);
+
+        if (status === 1 || status === 3 || status === 8) {
+          pendingQty++;
+        }
+      });
+    }
 
     // seperated out own orders and other supplier's orders
     tickets.forEach(ticket => {
@@ -385,7 +425,8 @@ export class BookingsComponent implements OnInit {
       });
     });
 
-    if (orderedOthersTickets.length === 0 ||  (orderedQty > this.booking.qty)) {
+    // if (orderedOthersTickets.length === 0 ||  (orderedQty > this.booking.qty)) {
+    if (orderedOthersTickets.length === 0 ||  (orderedQty > pendingQty)) {
       alert('Before placing order selective seller(s) should be [APPROVED] | [HOLD] and some qty should be assigned. Please also note that sum of ordered quantity should not be more than total ordered quantity.');
       return;
     }
@@ -456,9 +497,15 @@ export class BookingsComponent implements OnInit {
         }
 
         if (mode !== 'hold') {
-          mainbooking.customers[idx].status = (customer.pnr !== null && customer.pnr !== '') ? action : 3;
-          mainbooking.customers[idx].pnr = customer.pnr;
-          mainbooking.customers[idx].airline_ticket_no = customer.airline_ticket_no;
+          if (action !== 127) {
+            mainbooking.customers[idx].status = (customer.pnr !== null && customer.pnr !== '') ? action : 3;
+            mainbooking.customers[idx].pnr = customer.pnr;
+            mainbooking.customers[idx].airline_ticket_no = customer.airline_ticket_no;
+          } else {
+            mainbooking.customers[idx].status = 127;
+            mainbooking.customers[idx].pnr = '';
+            mainbooking.customers[idx].airline_ticket_no = '';
+          }
         } else {
           mainbooking.customers[idx].status = action;
         }
@@ -529,7 +576,7 @@ export class BookingsComponent implements OnInit {
     refBooking.cgst = parseFloat(ticket.spl_cgst);
     refBooking.sgst = parseFloat(ticket.spl_sgst);
     refBooking.igst = parseFloat(ticket.spl_igst);
-    refBooking.total = (refBooking.price + refBooking.markup + refBooking.srvchg + refBooking.cgst + refBooking.sgst) - parseFloat(ticket.spl_disc);
+    refBooking.total = ((refBooking.price + refBooking.markup + refBooking.srvchg + refBooking.cgst + refBooking.sgst) - parseFloat(ticket.spl_disc))  * parseFloat(refBooking.qty);
     refBooking.costprice = parseFloat(ticket.total);
     refBooking.rateplanid = ticket.rate_plan_id;
     refBooking.adult = refBooking.qty;
@@ -560,7 +607,8 @@ export class BookingsComponent implements OnInit {
     let processedIndx = 0;
     const selectedCustomers: any = [];
     while (customers && customers.length > 0 && indx < customers.length && processedIndx < refBooking.qty) {
-      if (parseInt(customers[indx].refrence_id, 10) === 0 || parseInt(customers[indx].status, 10) === 3) {
+      // Ignore removed customers
+      if ((parseInt(customers[indx].refrence_id, 10) === 0 || parseInt(customers[indx].status, 10) === 3) && parseInt(customers[indx].status, 10) !== 127) {
         const selectedCustomer: any = {};
         customers[indx].refrence_id = -1;
         selectedCustomer.id = customers[indx].id;
@@ -611,6 +659,9 @@ export class BookingsComponent implements OnInit {
         break;
       case 32:
         statusCode = 'Request For Cancel';
+        break;
+      case 127:
+        statusCode = 'DELETED';
         break;
       default:
         break;

@@ -32,7 +32,7 @@ export class TicketsComponent implements OnInit {
 
   public columnDefs = [
     {headerName: '', field: 'id', sortable: true, filter: true, resizable: true, width: 50, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
-    {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 75},
+    {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 100},
     {headerName: 'Dept.City', field: 'source', sortable: true, filter: true, resizable: true, width: 140},
     {headerName: 'Arrv.City', field: 'destination', sortable: true, filter: true, resizable: true, width: 140},
     {headerName: 'Trip.Type', field: 'trip_type', sortable: true, filter: true, resizable: true, width: 75},
@@ -118,14 +118,19 @@ export class TicketsComponent implements OnInit {
     });
   }
 
-  handleEdit(id): any {
+  handleEdit(operation, rowIndex, ticketId, ticket, companyId, companyName): any {
     // alert(`${company_name} - ${currentCompanyName}`);
-    this.mode = 'edit';
     const parentObj = this;
-    const rowNode = this.gridApi.getRowNode(id);
-    this.selectedTicket = this.setSelectedTicket(rowNode.data);
+    parentObj.ticket = new Ticket();
+    parentObj.ticket.ticket_no = 'Loading ...';
+    parentObj.ticket.supplier = 'Loading ...';
+    parentObj.ticket.name = 'Loading ...';
 
-    this.adminService.getTicket(rowNode.data.id).subscribe((res: any) => {
+    const rowNode = this.gridApi.getRowNode(rowIndex);
+    this.setSelectedTicket(this.selectedTicket, ticket);
+    this.mode = 'edit';
+
+    this.adminService.getTicket(ticketId).subscribe((res: any) => {
       if (res && res.length > 0) {
         parentObj.ticket = res[0];
       } else {
@@ -291,8 +296,8 @@ export class TicketsComponent implements OnInit {
     const edit_element = this.getInvitationLink(params, 'edit', (ev) => {
       // rateplanid:"1"
       // relationid:"1"
-      oneditclick('edit', parseInt(data.rateplanid, 10), parseInt(data.relationid, 10), parseInt(data.allowfeed, 10),
-        parseInt(data.transaction_type, 10), 1, parseInt(data.id, 10), data.display_name, currentCompanyid, currentCompanyName);
+      const ticket = params.data;
+      oneditclick('edit', params.rowIndex, parseInt(ticket.id, 10), ticket, currentCompanyid, currentCompanyName);
     });
 
     action_container.appendChild(edit_element);
@@ -335,7 +340,7 @@ export class TicketsComponent implements OnInit {
       // parentObj.selectedTicket = row.data;
       const tkt = row.data;
 
-      parentObj = this.setSelectedTicket(tkt);
+      this.setSelectedTicket(parentObj, tkt);
 
       // parentObj.init(row.data, parentObj.tickets);
 
@@ -364,8 +369,8 @@ export class TicketsComponent implements OnInit {
     }
   }
 
-  setSelectedTicket(tkt) {
-    const parentObj: any = {};
+  setSelectedTicket(parentObj, tkt) {
+    // const parentObj: any = {};
     parentObj.selectedTicket = tkt;
     parentObj.selectedTicket.cost = {};
     parentObj.selectedTicket.sale = {};

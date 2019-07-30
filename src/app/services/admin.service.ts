@@ -353,6 +353,11 @@ export class AdminService {
     return this.httpClient.get(this.baseUrl + `/company/${companyid}/services`);
   }
 
+  public deleteBookingCustomer(bookingid, customerid): any {
+    // tslint:disable-next-line: object-literal-key-quotes
+    return this.httpClient.get(this.baseUrl + `/company/delete_booking_customer/${bookingid}/${customerid}`);
+  }
+
   public changeFeed(vendorType, feedValue, targetCompanyid, sourceCompanyid): any {
     if (vendorType === 'supplier') {
       // tslint:disable-next-line: object-literal-key-quotes
