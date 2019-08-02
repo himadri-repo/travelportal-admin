@@ -38,6 +38,10 @@ import { SafehtmlPipe } from './common/safehtml.pipe';
 import { BookingsComponent } from './components/sales/bookings/bookings.component';
 import { DatediffPipe } from './common/datediff.pipe';
 import { CacheInterceptor } from './common/cache-inspector';
+import { TicketviewComponent } from './components/tickets/ticketview/ticketview.component';
+import { TicketFormComponent } from './components/tickets/ticket-form/ticket-form.component';
+// import { DateTimePickerComponent } from './components/shared/date-time-picker/date-time-picker.component';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 @NgModule({
   declarations: [
@@ -61,7 +65,9 @@ import { CacheInterceptor } from './common/cache-inspector';
     RateplandetailComponent,
     SafehtmlPipe,
     BookingsComponent,
-    DatediffPipe
+    DatediffPipe,
+    TicketviewComponent,
+    TicketFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -80,7 +86,9 @@ import { CacheInterceptor } from './common/cache-inspector';
     MatAutocompleteModule,
     ReactiveFormsModule,
     NgxEditorModule,
-    TooltipModule.forRoot()
+    TooltipModule.forRoot(),
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule
   ],
   entryComponents: [
     CustomerinfoComponent,

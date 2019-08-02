@@ -25,4 +25,8 @@ export class Ticket {
     allowfeed: number;
     service: string;
     owner_companyid: number;
+
+    constructor() {
+        this.trip_type = 'ONE';
+    }
 }

@@ -1,0 +1,212 @@
+<div class="main-content">
+  <div class="main-content-inner">
+      <div class="page-content">
+        <div class="page-header page-title page-title-section" id="header">
+          <!--.page-header -->
+          <h1 style="font-weight: 100; font-size: 1.5vw; color: #0000ff; width: 80%; display: inline-block">
+            {{ticket.sourcename}} TO {{ticket.destinationname}} ( {{tkt.trip_type.value}} WAY ) - {{ticket.approved === '1' ? 'Approved' : 'Not Approved'}}
+          </h1>
+          <button (click)="closeview($event)" class="btn btn-primary" style="float:right"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Bookings</button>
+        </div><!-- /.page-header -->
+        <form [formGroup]="handleticketform" autocomplete="off" (ngSubmit)="onHandleChangeTicket()" novalidate>
+          <input type="hidden" name="id" value="{{ticket.id}}"/>
+          <div class="row">
+            <div class="col-xs-12 col-sm-12">
+              <!--Widget col-md-8 start-->
+              <div class="">
+                  <!-- <h3 class="title-heading">GENERAL INFORMATION</h3>
+                  <hr style="margin:0" /> -->
+                  <div class="card">
+                      <h4 class="card-header text-white bg-primary">GENERAL INFORMATION</h4>
+                      <div class="card-body">
+                        <div class="row fieldrow">
+                          <div class="col-xs-2 col-sm-2 field-title">Ticket #</div>
+                          <div class="col-xs-2 col-sm-2"><input name="ticket_no" formControlName="ticket_no" class="form-control" required></div>
+                          <div class="col-xs-2 col-sm-2 field-title">Trip Type</div>
+                          <div class="col-xs-2 col-sm-2">
+                              <select name="trip_type" formControlName="trip_type" class="form-control">
+                                <option value="ONE">ONEWAY</option>
+                                <option value="ROUND">ROUND</option>
+                              </select>
+                          </div>
+                          <div class="col-xs-2 col-sm-2 field-title">Approved ?</div>
+                          <div class="col-xs-2 col-sm-2"><input type="checkbox" name="approve" formControlName="approve" class="form-control checkbox" checked></div>
+                        </div>
+                        <div class="row fieldrow">
+                          <div class="col-xs-2 col-sm-2 field-title">Refundable ?</div>
+                          <div class="col-xs-2 col-sm-2"><input type="checkbox" name="refundable" formControlName="refundable" class="form-control checkbox" checked></div>
+                          <div class="col-xs-2 col-sm-2 field-title">Sale Type</div>
+                          <div class="col-xs-2 col-sm-2">
+                            <select name="sale_type" formControlName="sale_type" class="form-control">
+                              <option value="request">REQUEST</option>
+                              <option value="live">LIVE</option>
+                            </select>
+                          </div>
+                          <div class="col-xs-2 col-sm-2 field-title">Adding/Updating By</div>
+                          <div class="col-xs-2 col-sm-2" style="padding: 5px 0px;">{{currentUser.name}}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <hr style="margin:0" /> -->
+                    <div class="card">
+                      <!-- <h4 class="title-heading">SCHEDULE INFORMATION</h4> -->
+                      <h4 class="card-header text-white bg-primary">ONE-WAY JOURNEY INFORMATION</h4>
+                      <!-- <hr style="margin:0" /> -->
+                      <div class="card-body">
+                        <div class="row fieldrow">
+                          <div class="col-xs-3 col-sm-3 field-title">Departing city</div>
+                          <div class="col-xs-3 col-sm-3">
+                            <select name="source" formControlName="source" class="form-control">
+                              <option value="-1">-- Select --</option>
+                              <option *ngFor="let city of cities" value="{{city.id}}">{{city.city}} ({{city.code}})</option>
+                            </select>
+                          </div>
+                          <div class="col-xs-3 col-sm-3 field-title">Arriving City</div>
+                          <div class="col-xs-3 col-sm-3">
+                            <select name="destination" formControlName="destination" class="form-control">
+                              <option value="-1">-- Select --</option>
+                              <option *ngFor="let city of cities" value="{{city.id}}">{{city.city}} ({{city.code}})</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row fieldrow">
+                          <div class="col-xs-3 col-sm-3 field-title">Departing Date & Time</div>
+                          <div class="col-xs-3 col-sm-3">
+                            <input type="datetime" name="departure_date_time" formControlName="departure_date_time" [owlDateTimeTrigger]="dtDeparture" [owlDateTime]="dtDeparture" class="form-control" required>
+                            <owl-date-time #dtDeparture></owl-date-time>
+                          </div>
+                          <div class="col-xs-3 col-sm-3 field-title">Arriving Date & Time</div>
+                          <div class="col-xs-3 col-sm-3">
+                            <input type="datetime" name="arrival_date_time" formControlName="arrival_date_time" [owlDateTimeTrigger]="dtArrival" [owlDateTime]="dtArrival" class="form-control" required>
+                            <owl-date-time #dtArrival></owl-date-time>
+                          </div>
+                        </div>
+                        <hr/>
+                        <div class="row fieldrow">
+                          <div class="col-xs-1 col-sm-1 field-title">Airline</div>
+                          <div class="col-xs-2 col-sm-2">
+                            <select name="airline" formControlName="airline" class="form-control">
+                              <option value="-1">-- Select --</option>
+                              <option *ngFor="let airline of airlines" value="{{airline.id}}">{{airline.airline}} ({{airline.aircode}})</option>
+                            </select>
+                          </div>
+                          <div class="col-xs-1 col-sm-1 field-title">Class</div>
+                          <div class="col-xs-2 col-sm-2">
+                            <select name="class" formControlName="class" class="form-control">
+                              <option value="ECONOMY">ECONOMY</option>
+                              <option value="BUSINESS">BUSINESS</option>
+                            </select>
+                          </div>
+                          <div class="col-xs-1 col-sm-1 field-title">Flight #</div>
+                          <div class="col-xs-2 col-sm-2"><input name="flight_no" formControlName="flight_no" class="form-control" required></div>
+                          <div class="col-xs-1 col-sm-1 field-title">Terminal</div>
+                          <div class="col-xs-2 col-sm-2"><input name="terminal" formControlName="terminal" class="form-control" required></div>
+                        </div>
+                      </div>
+                  </div>
+                  <!-- <hr style="margin:0" /> -->
+                  <div class="card" *ngIf="tkt.trip_type.value==='ROUND'">
+                      <!-- <h4 class="title-heading">SCHEDULE INFORMATION</h4> -->
+                      <h4 class="card-header text-white bg-primary">RETURN JOURNEY INFORMATION</h4>
+                      <!-- <hr style="margin:0" /> -->
+                      <div class="card-body">
+                          <div class="row fieldrow">
+                            <div class="col-xs-3 col-sm-3 field-title">Departing city</div>
+                            <div class="col-xs-3 col-sm-3">
+                              <select name="source1" formControlName="source1" class="form-control">
+                                <option value="-1">-- Select --</option>
+                                <option *ngFor="let city of cities" value="{{city.id}}">{{city.city}} ({{city.code}})</option>
+                              </select>
+                            </div>
+                            <div class="col-xs-3 col-sm-3 field-title">Arriving City</div>
+                            <div class="col-xs-3 col-sm-3">
+                              <select name="destination1" formControlName="destination1" class="form-control">
+                                <option value="-1">-- Select --</option>
+                                <option *ngFor="let city of cities" value="{{city.id}}">{{city.city}} ({{city.code}})</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="row fieldrow">
+                            <div class="col-xs-3 col-sm-3 field-title">Departing Date & Time</div>
+                            <div class="col-xs-3 col-sm-3">
+                              <input type="datetime" name="departure_date_time1" formControlName="departure_date_time1" [owlDateTimeTrigger]="dtDeparture" [owlDateTime]="dtDeparture" class="form-control" required>
+                              <owl-date-time #dtDeparture></owl-date-time>
+                            </div>
+                            <div class="col-xs-3 col-sm-3 field-title">Arriving Date & Time</div>
+                            <div class="col-xs-3 col-sm-3">
+                              <input type="datetime" name="arrival_date_time1" formControlName="arrival_date_time1" [owlDateTimeTrigger]="dtArrival" [owlDateTime]="dtArrival" class="form-control" required>
+                              <owl-date-time #dtArrival></owl-date-time>
+                            </div>
+                          </div>
+                          <hr/>
+                          <div class="row fieldrow">
+                            <div class="col-xs-1 col-sm-1 field-title">Airline</div>
+                            <div class="col-xs-2 col-sm-2">
+                              <select name="airline1" formControlName="airline1" class="form-control">
+                                <option value="-1">-- Select --</option>
+                                <option *ngFor="let airline of airlines" value="{{airline.id}}">{{airline.airline}} ({{airline.aircode}})</option>
+                              </select>
+                            </div>
+                            <div class="col-xs-1 col-sm-1 field-title">Class</div>
+                            <div class="col-xs-2 col-sm-2">
+                              <select name="class1" formControlName="class1" class="form-control">
+                                <option value="ECONOMY">ECONOMY</option>
+                                <option value="BUSINESS">BUSINESS</option>
+                              </select>
+                            </div>
+                            <div class="col-xs-1 col-sm-1 field-title">Flight #</div>
+                            <div class="col-xs-2 col-sm-2"><input name="flight_no1" formControlName="flight_no1" class="form-control" required></div>
+                            <div class="col-xs-1 col-sm-1 field-title">Terminal</div>
+                            <div class="col-xs-2 col-sm-2"><input name="terminal1" formControlName="terminal1" class="form-control" value="NA"></div>
+                          </div>
+                        </div>
+                    </div>
+                  <div class="card">
+                      <!-- <hr style="margin:0" /> -->
+                      <h4 class="card-header text-white bg-primary">COMMERCIAL INFORMATION</h4>
+                      <!-- <hr style="margin:0" /> -->
+                      <div class="card-body">
+                          <div class="row fieldrow">
+                            <div class="col-xs-1 col-sm-1 field-title">No.Of.PAX</div>
+                            <div class="col-xs-2 col-sm-2"><input name="no_of_person" min="1" max="100" step="1" formControlName="no_of_person" class="form-control" required></div>
+                            <div class="col-xs-1 col-sm-1 field-title">No.Of.Stop</div>
+                            <div class="col-xs-2 col-sm-2"><input name="no_of_stop" min="0" max="3" step="1" formControlName="no_of_stop" class="form-control" required></div>
+                            <div class="col-xs-1 col-sm-1 field-title">PNR</div>
+                            <div class="col-xs-2 col-sm-2"><input name="pnr" formControlName="pnr" class="form-control" required></div>
+                            <div class="col-xs-1 col-sm-1 field-title">Booking Till</div>
+                            <div class="col-xs-2 col-sm-2">
+                                <input type="datetime" formControlName="booking_freeze_by" [owlDateTimeTrigger]="dtBookingFreeze" [owlDateTime]="dtBookingFreeze" class="form-control" required>
+                                <owl-date-time #dtBookingFreeze></owl-date-time>
+                              </div>
+                          </div>
+                          <hr/>
+                          <div class="row fieldrow">
+                              <div class="col-xs-2 col-sm-2 field-title">Adult Fare</div>
+                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="price" formControlName="price" class="form-control" required></div>
+                              <div class="col-xs-2 col-sm-2 field-title">Child Fare</div>
+                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="price_child" formControlName="price_child" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2 field-title">Infant Fare</div>
+                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="price_infant" formControlName="price_infant" class="form-control" value="0.00"></div>
+                          </div>
+                          <div class="row fieldrow">
+                              <div class="col-xs-2 col-sm-2 field-title">Baggage Rate</div>
+                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="baggage" formControlName="baggage" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2 field-title">Meal Rate</div>
+                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="meal" formControlName="meal" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2 field-title">Ticket Cancel Rate <span style="color: #ff0000">*</span></div>
+                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="cancel_rate" formControlName="cancel_rate" class="form-control" value="0.00"></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <!-- Action area where all buttons should be placed-->
+          <div style="width: 100%;">
+              <button type="submit" id="btnBook" name="btnBook" class="btn btn-primary" style="float:right"> Save</button>
+          </div>
+          <!--row-->
+        </form>
+      </div> <!-- /.page-content -->
+  </div> <!-- /.main-content-inner -->
+</div> <!-- /.main-content -->

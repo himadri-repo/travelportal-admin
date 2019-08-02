@@ -32,19 +32,19 @@ export class TicketsComponent implements OnInit {
 
   public columnDefs = [
     {headerName: '', field: 'id', sortable: true, filter: true, resizable: true, width: 50, cellRenderer: 'actionrenderer', cellRendererParams: {onEdit: this.handleEdit.bind(this)}},
-    {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 100},
-    {headerName: 'Dept.City', field: 'source', sortable: true, filter: true, resizable: true, width: 140},
-    {headerName: 'Arrv.City', field: 'destination', sortable: true, filter: true, resizable: true, width: 140},
-    {headerName: 'Trip.Type', field: 'trip_type', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Dept.Time', field: 'departure_date_time', sortable: true, filter: true, resizable: true, width: 150},
-    {headerName: 'Arrv.Time', field: 'arrival_date_time', sortable: true, filter: true, resizable: true, width: 150},
-    {headerName: 'Flight#', field: 'flight_no', sortable: true, filter: true, resizable: true, width: 75},
-    {headerName: 'Seats', field: 'no_of_person', sortable: true, filter: true, resizable: true, width: 75},
+    // {headerName: 'Ticket#', field: 'ticket_no', sortable: true, filter: true, resizable: true, width: 100},
+    {headerName: 'Dept.City', field: 'source', sortable: true, filter: true, resizable: true, width: 100, cellRenderer: 'cityrenderer'},
+    // {headerName: 'Arrv.City', field: 'destination', sortable: true, filter: true, resizable: true, width: 140},
+    // {headerName: 'Trip.Type', field: 'trip_type', sortable: true, filter: true, resizable: true, width: 75},
+    {headerName: 'Dept.Time', field: 'departure_date_time', sortable: true, filter: true, resizable: true, width: 110, cellRenderer: 'timerenderer'},
+    // {headerName: 'Arrv.Time', field: 'arrival_date_time', sortable: true, filter: true, resizable: true, width: 150},
+    {headerName: 'Flight#', field: 'flight_no', sortable: true, filter: true, resizable: true, width: 70},
+    {headerName: 'Qty', field: 'no_of_person', sortable: true, filter: true, resizable: true, width: 55},
     // {headerName: 'Class', field: 'class', sortable: true, filter: true, resizable: true, width: 80},
     {headerName: 'PNR', field: 'pnr', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'pnrrenderer'},
-    {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 80},
-    {headerName: 'Airline', field: 'airline', sortable: true, filter: true, resizable: true, width: 80},
-    // {headerName: 'Aircode', field: 'aircode', sortable: true, filter: true, resizable: true, width: 80},
+    {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 100},
+    // {headerName: 'Airline', field: 'airline', sortable: true, filter: true, resizable: true, width: 80},
+    {headerName: 'Aircode', field: 'aircode', sortable: true, filter: true, resizable: true, width: 60},
     {headerName: 'Price', field: 'price', sortable: true, filter: true, resizable: true, width: 75},
     // {headerName: 'Admin.Markup', field: 'admin_markup', sortable: true, filter: true, resizable: true, width: 75},
     // {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 150},
@@ -54,10 +54,12 @@ export class TicketsComponent implements OnInit {
     // {headerName: 'IGST', field: 'igst_rate', sortable: true, filter: true, resizable: true, width: 50},
     // {headerName: 'Tag', field: 'data_collected_from', sortable: true, filter: true, resizable: true, width: 75},
     // {headerName: 'Updated.On', field: 'updated_on', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'utcdaterenderer'},
-    {headerName: 'Approved', field: 'approved', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'approverenderer'},
+    // {headerName: 'Approved', field: 'approved', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'approverenderer'},
 ];
 
   public components = {
+    timerenderer: this.timerenderer.bind(this),
+    cityrenderer: this.cityrenderer.bind(this),
     actionrenderer: this.actionrenderer.bind(this),
     pnrrenderer: this.pnrrenderer.bind(this),
     utcdaterenderer: this.utcdaterenderer.bind(this),
@@ -125,10 +127,10 @@ export class TicketsComponent implements OnInit {
     parentObj.ticket.ticket_no = 'Loading ...';
     parentObj.ticket.supplier = 'Loading ...';
     parentObj.ticket.name = 'Loading ...';
+    parentObj.mode = 'edit';
 
     const rowNode = this.gridApi.getRowNode(rowIndex);
     this.setSelectedTicket(this.selectedTicket, ticket);
-    this.mode = 'edit';
 
     this.adminService.getTicket(ticketId).subscribe((res: any) => {
       if (res && res.length > 0) {
@@ -138,6 +140,7 @@ export class TicketsComponent implements OnInit {
       }
     });
 
+    // tslint:disable-next-line: deprecation
     event.stopPropagation();
   }
 
@@ -188,6 +191,41 @@ export class TicketsComponent implements OnInit {
     action_container.setAttribute('style', 'text-align: cneter');
 
     action_container.appendChild(document.createTextNode(value));
+
+    return action_container;
+  }
+
+  cityrenderer(params): any {
+    const data = params.data;
+    const source = params.data.source.trim().substr(params.data.source.length - 3);
+    const destination = params.data.destination.trim().substr(params.data.destination.length - 3);
+    const value = params.value;
+    let journey = '';
+
+    if (params.data.trip_type === 'ONE') {
+      journey = `${source} - ${destination}`;
+    } else if (params.data.trim_type === 'ROUND') {
+      journey = `${source} - ${destination} - ${source}`;
+    }
+
+    const action_container = document.createElement('span');
+    action_container.setAttribute('style', 'text-align: left');
+
+    action_container.appendChild(document.createTextNode(journey));
+
+    return action_container;
+  }
+
+  timerenderer(params): any {
+    const data = params.data;
+    const value = params.value;
+
+    const datetimevalue = moment(value).format('DD-MM-YY HH:mm');
+
+    const action_container = document.createElement('span');
+    action_container.setAttribute('style', 'text-align: left');
+
+    action_container.appendChild(document.createTextNode(datetimevalue));
 
     return action_container;
   }
@@ -331,7 +369,7 @@ export class TicketsComponent implements OnInit {
 
   onRowSelected(mode, row) {
     if (row.node.selected) {
-      let parentObj = this;
+      const parentObj = this;
       parentObj.ticket = new Ticket();
       parentObj.ticket.ticket_no = 'Loading ...';
       parentObj.ticket.supplier = 'Loading ...';
@@ -355,7 +393,6 @@ export class TicketsComponent implements OnInit {
       //   'available': 'YES',
       //   'no_of_person': 1,
       // };
-
       this.mode = 'view';
       this.adminService.getTicket(row.data.id).subscribe((res: any) => {
         if (res && res.length > 0) {
