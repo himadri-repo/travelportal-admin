@@ -46,6 +46,7 @@ export class TicketsComponent implements OnInit {
     // {headerName: 'Airline', field: 'airline', sortable: true, filter: true, resizable: true, width: 80},
     {headerName: 'Aircode', field: 'aircode', sortable: true, filter: true, resizable: true, width: 60},
     {headerName: 'Price', field: 'price', sortable: true, filter: true, resizable: true, width: 75},
+    {headerName: 'Trans.Type', field: 'trans_type', sortable: true, filter: true, resizable: true, width: 100},
     // {headerName: 'Admin.Markup', field: 'admin_markup', sortable: true, filter: true, resizable: true, width: 75},
     // {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 150},
     // {headerName: 'Markup', field: 'markup_rate', sortable: true, filter: true, resizable: true, width: 75},
@@ -80,6 +81,9 @@ export class TicketsComponent implements OnInit {
   // };
 
   public rowData: Ticket[] = [];
+  public ownTickets: Ticket[] = [];
+
+  public tabindex = 0;
 
   public rowSelection = 'single';
   public currentUser: User;
@@ -88,6 +92,8 @@ export class TicketsComponent implements OnInit {
   public mode = 'noshow';
   public cities: City[] = [];
   public airlines: Airline[] = [];
+  public is_supplier = false;
+  public is_wholesaler = false;
 
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
@@ -100,6 +106,9 @@ export class TicketsComponent implements OnInit {
     this.commonService.setTitle('Inventory Management');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
+    this.is_supplier = (parseInt(this.authenticationService.currentCompany.type, 10) & 2) === 2; /* 2 means supplier */
+    this.is_wholesaler = (parseInt(this.authenticationService.currentCompany.type, 10) & 4) === 4; /* 4 means wholesaler */
+
     this.selectedTicket = new Ticket();
     this.ticket = new Ticket();
 
@@ -120,6 +129,14 @@ export class TicketsComponent implements OnInit {
     });
   }
 
+  addTicket() {
+    const userid = this.currentUser.id;
+    const companyid = this.currentUser.companyid;
+    const parentObj = this;
+    parentObj.mode = 'edit';
+    parentObj.ticket = new Ticket();
+  }
+
   handleEdit(operation, rowIndex, ticketId, ticket, companyId, companyName): any {
     // alert(`${company_name} - ${currentCompanyName}`);
     const parentObj = this;
@@ -127,11 +144,10 @@ export class TicketsComponent implements OnInit {
     parentObj.ticket.ticket_no = 'Loading ...';
     parentObj.ticket.supplier = 'Loading ...';
     parentObj.ticket.name = 'Loading ...';
-    parentObj.mode = 'edit';
 
     const rowNode = this.gridApi.getRowNode(rowIndex);
-    this.setSelectedTicket(this.selectedTicket, ticket);
-
+    // this.setSelectedTicket(this.selectedTicket, ticket);
+    parentObj.mode = 'edit';
     this.adminService.getTicket(ticketId).subscribe((res: any) => {
       if (res && res.length > 0) {
         parentObj.ticket = res[0];
@@ -155,7 +171,19 @@ export class TicketsComponent implements OnInit {
     this.adminService.getTicketsByCompany(companyid).subscribe((res: Ticket[]) => {
       if (res !== null && res !== undefined && res.length > 0) {
         this.gridApi.hideOverlay();
-        self.rowData = res;
+        const ownTickets = [];
+        const othersTickets = [];
+
+        res.forEach(ticket => {
+          if (ticket.companyid === companyid) {
+            ownTickets.push(ticket);
+          } else {
+            othersTickets.push(ticket);
+          }
+        });
+
+        self.rowData = othersTickets;
+        self.ownTickets = ownTickets;
       } else {
         this.gridApi.showNoRowsOverlay();
       }
@@ -325,9 +353,10 @@ export class TicketsComponent implements OnInit {
     action_container.setAttribute('style', 'text-align: cneter');
     const id = parseInt(params.value, 10);
     const oneditclick = params.onEdit;
+    const ticket_companyid = parseInt(params.data.companyid, 10);
     // const onrejectclick = params.onRejectInvitation;
     const data = params.data;
-    const currentCompanyid = this.currentUser.companyid;
+    const currentCompanyid = parseInt(this.currentUser.companyid.toString(), 10);
     const currentCompanyName = this.currentUser.cname;
 
     // Add action element for inviting to suppliers / wholesalers
@@ -338,7 +367,9 @@ export class TicketsComponent implements OnInit {
       oneditclick('edit', params.rowIndex, parseInt(ticket.id, 10), ticket, currentCompanyid, currentCompanyName);
     });
 
-    action_container.appendChild(edit_element);
+    if (ticket_companyid === currentCompanyid) {
+      action_container.appendChild(edit_element);
+    }
 
     return action_container;
   }
@@ -432,5 +463,9 @@ export class TicketsComponent implements OnInit {
 
   onHandleChangeTicket(rowParams, mode, callback) {
 
+  }
+
+  onSelectedTabChanged(tabindex) {
+    this.RefreshData(this.currentUser.companyid);
   }
 }

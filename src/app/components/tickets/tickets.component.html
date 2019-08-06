@@ -1,29 +1,67 @@
 <div *ngIf="mode==='noshow'">
-    <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 25px 5px 1px 5px; height:35px;">
-        <span class="badge badge-info">{{message}}</span>
-        <span class="example-spacer"></span>
-        <a class="btn btn-sm btn-success text-white" (click)="UploadTickets(this.currentUser.companyid)" role="button">
-            <i class="fa fa-plus" aria-hidden="true"></i> Upload Tickets
-        </a>
-        <a class="btn btn-sm btn-success text-white" (click)="RefreshData(this.currentUser.companyid)" role="button">
-            <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
-        </a>
-        <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
-    </mat-toolbar>
-    <ag-grid-angular 
-        style="width: 100%; height: 600px; margin: 0px 5px 20px 5px;"
-        class="ag-theme-balham"
-        [rowData]="rowData" 
-        [rowSelection]="rowSelection"
-        [columnDefs]="columnDefs"
-        [components]="components"
-        [suppressCellSelection]="true"
-        [overlayLoadingTemplate]="overlayLoadingTemplate"
-        [overlayNoRowsTemplate]="overlayNoRowsTemplate"
-        (rowSelected)="onRowSelected('edit',$event)"
-        (gridReady)="onGridReady($event)">
-    </ag-grid-angular>
+    <mat-tab-group animationDuration="2000ms" [(selectedIndex)]="tabindex" (selectedIndexChange)="onSelectedTabChanged($event)">
+        <mat-tab label="Tickets from suppliers" style="width: 100%;" *ngIf="is_wholesaler === true">
+            <div style="width: 99%;">
+                <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 0px 5px 1px 5px; height:35px;">
+                    <span class="badge badge-info">{{message}}</span>
+                    <span class="example-spacer"></span>
+                    <!-- <a class="btn btn-sm btn-success text-white" (click)="UploadTickets(this.currentUser.companyid)" role="button">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Upload Tickets
+                    </a> -->
+                    <a class="btn btn-sm btn-success text-white" (click)="RefreshData(this.currentUser.companyid)" role="button">
+                        <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+                    </a>
+                    <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
+                    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
+                </mat-toolbar>
+                <ag-grid-angular 
+                    style="width: 99%; height: 600px; margin: 0px 5px 20px 5px;"
+                    class="ag-theme-balham"
+                    [rowData]="rowData" 
+                    [rowSelection]="rowSelection"
+                    [columnDefs]="columnDefs"
+                    [components]="components"
+                    [suppressCellSelection]="true"
+                    [overlayLoadingTemplate]="overlayLoadingTemplate"
+                    [overlayNoRowsTemplate]="overlayNoRowsTemplate"
+                    (rowSelected)="onRowSelected('edit',$event)"
+                    (gridReady)="onGridReady($event)">
+                </ag-grid-angular>
+            </div>
+        </mat-tab>
+        <mat-tab label="Own tickets" style="width: 100%;" *ngIf="is_supplier === true">
+            <div style="width: 99%;">
+                <mat-toolbar color="default" class="mat-elevation-z1" style="margin: 0px 5px 1px 5px; height:35px;">
+                    <span class="badge badge-info">{{message}}</span>
+                    <span class="example-spacer"></span>
+                    <a class="btn btn-sm btn-success text-white" (click)="addTicket(this.currentUser.companyid)" role="button">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Add Ticket
+                    </a>
+                    <a class="btn btn-sm btn-success text-white" (click)="UploadTickets(this.currentUser.companyid)" role="button">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Upload Tickets
+                    </a>
+                    <a class="btn btn-sm btn-success text-white" (click)="RefreshData(this.currentUser.companyid)" role="button">
+                        <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+                    </a>
+                    <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
+                    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
+                </mat-toolbar>
+                <ag-grid-angular 
+                    style="width: 99%; height: 600px; margin: 0px 5px 20px 5px;"
+                    class="ag-theme-balham"
+                    [rowData]="ownTickets" 
+                    [rowSelection]="rowSelection"
+                    [columnDefs]="columnDefs"
+                    [components]="components"
+                    [suppressCellSelection]="true"
+                    [overlayLoadingTemplate]="overlayLoadingTemplate"
+                    [overlayNoRowsTemplate]="overlayNoRowsTemplate"
+                    (rowSelected)="onRowSelected('edit',$event)"
+                    (gridReady)="onGridReady($event)">
+                </ag-grid-angular>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 </div>
 <div *ngIf="mode==='view'">
     <app-ticketview [selectedTicket]="selectedTicket" [ticket]="ticket" (close)="onBack($event)"></app-ticketview>

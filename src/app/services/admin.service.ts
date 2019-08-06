@@ -439,4 +439,8 @@ export class AdminService {
   public getAirlines(): any {
     return this.httpClient.get(this.baseUrl + `/admin/airlines`);
   }
+
+  public saveTicket(tickets: any): any {
+    return this.httpClient.post(this.baseUrl + `/company/save/tickets`, tickets);
+  }
 }

@@ -60,12 +60,21 @@ span {
 
 .no-padding {
     padding: 0px;
+    height: 100%;
+    margin: 0;
+}
+
+.wrapper1 {
+    height: 100%;
+    margin: 0;
 }
 
 .wrapper {
     display: flex;
     align-items: stretch;
-    margin: 20px 10px 20px 10px;
+    height: 100%;
+    margin: 0;
+    /*margin: 20px 10px 20px 10px;*/
 }
 
 .right-floated {

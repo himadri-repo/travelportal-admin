@@ -7,11 +7,14 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
-body {
-    background: #ffffff;
-    background: -webkit-linear-gradient(#ffffff, #293f50);
-    background:    -moz-linear-gradient(#ffffff, #293f50);
-    background:         linear-gradient(#ffffff, #293f50);
+html, body {
+    // background: #ffffff;
+    // background: -webkit-linear-gradient(#ffffff, #293f50);
+    // background:    -moz-linear-gradient(#ffffff, #293f50);
+    // background:         linear-gradient(#ffffff, #293f50);
+    /* background-color: #cecece;*/
+    height: 100%;
+    margin: 0;
 }
 
 a:hover {

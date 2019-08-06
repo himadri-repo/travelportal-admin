@@ -4,7 +4,7 @@
         <div class="page-header page-title page-title-section" id="header">
           <!--.page-header -->
           <h1 style="font-weight: 100; font-size: 1.5vw; color: #0000ff; width: 80%; display: inline-block">
-            {{selectedTicket.source}} TO {{selectedTicket.destination}} ( {{selectedTicket.trip_type}} WAY ) - {{selectedTicket.approved === '1' ? 'Approved' : 'Not Approved'}}
+            {{selectedTicket.source}} TO {{selectedTicket.destination}} ( {{selectedTicket.trip_type}} WAY ) - {{selectedTicket.approved == 1 ? 'Approved' : 'Not Approved'}}
           </h1>
           <button (click)="closeview($event)" class="btn btn-primary" style="float:right"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Bookings</button>
         </div><!-- /.page-header -->

@@ -4,9 +4,9 @@
         <div class="page-header page-title page-title-section" id="header">
           <!--.page-header -->
           <h1 style="font-weight: 100; font-size: 1.5vw; color: #0000ff; width: 80%; display: inline-block">
-            {{ticket.sourcename}} TO {{ticket.destinationname}} ( {{tkt.trip_type.value}} WAY ) - {{ticket.approved === '1' ? 'Approved' : 'Not Approved'}}
+            {{cityname(tkt.source.value)}} TO {{cityname(tkt.destination.value)}} ( {{tkt.trip_type.value}} WAY ) - {{tkt.approve.value ? 'Approved' : 'Not Approved'}}
           </h1>
-          <button (click)="closeview($event)" class="btn btn-primary" style="float:right"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Bookings</button>
+          <button (click)="closeview($event)" class="btn btn-primary" style="float:right"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Tickets</button>
         </div><!-- /.page-header -->
         <form [formGroup]="handleticketform" autocomplete="off" (ngSubmit)="onHandleChangeTicket()" novalidate>
           <input type="hidden" name="id" value="{{ticket.id}}"/>
@@ -21,13 +21,21 @@
                       <div class="card-body">
                         <div class="row fieldrow">
                           <div class="col-xs-2 col-sm-2 field-title">Ticket #</div>
-                          <div class="col-xs-2 col-sm-2"><input name="ticket_no" formControlName="ticket_no" class="form-control" required></div>
+                          <div class="col-xs-2 col-sm-2">
+                            <input name="ticket_no" formControlName="ticket_no" class="form-control" required>
+                            <div *ngIf="submitted && tkt.ticket_no.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.ticket_no.errors.required">Ticket Number is required</div>
+                            </div>                            
+                          </div>
                           <div class="col-xs-2 col-sm-2 field-title">Trip Type</div>
                           <div class="col-xs-2 col-sm-2">
-                              <select name="trip_type" formControlName="trip_type" class="form-control">
-                                <option value="ONE">ONEWAY</option>
-                                <option value="ROUND">ROUND</option>
-                              </select>
+                            <select name="trip_type" formControlName="trip_type" class="form-control" required>
+                              <option value="ONE">ONEWAY</option>
+                              <option value="ROUND">ROUND</option>
+                            </select>
+                            <div *ngIf="submitted && tkt.trip_type.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.trip_type.errors.required">Trip Type is required</div>
+                            </div>                            
                           </div>
                           <div class="col-xs-2 col-sm-2 field-title">Approved ?</div>
                           <div class="col-xs-2 col-sm-2"><input type="checkbox" name="approve" formControlName="approve" class="form-control checkbox" checked></div>
@@ -37,10 +45,13 @@
                           <div class="col-xs-2 col-sm-2"><input type="checkbox" name="refundable" formControlName="refundable" class="form-control checkbox" checked></div>
                           <div class="col-xs-2 col-sm-2 field-title">Sale Type</div>
                           <div class="col-xs-2 col-sm-2">
-                            <select name="sale_type" formControlName="sale_type" class="form-control">
+                            <select name="sale_type" formControlName="sale_type" class="form-control" required>
                               <option value="request">REQUEST</option>
                               <option value="live">LIVE</option>
                             </select>
+                            <div *ngIf="submitted && tkt.sale_type.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.sale_type.errors.required">Sale Type is required</div>
+                            </div>                            
                           </div>
                           <div class="col-xs-2 col-sm-2 field-title">Adding/Updating By</div>
                           <div class="col-xs-2 col-sm-2" style="padding: 5px 0px;">{{currentUser.name}}</div>
@@ -56,17 +67,23 @@
                         <div class="row fieldrow">
                           <div class="col-xs-3 col-sm-3 field-title">Departing city</div>
                           <div class="col-xs-3 col-sm-3">
-                            <select name="source" formControlName="source" class="form-control">
+                            <select name="source" formControlName="source" class="form-control" required>
                               <option value="-1">-- Select --</option>
                               <option *ngFor="let city of cities" value="{{city.id}}">{{city.city}} ({{city.code}})</option>
                             </select>
+                            <div *ngIf="submitted && tkt.source.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.source.errors.required">Departing City is required</div>
+                            </div>                            
                           </div>
                           <div class="col-xs-3 col-sm-3 field-title">Arriving City</div>
                           <div class="col-xs-3 col-sm-3">
-                            <select name="destination" formControlName="destination" class="form-control">
+                            <select name="destination" formControlName="destination" class="form-control" required>
                               <option value="-1">-- Select --</option>
                               <option *ngFor="let city of cities" value="{{city.id}}">{{city.city}} ({{city.code}})</option>
                             </select>
+                            <div *ngIf="submitted && tkt.destination.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.destination.errors.required">Arriving City is required</div>
+                            </div>                            
                           </div>
                         </div>
                         <div class="row fieldrow">
@@ -74,33 +91,55 @@
                           <div class="col-xs-3 col-sm-3">
                             <input type="datetime" name="departure_date_time" formControlName="departure_date_time" [owlDateTimeTrigger]="dtDeparture" [owlDateTime]="dtDeparture" class="form-control" required>
                             <owl-date-time #dtDeparture></owl-date-time>
+                            <div *ngIf="submitted && tkt.departure_date_time.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.departure_date_time.errors">Departing Date & Time is required</div>
+                            </div>                            
                           </div>
                           <div class="col-xs-3 col-sm-3 field-title">Arriving Date & Time</div>
                           <div class="col-xs-3 col-sm-3">
                             <input type="datetime" name="arrival_date_time" formControlName="arrival_date_time" [owlDateTimeTrigger]="dtArrival" [owlDateTime]="dtArrival" class="form-control" required>
                             <owl-date-time #dtArrival></owl-date-time>
+                            <div *ngIf="submitted && tkt.arrival_date_time.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.arrival_date_time.errors">Arriving Date & Time is required</div>
+                            </div>                            
                           </div>
                         </div>
                         <hr/>
                         <div class="row fieldrow">
                           <div class="col-xs-1 col-sm-1 field-title">Airline</div>
                           <div class="col-xs-2 col-sm-2">
-                            <select name="airline" formControlName="airline" class="form-control">
+                            <select name="airline" formControlName="airline" class="form-control" required>
                               <option value="-1">-- Select --</option>
                               <option *ngFor="let airline of airlines" value="{{airline.id}}">{{airline.airline}} ({{airline.aircode}})</option>
                             </select>
+                            <div *ngIf="submitted && tkt.airline.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.airline.errors.required">Airline is required</div>
+                            </div>                            
                           </div>
                           <div class="col-xs-1 col-sm-1 field-title">Class</div>
                           <div class="col-xs-2 col-sm-2">
-                            <select name="class" formControlName="class" class="form-control">
+                            <select name="class" formControlName="class" class="form-control" required>
                               <option value="ECONOMY">ECONOMY</option>
                               <option value="BUSINESS">BUSINESS</option>
                             </select>
+                            <div *ngIf="submitted && tkt.class.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.class.errors.required">Class is required</div>
+                            </div>                            
                           </div>
                           <div class="col-xs-1 col-sm-1 field-title">Flight #</div>
-                          <div class="col-xs-2 col-sm-2"><input name="flight_no" formControlName="flight_no" class="form-control" required></div>
+                          <div class="col-xs-2 col-sm-2">
+                            <input name="flight_no" formControlName="flight_no" class="form-control" required>
+                            <div *ngIf="submitted && tkt.flight_no.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.flight_no.errors.required">Flight number is required</div>
+                            </div>
+                          </div>
                           <div class="col-xs-1 col-sm-1 field-title">Terminal</div>
-                          <div class="col-xs-2 col-sm-2"><input name="terminal" formControlName="terminal" class="form-control" required></div>
+                          <div class="col-xs-2 col-sm-2">
+                            <input name="terminal" formControlName="terminal" class="form-control" required>
+                            <div *ngIf="submitted && tkt.terminal.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.terminal.errors.required">Terminal is required</div>
+                            </div>  
+                          </div>
                         </div>
                       </div>
                   </div>
@@ -129,12 +168,12 @@
                           <div class="row fieldrow">
                             <div class="col-xs-3 col-sm-3 field-title">Departing Date & Time</div>
                             <div class="col-xs-3 col-sm-3">
-                              <input type="datetime" name="departure_date_time1" formControlName="departure_date_time1" [owlDateTimeTrigger]="dtDeparture" [owlDateTime]="dtDeparture" class="form-control" required>
+                              <input type="datetime" name="departure_date_time1" formControlName="departure_date_time1" [owlDateTimeTrigger]="dtDeparture" [owlDateTime]="dtDeparture" class="form-control">
                               <owl-date-time #dtDeparture></owl-date-time>
                             </div>
                             <div class="col-xs-3 col-sm-3 field-title">Arriving Date & Time</div>
                             <div class="col-xs-3 col-sm-3">
-                              <input type="datetime" name="arrival_date_time1" formControlName="arrival_date_time1" [owlDateTimeTrigger]="dtArrival" [owlDateTime]="dtArrival" class="form-control" required>
+                              <input type="datetime" name="arrival_date_time1" formControlName="arrival_date_time1" [owlDateTimeTrigger]="dtArrival" [owlDateTime]="dtArrival" class="form-control">
                               <owl-date-time #dtArrival></owl-date-time>
                             </div>
                           </div>
@@ -155,7 +194,7 @@
                               </select>
                             </div>
                             <div class="col-xs-1 col-sm-1 field-title">Flight #</div>
-                            <div class="col-xs-2 col-sm-2"><input name="flight_no1" formControlName="flight_no1" class="form-control" required></div>
+                            <div class="col-xs-2 col-sm-2"><input name="flight_no1" formControlName="flight_no1" class="form-control"></div>
                             <div class="col-xs-1 col-sm-1 field-title">Terminal</div>
                             <div class="col-xs-2 col-sm-2"><input name="terminal1" formControlName="terminal1" class="form-control" value="NA"></div>
                           </div>
@@ -168,33 +207,61 @@
                       <div class="card-body">
                           <div class="row fieldrow">
                             <div class="col-xs-1 col-sm-1 field-title">No.Of.PAX</div>
-                            <div class="col-xs-2 col-sm-2"><input name="no_of_person" min="1" max="100" step="1" formControlName="no_of_person" class="form-control" required></div>
+                            <div class="col-xs-2 col-sm-2">
+                              <input name="no_of_person" min="1" max="100" step="1" formControlName="no_of_person" class="form-control" required>
+                              <div *ngIf="submitted && tkt.no_of_person.errors" class="invalid-feedback">
+                                <div *ngIf="tkt.no_of_person.errors.required">No Of PAX is required</div>
+                              </div>
+                            </div>
                             <div class="col-xs-1 col-sm-1 field-title">No.Of.Stop</div>
-                            <div class="col-xs-2 col-sm-2"><input name="no_of_stop" min="0" max="3" step="1" formControlName="no_of_stop" class="form-control" required></div>
+                            <div class="col-xs-2 col-sm-2">
+                              <input name="no_of_stop" min="0" max="3" step="1" formControlName="no_of_stop" class="form-control" required>
+                              <div *ngIf="submitted && tkt.no_of_stop.errors" class="invalid-feedback">
+                                <div *ngIf="tkt.no_of_stop.errors.required">No Of Stops is required</div>
+                              </div>  
+                            </div>
                             <div class="col-xs-1 col-sm-1 field-title">PNR</div>
-                            <div class="col-xs-2 col-sm-2"><input name="pnr" formControlName="pnr" class="form-control" required></div>
+                            <div class="col-xs-2 col-sm-2"><input name="pnr" formControlName="pnr" class="form-control"></div>
                             <div class="col-xs-1 col-sm-1 field-title">Booking Till</div>
                             <div class="col-xs-2 col-sm-2">
-                                <input type="datetime" formControlName="booking_freeze_by" [owlDateTimeTrigger]="dtBookingFreeze" [owlDateTime]="dtBookingFreeze" class="form-control" required>
-                                <owl-date-time #dtBookingFreeze></owl-date-time>
-                              </div>
+                              <input type="datetime" formControlName="booking_freeze_by" [owlDateTimeTrigger]="dtBookingFreeze" [owlDateTime]="dtBookingFreeze" class="form-control" required>
+                              <owl-date-time #dtBookingFreeze></owl-date-time>
+                              <div *ngIf="submitted && tkt.booking_freeze_by.errors" class="invalid-feedback">
+                                <div *ngIf="tkt.booking_freeze_by.errors">Please mention till which date booking is allowed</div>
+                              </div>  
+                            </div>
                           </div>
                           <hr/>
                           <div class="row fieldrow">
                               <div class="col-xs-2 col-sm-2 field-title">Adult Fare</div>
-                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="price" formControlName="price" class="form-control" required></div>
+                              <div class="col-xs-2 col-sm-2">
+                                <input type="number" min="0.00" max="99999.00" step="1" name="price" formControlName="price" class="form-control" required>
+                                <div *ngIf="submitted && tkt.price.errors" class="invalid-feedback">
+                                  <div *ngIf="tkt.price.errors.required">Adult price is mandatory field</div>
+                                </div>
+                              </div>
                               <div class="col-xs-2 col-sm-2 field-title">Child Fare</div>
-                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="price_child" formControlName="price_child" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2">
+                                <input type="number" min="0.00" max="99999.00" step="1" name="price_child" formControlName="price_child" class="form-control" value="0.00">
+                              </div>
                               <div class="col-xs-2 col-sm-2 field-title">Infant Fare</div>
-                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="price_infant" formControlName="price_infant" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2">
+                                <input type="number" min="0.00" max="99999.00" step="1" name="price_infant" formControlName="price_infant" class="form-control" value="0.00">
+                              </div>
                           </div>
                           <div class="row fieldrow">
                               <div class="col-xs-2 col-sm-2 field-title">Baggage Rate</div>
-                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="baggage" formControlName="baggage" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2">
+                                <input type="number" min="0.00" max="99999.00" step="1" name="baggage" formControlName="baggage" class="form-control" value="0.00">
+                              </div>
                               <div class="col-xs-2 col-sm-2 field-title">Meal Rate</div>
-                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="meal" formControlName="meal" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2">
+                                <input type="number" min="0.00" max="99999.00" step="1" name="meal" formControlName="meal" class="form-control" value="0.00">
+                              </div>
                               <div class="col-xs-2 col-sm-2 field-title">Ticket Cancel Rate <span style="color: #ff0000">*</span></div>
-                              <div class="col-xs-2 col-sm-2"><input type="number" min="0.00" max="99999.00" step="1" name="cancel_rate" formControlName="cancel_rate" class="form-control" value="0.00"></div>
+                              <div class="col-xs-2 col-sm-2">
+                                <input type="number" min="0.00" max="99999.00" step="1" name="cancel_rate" formControlName="cancel_rate" class="form-control" value="0.00">
+                              </div>
                           </div>
                       </div>
                   </div>
@@ -202,8 +269,9 @@
             </div>
           </div>
           <!-- Action area where all buttons should be placed-->
-          <div style="width: 100%;">
-              <button type="submit" id="btnBook" name="btnBook" class="btn btn-primary" style="float:right"> Save</button>
+          <div style="width: 100%; margin: 0px 5px 15px 5px; height: 50px;">
+            <button (click)="closeview($event)" class="btn btn-primary" style="float:left"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Tickets</button>
+            <button type="submit" id="btnBook" name="btnBook" class="btn btn-primary" style="float:right"><i class="fa fa-save" aria-hidden="true"></i> Save</button>
           </div>
           <!--row-->
         </form>
