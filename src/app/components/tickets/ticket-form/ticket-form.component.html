@@ -37,8 +37,17 @@
                               <div *ngIf="tkt.trip_type.errors.required">Trip Type is required</div>
                             </div>                            
                           </div>
-                          <div class="col-xs-2 col-sm-2 field-title">Approved ?</div>
-                          <div class="col-xs-2 col-sm-2"><input type="checkbox" name="approve" formControlName="approve" class="form-control checkbox" checked></div>
+                          <div class="col-xs-2 col-sm-2 field-title">Status ?</div>
+                          <div class="col-xs-2 col-sm-2">
+                            <select name="approve" formControlName="approve" class="form-control" required>
+                              <option value="">Select status</option>
+                              <option value="0">Pending</option>
+                              <option value="1">Approved</option>
+                              <option value="2">Rejected</option>
+                              <option value="3">Freezed</option>    
+                            </select>
+                            <!-- <input type="checkbox" name="approve" formControlName="approve" class="form-control checkbox" checked> -->
+                          </div>
                         </div>
                         <div class="row fieldrow">
                           <div class="col-xs-2 col-sm-2 field-title">Refundable ?</div>

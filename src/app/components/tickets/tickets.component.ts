@@ -55,7 +55,7 @@ export class TicketsComponent implements OnInit {
     // {headerName: 'IGST', field: 'igst_rate', sortable: true, filter: true, resizable: true, width: 50},
     // {headerName: 'Tag', field: 'data_collected_from', sortable: true, filter: true, resizable: true, width: 75},
     // {headerName: 'Updated.On', field: 'updated_on', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'utcdaterenderer'},
-    // {headerName: 'Approved', field: 'approved', sortable: true, filter: true, resizable: true, width: 75, cellRenderer: 'approverenderer'},
+    {headerName: 'Status', field: 'approved', sortable: true, filter: true, resizable: true, width: 50, cellRenderer: 'approverenderer'},
 ];
 
   public components = {
@@ -273,27 +273,44 @@ export class TicketsComponent implements OnInit {
     action_container.setAttribute('style', 'text-align: cneter');
     const approved = parseInt(params.value, 10);
     let approvedText = '';
+    let element = document.createElement('span');
 
     switch (approved) {
       case 0:
-        approvedText = 'Pending';
+        element = document.createElement('span');
+        approvedText = 'Pending'; // empty text for pending
         break;
       case 1:
-        approvedText = 'Approved';
+        element = document.createElement('i');
+        element.className = 'fa fa-thumbs-o-up';
+        element.setAttribute('style', 'font-size: 22px; color: #109c20');
+        element.title = `Approved ticket`;
+        approvedText = 'Approved'; // <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
         break;
       case 2:
-        approvedText = 'Reject';
+        element = document.createElement('i');
+        element.className = 'fa fa-thumbs-o-down';
+        element.setAttribute('style', 'font-size: 22px; color: #b31c1c');
+        element.title = `Rejected ticket`;
+        approvedText = 'Rejected'; // <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
         break;
-      case 2:
-        approvedText = 'Hold';
+      case 3:
+        element = document.createElement('i');
+        element.className = 'fa fa-hand-paper-o';
+        element.setAttribute('style', 'font-size: 22px; color: #007bff');
+        element.title = `Hold ticket`;
+        approvedText = 'Hold'; // <i class="fa fa-hand-paper-o" aria-hidden="true"></i>
         break;
       default:
-        break;
+          element = document.createElement('span');
+          break;
     }
 
-    action_container.appendChild(document.createTextNode(approvedText));
+    // action_container.appendChild(document.createTextNode(approvedText));
 
-    return action_container;
+    // return action_container;
+
+    return element;
   }
 
   typerenderer(params): any {

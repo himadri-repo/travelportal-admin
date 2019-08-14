@@ -77,7 +77,7 @@ export class TicketFormComponent implements OnInit, OnChanges {
       ticket_no: new FormControl(ticket.ticket_no),
       trip_type: new FormControl(ticket.trip_type),
       approve: new FormControl(ticket.approved),
-      refundable: new FormControl(ticket.refundable),
+      refundable: new FormControl(ticket.refundable === 'Y' ? 1 : 0),
       sale_type: new FormControl(ticket.sale_type),
 
       source:  new FormControl(ticket.source),
@@ -169,6 +169,8 @@ export class TicketFormComponent implements OnInit, OnChanges {
 
   private getPostedTicket(): any {
     const ticket = new Ticket();
+
+    delete ticket.trans_type;
     ticket.ticket_no = this.tkt.ticket_no.value;
     ticket.trip_type = this.tkt.trip_type.value;
     ticket.approved = this.tkt.approve.value;
