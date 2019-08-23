@@ -13,6 +13,7 @@ import { Rateplan } from '../models/rateplan';
 import { RateplanDetail } from '../models/rateplandetail';
 import { Service } from '../models/service';
 import { Metadata } from '../models/metadata';
+import { WalletTransaction } from '../models/wallet_transaction';
 
 @Injectable({
   providedIn: 'root'
@@ -442,5 +443,12 @@ export class AdminService {
 
   public saveTicket(tickets: any): any {
     return this.httpClient.post(this.baseUrl + `/company/save/tickets`, tickets);
+  }
+
+  public getWalletTransactions(query: any): any {
+    return this.httpClient.post(this.baseUrl + `/company/wallet/transactions`, query);
+  }
+  public settleWalletTransaction(query: any): any {
+    return this.httpClient.post(this.baseUrl + `/company/wallet/transactions/settle`, query);
   }
 }

@@ -36,6 +36,9 @@ export class Ticket {
     cancel_rate: number;
     approved: number;
     trans_type: string;
+    terminal1: string;
+    terminal2: string;
+    terminal3: string;
 
     constructor() {
         this.id = -1;

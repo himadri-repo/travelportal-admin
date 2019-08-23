@@ -102,7 +102,7 @@ export class BookingsComponent implements OnInit {
       formGroups.push(this.formBuilder.group({
         id: new FormControl(customer.id),
         sl: new FormControl(idx),
-        name: new FormControl(`${customer.first_name} ${customer.last_name}`),
+        name: new FormControl(`${customer.prefix} ${customer.first_name} ${customer.last_name}`),
         age: new FormControl(customer.age),
         mobile: new FormControl(`${customer.mobile_no}`),
         email: new FormControl(customer.email),
@@ -283,14 +283,16 @@ export class BookingsComponent implements OnInit {
             // 1 = Pending | 3 = Rejected | 4 = Cancelled
             // processedQty += parseInt(supplier.qty.toString(), 10);
             if (customerStatus === 1) {
-              if (row.data.status === 'PROCESSING') {
+              // This flow failing when orders are splitted into two parts and send into two booking id.
+              // if (row.data.status === 'PROCESSING') {
+              if (refid !== 0) {
                 processedQty++;
               }
             } else {
               processedQty++;
             }
 
-            if (customerStatus === 2 || customerStatus === 3 || customerStatus === 4) {
+            if (customerStatus === 2 || customerStatus === 3 || customerStatus === 4 || customerStatus === 127) {
               // Mainly settled one.
               // Settlement can be done either by Approve, Reject or Cancel the booking.
               // Approved one
@@ -444,7 +446,9 @@ export class BookingsComponent implements OnInit {
       const bookings = [];
       orderedOthersTickets.forEach(ticket => {
         const refBooking = this.getBookingFromSelectedTicket(ticket, this.booking.customers);
-        bookings.push(refBooking);
+        if (refBooking.customers && refBooking.customers.length > 0) {
+          bookings.push(refBooking);
+        }
       });
 
       if (bookings.length > 0) {
@@ -460,6 +464,8 @@ export class BookingsComponent implements OnInit {
             this.onBack(ev);
           });
         });
+      } else {
+        alert('Please check at least one customer is approved/rejected');
       }
     }
   }
@@ -477,9 +483,12 @@ export class BookingsComponent implements OnInit {
     }
 
     customers.forEach((customer, idx) => {
-      processedCustomers.push(customer);
+      let action = parseInt(customer.action, 10);
+      if (action !== 1) {
+        processedCustomers.push(customer);
+      }
       if (mainbooking.customers.length > idx) {
-        let action = parseInt(customer.action, 10);
+        action = parseInt(customer.action, 10);
         if (mode !== 'hold') {
           if (action < 2) {
             if (customer.pnr !== null && customer.pnr !== '') {
@@ -531,9 +540,11 @@ export class BookingsComponent implements OnInit {
             }
           }
 
-          this.adminService.saveBooking([mainbooking]).subscribe((res1: any) => {
-            this.onBack(ev);
-          });
+          if (true) {
+            this.adminService.saveBooking([mainbooking]).subscribe((res1: any) => {
+              this.onBack(ev);
+            });
+          }
         }
       // } else {
       //  alert('Going to approve the booking from seller\'s end');

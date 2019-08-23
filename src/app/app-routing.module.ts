@@ -11,12 +11,13 @@ import { WholesalerSearchComponent } from './components/wholesalers/search/whole
 import { NotificationComponent } from './components/notification/notification.component';
 import { RateplanComponent } from './components/general/rateplan/rateplan.component';
 import { BookingsComponent } from './components/sales/bookings/bookings.component';
+import { WalletsComponent } from './components/wallets/wallets.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
   {path: 'admin/notification', component: NotificationComponent},
   {path: 'admin/customer', component: CustomersComponent},
-  {path: 'admin/finance/wallet', component: UsersComponent},
+  {path: 'admin/finance/wallet', component: WalletsComponent},
   {path: 'admin/finance/accounts', component: UsersComponent},
   {path: 'admin/services', component: UsersComponent},
   {path: 'admin/tickets', component: TicketsComponent},

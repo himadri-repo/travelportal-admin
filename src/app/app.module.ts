@@ -18,11 +18,13 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
 
-import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl } from '@angular/material';
+import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl, MatRippleModule } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { CustomerinfoComponent } from './components/customers/customerinfo/customerinfo.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';
 import { SuppliersearchComponent } from './components/suppliers/suppliersearch/suppliersearch.component';
 import { InviteComponent } from './components/communication/invite/invite.component';
@@ -42,6 +44,8 @@ import { TicketviewComponent } from './components/tickets/ticketview/ticketview.
 import { TicketFormComponent } from './components/tickets/ticket-form/ticket-form.component';
 // import { DateTimePickerComponent } from './components/shared/date-time-picker/date-time-picker.component';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
+import { WalletsComponent } from './components/wallets/wallets.component';
+import { WalletinfoComponent } from './components/wallets/walletinfo/walletinfo.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +72,8 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
     DatediffPipe,
     TicketviewComponent,
     TicketFormComponent,
+    WalletsComponent,
+    WalletinfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -84,7 +90,12 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
     MatSelectModule,
     MatFormFieldModule,
     MatAutocompleteModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatRippleModule,
     ReactiveFormsModule,
+    FormsModule,
     NgxEditorModule,
     TooltipModule.forRoot(),
     OwlDateTimeModule,

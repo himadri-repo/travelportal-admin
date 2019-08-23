@@ -88,6 +88,7 @@ export class TicketFormComponent implements OnInit, OnChanges {
       class: new FormControl(ticket.class),
       flight_no: new FormControl(ticket.flight_no),
       terminal: new FormControl(ticket.terminal),
+      terminal2: new FormControl(ticket.terminal2),
 
       source1:  new FormControl(ticket.source1),
       destination1: new FormControl(ticket.destination1),
@@ -97,6 +98,7 @@ export class TicketFormComponent implements OnInit, OnChanges {
       class1: new FormControl(ticket.class1),
       flight_no1: new FormControl(ticket.flight_no1),
       terminal1: new FormControl(ticket.terminal1),
+      terminal3: new FormControl(ticket.terminal3),
 
       no_of_stop: new FormControl(ticket.no_of_stops),
       no_of_person: new FormControl(ticket.no_of_person),
@@ -186,6 +188,7 @@ export class TicketFormComponent implements OnInit, OnChanges {
     ticket.class = this.tkt.class.value;
     ticket.flight_no = this.tkt.flight_no.value;
     ticket.terminal = this.tkt.terminal.value;
+    ticket.terminal2 = this.tkt.terminal2.value;
 
     ticket.source1 = this.tkt.source1.value ? this.tkt.source1.value : 0;
     ticket.destination1 = this.tkt.destination1.value ? this.tkt.destination1.value : 0;
@@ -198,6 +201,7 @@ export class TicketFormComponent implements OnInit, OnChanges {
       ticket.aircode1 = '';
       ticket.flight_no1 = '';
       ticket.terminal1 = '';
+      ticket.terminal3 = '';
     } else {
       ticket.departure_date_time1 = moment(this.tkt.departure_date_time1.value).format('YYYY-MM-DD HH:mm');
       ticket.arrival_date_time1 = moment(this.tkt.arrival_date_time1.value).format('YYYY-MM-DD HH:mm');
@@ -206,6 +210,7 @@ export class TicketFormComponent implements OnInit, OnChanges {
       ticket.aircode1 = '';
       ticket.flight_no1 = this.tkt.flight_no1.value;
       ticket.terminal1 = this.tkt.terminal1.value;
+      ticket.terminal3 = this.tkt.terminal3.value;
     }
 
 

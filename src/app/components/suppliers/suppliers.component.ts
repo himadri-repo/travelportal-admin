@@ -251,6 +251,7 @@ export class SuppliersComponent implements OnInit {
     this.g.transactiontype.setValue(`${transactiontype}`);
     this.g.walletid.setValue(walletid);
 
+    // tslint:disable-next-line: deprecation
     event.stopPropagation();
   }
 
@@ -265,6 +266,7 @@ export class SuppliersComponent implements OnInit {
         });
       }
     });
+    // tslint:disable-next-line: deprecation
     event.stopPropagation();
   }
 
