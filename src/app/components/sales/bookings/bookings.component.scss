@@ -85,3 +85,7 @@
 .table td, .table th {
     padding: .20rem;
 }
+
+#grid1 > tr > td {
+    vertical-align: middle;
+}

@@ -61,7 +61,10 @@
                   <tr [formGroup]="customer" class="{{customer.controls.status.value == 2 ? 'processed-customer' : (customer.controls.status.value == 3 ? 'rejected-customer' : '')}}" *ngIf="((booking.id == customer.controls.cus_booking_id.value) || (booking.parent_booking_id == customer.controls.cus_booking_id.value))">
                     <td style="width: 40px;"><i class="fa fa-trash" style="text-align: center; color: #ff0000; font-size:20px;height:auto;width:auto;border-radius:0;background:none;padding-top:0;margin:0px 10px; cursor: pointer; cursor: hand" (click)="deleteCustomer(customer.controls.booking_id.value, customer.controls.id.value)" *ngIf="((customer.controls.status.value==1 && customer.controls.refrence_id.value==0) || customer.controls.status.value==8 || customer.controls.status.value==3) && (booking.id == customer.controls.booking_id.value)"></i></td>
                     <td>{{i+1}}</td>
-                    <td>{{customer.controls.name.value}}<a class="fyi-notes" style="display: block;" *ngIf="customer.controls.status.value!=1">Ref.Booking Id: {{customer.controls.refrence_id.value}}</a></td>
+                    <td>{{customer.controls.name.value}}
+                      <a class="fyi-notes" style="display: block;" *ngIf="customer.controls.status.value!=1">Ref.Booking Id: {{customer.controls.refrence_id.value}}</a>
+                      <span *ngIf="customer.controls.status.value==8" style="font-size: 13px; font-weight: 600;">  (This ticket is on HOLD)</span>
+                    </td>
                     <td>{{customer.controls.age.value}}</td>
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.mobile.value : 'XXXXXXXXXX'}}</td>
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.email.value : 'XXXXXXXXXX@XXXXX.com'}}</td>

@@ -136,18 +136,25 @@
                             </div>                            
                           </div>
                           <div class="col-xs-1 col-sm-1 field-title">Flight #</div>
-                          <div class="col-xs-2 col-sm-2">
+                          <div class="col-xs-1 col-sm-1">
                             <input name="flight_no" formControlName="flight_no" class="form-control" required>
                             <div *ngIf="submitted && tkt.flight_no.errors" class="invalid-feedback">
                               <div *ngIf="tkt.flight_no.errors.required">Flight number is required</div>
                             </div>
                           </div>
-                          <div class="col-xs-1 col-sm-1 field-title">Terminal</div>
-                          <div class="col-xs-2 col-sm-2">
+                          <div class="col-xs-1 col-sm-1 field-title">Terminal(Dept.)</div>
+                          <div class="col-xs-1 col-sm-1">
                             <input name="terminal" formControlName="terminal" class="form-control" required>
                             <div *ngIf="submitted && tkt.terminal.errors" class="invalid-feedback">
                               <div *ngIf="tkt.terminal.errors.required">Terminal is required</div>
                             </div>  
+                          </div>
+                          <div class="col-xs-1 col-sm-1 field-title">Terminal(Arrv.)</div>
+                          <div class="col-xs-1 col-sm-1">
+                            <input name="terminal2" formControlName="terminal2" class="form-control" required>
+                            <!-- <div *ngIf="submitted && tkt.terminal2.errors" class="invalid-feedback">
+                              <div *ngIf="tkt.terminal2.errors.required">Terminal is required</div>
+                            </div>   -->
                           </div>
                         </div>
                       </div>
@@ -203,9 +210,11 @@
                               </select>
                             </div>
                             <div class="col-xs-1 col-sm-1 field-title">Flight #</div>
-                            <div class="col-xs-2 col-sm-2"><input name="flight_no1" formControlName="flight_no1" class="form-control"></div>
-                            <div class="col-xs-1 col-sm-1 field-title">Terminal</div>
-                            <div class="col-xs-2 col-sm-2"><input name="terminal1" formControlName="terminal1" class="form-control" value="NA"></div>
+                            <div class="col-xs-1 col-sm-1"><input name="flight_no1" formControlName="flight_no1" class="form-control"></div>
+                            <div class="col-xs-1 col-sm-1 field-title">Terminal(Dept.)</div>
+                            <div class="col-xs-1 col-sm-1"><input name="terminal1" formControlName="terminal1" class="form-control" value="NA"></div>
+                            <div class="col-xs-1 col-sm-1 field-title">Terminal(Arrv.)</div>
+                            <div class="col-xs-1 col-sm-1"><input name="terminal3" formControlName="terminal3" class="form-control" value="NA"></div>
                           </div>
                         </div>
                     </div>

@@ -28,6 +28,7 @@ export class WalletsComponent implements OnInit {
   menuTitle = 'wallet';
   message = '';
   public recordStatus = 0;
+  public showAllTransaction = false;
   public handlewalletform: FormGroup;
   public gridApi: any;
   public gridColumnApi: any;
@@ -71,7 +72,7 @@ export class WalletsComponent implements OnInit {
 
   loadUnapprovedWalletTransactions() {
     this.walletTransactions = null;
-    this.adminService.getWalletTransactions({filter: {status: this.recordStatus, target_companyid: this.company.id}}).subscribe(resp => {
+    this.adminService.getWalletTransactions({filter: {status: this.recordStatus, target_companyid: this.company.id}, allTransactions: this.showAllTransaction}).subscribe(resp => {
       let walletTrans = [];
       if (resp) {
         walletTrans = resp.map(item => {

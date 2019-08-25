@@ -2,6 +2,7 @@
   <mat-toolbar-row>
     <span>Payment transactions</span>
     <span class="example-spacer"></span>
+    <mat-checkbox class="example-margin" [(ngModel)]="showAllTransaction" style="margin: 0px 15px; font-size: 15px; color: #fff;" (change)="loadUnapprovedWalletTransactions()">Show all wallet transactions</mat-checkbox>
     <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
     <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
   </mat-toolbar-row>
