@@ -246,7 +246,7 @@
                   </td>
                   <td>{{ticket.controls.flight_no.value}}</td>
                   <td>{{ticket.controls.class.value}}</td>
-                  <td><b>Supplier Rate : </b>{{ticket.controls.costprice.value}}<br> <b>Portal Rate : </b>{{currentUser.type==='B2B'? (ticket.controls.price.value + 200) : ticket.controls.price.value }}</td>
+                  <td><b>Supplier Rate : </b>{{ticket.controls.costprice.value}}<br> <b>Portal Rate : </b>{{currentUser.type==='B2B'? (ticket.controls.price.value) : ticket.controls.price.value }}</td>
                   <td>{{ticket.controls.no_of_person.value}}</td>
                   <td>{{ticket.controls.supplier.value}}</td>
                   <td>
