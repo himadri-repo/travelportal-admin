@@ -35,6 +35,8 @@ export class CustomersComponent implements OnInit {
     {headerName: 'Approved', field: 'active', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'activerenderer'},
     {headerName: 'Type', field: 'type', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'typerenderer'},
     {headerName: 'Allow.Credit', field: 'credit_ac', sortable: true, filter: true, resizable: true, width: 120, cellRenderer: 'chkrenderer'},
+    {headerName: 'Wallet.Balance', field: 'balance', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'currencyrenderer'},
+    {headerName: 'Account.Balance', field: 'accounts_balance', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'currencyrenderer'},
     {headerName: 'Rateplan', field: 'rateplan_name', sortable: true, filter: true, resizable: true, width: 120},
     {headerName: 'State', field: 'state', sortable: true, filter: true, resizable: true, width: 150, cellRenderer: 'staterenderer'},
     {headerName: 'Address', field: 'address', sortable: true, filter: true, resizable: true, width: 300},
@@ -46,7 +48,8 @@ export class CustomersComponent implements OnInit {
     typerenderer: this.typerenderer.bind(this),
     emailrenderer: this.emailrenderer.bind(this),
     activerenderer: this.activerenderer.bind(this),
-    staterenderer: this.staterenderer.bind(this)
+    staterenderer: this.staterenderer.bind(this),
+    currencyrenderer: this.currencyrenderer.bind(this)
   };
 
   // [loadingOverlayComponent]="customLoadingOverlay"
@@ -121,6 +124,23 @@ export class CustomersComponent implements OnInit {
     // element.appendChild(imageElement);
     // // element.appendChild(document.createTextNode(params.value));
     // element.appendChild(document.createTextNode(params.value));
+    return element;
+  }
+
+  currencyrenderer(params): any {
+    const value = parseFloat(params.value);
+    const element = document.createElement('span');
+
+    if (value >= 0) {
+      element.setAttribute('style', 'font-size: 12px; color: #109c20;');
+      element.title = `Positive balance`;
+    } else {
+      element.setAttribute('style', 'font-size: 12px; color: #ff0000;');
+      element.title = `Negative balance`;
+    }
+
+    element.appendChild(document.createTextNode(value.toString()));
+
     return element;
   }
 

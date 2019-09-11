@@ -39,7 +39,7 @@ export class TicketsComponent implements OnInit {
     {headerName: 'Dept.Time', field: 'departure_date_time', sortable: true, filter: true, resizable: true, width: 110, cellRenderer: 'timerenderer'},
     // {headerName: 'Arrv.Time', field: 'arrival_date_time', sortable: true, filter: true, resizable: true, width: 150},
     {headerName: 'Flight#', field: 'flight_no', sortable: true, filter: true, resizable: true, width: 70},
-    {headerName: 'Qty', field: 'no_of_person', sortable: true, filter: true, resizable: true, width: 55},
+    {headerName: 'Qty', field: 'no_of_person', sortable: true, filter: true, resizable: true, width: 55, cellRenderer: 'ticketcountrenderer'},
     // {headerName: 'Class', field: 'class', sortable: true, filter: true, resizable: true, width: 80},
     {headerName: 'PNR', field: 'pnr', sortable: true, filter: true, resizable: true, width: 80, cellRenderer: 'pnrrenderer'},
     {headerName: 'Supplier', field: 'supplier', sortable: true, filter: true, resizable: true, width: 100},
@@ -64,7 +64,8 @@ export class TicketsComponent implements OnInit {
     actionrenderer: this.actionrenderer.bind(this),
     pnrrenderer: this.pnrrenderer.bind(this),
     utcdaterenderer: this.utcdaterenderer.bind(this),
-    approverenderer: this.approverenderer.bind(this)
+    approverenderer: this.approverenderer.bind(this),
+    ticketcountrenderer: this.ticketcountrenderer.bind(this)
   };
 
   // [loadingOverlayComponent]="customLoadingOverlay"
@@ -219,6 +220,23 @@ export class TicketsComponent implements OnInit {
     action_container.setAttribute('style', 'text-align: cneter');
 
     action_container.appendChild(document.createTextNode(value));
+
+    return action_container;
+  }
+
+  ticketcountrenderer(params): any {
+    const data = params.data;
+    const inventoryCount = parseInt(params.value, 10);
+
+    const action_container = document.createElement('span');
+
+    if (inventoryCount === 0) {
+      action_container.setAttribute('style', 'text-align: right; color: #ff0000;');
+    } else {
+      action_container.setAttribute('style', 'text-align: right; color: #109c20;');
+    }
+
+    action_container.appendChild(document.createTextNode(inventoryCount.toString()));
 
     return action_container;
   }

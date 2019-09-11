@@ -164,7 +164,7 @@ export class WalletsComponent implements OnInit {
       status = 2;
     }
 
-    this.adminService.settleWalletTransaction({status, id: element.id}).subscribe(resp => {
+    this.adminService.settleWalletTransaction({status, id: element.id, userid: this.currentUser.id}).subscribe(resp => {
       // if (resp) {
         this.loadUnapprovedWalletTransactions();
       // }
