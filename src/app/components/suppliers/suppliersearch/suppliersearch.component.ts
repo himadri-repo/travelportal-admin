@@ -143,9 +143,36 @@ export class SuppliersearchComponent implements OnInit {
 
   loadSuppliers() {
     this.rowData = [];
-    this.adminService.searchSuppliers().subscribe((res: Company[]) => {
-      this.rowData = res;
-    });
+    // 1 means Visible as Wholesaler
+    if ((this.currentCompany.settings.configuration.search_visibility & 1) === 1) {
+      this.adminService.searchSuppliers().subscribe((res: Company[]) => {
+        this.rowData = this.sanitizeData(res);
+      }, err => {
+        console.log(err);
+      });
+    } else {
+      this.message = 'Please enable Visible as Wholesaler option to search any suppliers, as you will be wholesaler to them';
+    }
+  }
+
+  private sanitizeData(companylist: Company[]): Company[] {
+    const companies: Company[] = [];
+    if (companylist != null && companylist.length > 0) {
+      companylist.forEach(company => {
+        if (company.configuration != null && company.configuration !== '') {
+          const configType = company.configtype;
+          if (configType === 'object') {
+            const config = JSON.parse(company.configuration);
+            // 1 means visible as wholesaler | 2 means visible as supplier
+            if ((parseInt(config.search_visibility, 10) & 2) === 2) {
+              companies.push(company);
+            }
+          }
+        }
+      });
+    }
+
+    return companies;
   }
 
   sendMessage(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName) {
@@ -154,7 +181,7 @@ export class SuppliersearchComponent implements OnInit {
       // logged-in company is a wholesaler type. So can request for supplier
       this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName, {showInvite: true, defaultTabIndex: 0});
     } else {
-      alert("You are not a wholesaler. So can`t invite any supplier.If you want more inventory accrosse globe, please enhance your account as wholesaler.\nYou can have both wholesaler and supplier feature.");
+      alert('You are not a wholesaler. So can`t invite any supplier.If you want more inventory accrosse globe, please enhance your account as wholesaler.\nYou can have both wholesaler and supplier feature.');
     }
   }
 

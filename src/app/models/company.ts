@@ -1,4 +1,5 @@
 export class Company {
+    [x: string]: any;
     id: number;
     code: string;
     name: string;

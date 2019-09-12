@@ -133,11 +133,36 @@ export class WholesalerSearchComponent implements OnInit {
 
   loadWholesalers() {
     this.rowData = [];
-    this.adminService.searchWholesalers().subscribe((res: Company[]) => {
-      this.rowData = res;
-    }, err => {
-      console.log(err);
-    });
+    // 1 means Visible as Wholesaler
+    if ((this.currentCompany.settings.configuration.search_visibility & 1) === 1) {
+      this.adminService.searchWholesalers().subscribe((res: Company[]) => {
+        this.rowData = this.sanitizeData(res);
+      }, err => {
+        console.log(err);
+      });
+    } else {
+      this.message = 'Please enable Visible as Supplier option to search any Wholesaler, as you will be supplier to them';
+    }
+  }
+
+  private sanitizeData(companylist: Company[]): Company[] {
+    const companies: Company[] = [];
+    if (companylist != null && companylist.length > 0) {
+      companylist.forEach(company => {
+        if (company.configuration != null && company.configuration !== '') {
+          const configType = company.configtype;
+          if (configType === 'object') {
+            const config = JSON.parse(company.configuration);
+            // 1 means visible as wholesaler | 2 means visible as supplier
+            if ((parseInt(config.search_visibility, 10) & 1) === 1) {
+              companies.push(company);
+            }
+          }
+        }
+      });
+    }
+
+    return companies;
   }
 
   loadMyWholesalers(callback) {
