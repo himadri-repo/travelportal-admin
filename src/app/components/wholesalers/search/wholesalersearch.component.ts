@@ -124,7 +124,7 @@ export class WholesalerSearchComponent implements OnInit {
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.currentCompany = this.authenticationService.currentCompany;
-   
+
     this.loadWholesalers();
     // this.loadMyWholesalers(msg => {
     //   this.loadWholesalers();
@@ -184,7 +184,7 @@ export class WholesalerSearchComponent implements OnInit {
       // logged-in company is a supplier type. So can request for wholesaler
       this.openDialog(inviteeid, inviteeCompanyName, invitorid, invitorCompanyName, {showInvite: true, defaultTabIndex: 0});
     } else {
-      alert("You are not a supplier. So can`t invite any wholesaler.If you want wholesalers to sale your inventory, please enhance your account as supplier.\nYou can have both wholesaler and supplier feature.");
+      alert('You are not a supplier. So can`t invite any wholesaler.If you want wholesalers to sale your inventory, please enhance your account as supplier.\nYou can have both wholesaler and supplier feature.');
     }
   }
 

@@ -252,10 +252,10 @@
                   <td>
                     <input type="hidden" name="seller_id" value="1">
                     <input type="hidden" name="ticket_no" value="{{ticket.controls.tktid.value}}">
-                    <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%;" value="{{i === 0?booking.qty:0}}"/>
+                    <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%;" value="{{(booking.ticket_id == ticket.controls.tktid.value)?booking.qty:0}}" *ngIf="(booking.ticket_id == ticket.controls.tktid.value)"/>
                   </td>
                   <td>
-                    <div class="form-group" style="display: inline-block">
+                    <div class="form-group" style="display: inline-block" *ngIf="(booking.ticket_id == ticket.controls.tktid.value)">
                       <select id="status" class="form-control" formControlName="status">
                         <option value="-1"> -- Select --</option>
                         <option value="0">Pending</option>
