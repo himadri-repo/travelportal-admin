@@ -12,7 +12,7 @@
     <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
   </mat-toolbar>
   <ag-grid-angular 
-    style="width: 100%; height: 300px; margin: 0px 5px 20px 5px;"
+    style="width: 100%; height: 550px; margin: 0px 5px 20px 5px;"
     class="ag-theme-balham"
     [rowData]="bookings" 
     [rowSelection]="rowSelection"
@@ -138,10 +138,16 @@
                     <div class="column-left column-head column-title">Service Charge</div><div class="column-right">{{booking.service_charge}}</div>
                     <div class="column-left column-head column-title">GST</div><div class="column-right">{{booking.igst}}</div>
                     <div class="column-left column-head column-title">Grand Total</div><div class="column-right">{{booking.total}}</div>
+                    <div class="column-left column-head column-title column-attension" *ngIf="bookingPmtDetails!=null">Payment received</div><div class="column-right" *ngIf="bookingPmtDetails!=null">{{bookingPmtDetails.credit ? (bookingPmtDetails.credit + ' (' + bookingPmtDetails.payment_id +') ') : 'No (Credit Booking)'}}</div>
+                    <div class="column-left column-head column-title column-attension" *ngIf="bookingPmtDetails!=null">Customer Wallet Balance</div><div class="column-right" *ngIf="bookingPmtDetails!=null">{{bookingPmtDetails ? (bookingPmtDetails.balance | number: '1.0-1') : ''}}</div>
                   </td>
                 </tr>
                 <tr>
-                  <th class="column-head"><div class="column-left">Customer Name</div><div class="column-right">{{booking.name}}</div><div class="column-right">({{booking.customer_companyname}})</div></th>
+                  <th class="column-head">
+                    <div class="column-left">Customer Name</div>
+                    <div class="column-right">{{booking.name}}</div>
+                    <div class="column-right">({{booking.customer_companyname}})</div>
+                  </th>
                 </tr>
                 <tr>
                   <th class="column-head"><div class="column-left">Seller Name</div><div class="column-right">{{booking.seller}}</div><div class="column-right">({{booking.seller_companyname}})</div></th>
@@ -212,6 +218,7 @@
             <table id="dynamic-table" class="table table-striped table-bordered table-hover" style="margin-bottom:20px">
               <thead class="column-head">
                 <tr>
+                  <th></th>
                   <th>T.No</th>
                   <th>Journey</th>
                   <th>Type</th>
@@ -227,11 +234,12 @@
               </thead>
               <tbody id="grid3" *ngIf="fullyProcessed === true">
                 <tr>
-                  <td colspan="11">Order fully processed. No more quantity left.</td>
+                  <td colspan="12">Order fully processed. No more quantity left.</td>
                 </tr>
               </tbody>
               <tbody id="grid2" formArrayName="tickets" *ngFor="let ticket of handlebookingform.get('tickets').controls; let i = index;">
                 <tr [formGroup]="ticket" class="{{(booking.departure_date_time == ticket.controls.departure_date_time.value) ? 'exact_matched': 'not_matched'}}">
+                  <td><input type="radio" id="selection-{{ticket.controls.tktid.value}}" name="select" class="rowselector" (change)="handleChange(ticket.controls.tktid.value, ticket.controls.select, $event)" [attr.checked]="(ticket.controls.tktid.value === booking.ticket.id)?'checked':null"></td>
                   <td>{{ticket.controls.tktid.value}}</td>
                   <td>
                     <div>{{ticket.controls.source.value}}</div>
@@ -252,10 +260,10 @@
                   <td>
                     <input type="hidden" name="seller_id" value="1">
                     <input type="hidden" name="ticket_no" value="{{ticket.controls.tktid.value}}">
-                    <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%;" value="{{(booking.ticket_id == ticket.controls.tktid.value)?booking.qty:0}}" *ngIf="(booking.ticket_id == ticket.controls.tktid.value)"/>
+                    <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%; height: calc(1.5em + .75rem + 2px)" value="{{booking.qty}}" *ngIf="(ticket.controls.select.value)"/>
                   </td>
                   <td>
-                    <div class="form-group" style="display: inline-block" *ngIf="(booking.ticket_id == ticket.controls.tktid.value)">
+                    <div class="form-group" style="display: inline-block" *ngIf="ticket.controls.select.value">
                       <select id="status" class="form-control" formControlName="status">
                         <option value="-1"> -- Select --</option>
                         <option value="0">Pending</option>

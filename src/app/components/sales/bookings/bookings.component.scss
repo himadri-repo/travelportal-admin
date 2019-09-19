@@ -25,6 +25,9 @@
     background-image: linear-gradient(to bottom, #9ccaf1 0, #80bcef 100%);
     width: 50%;
 }
+.column-attension {
+    background-image: linear-gradient(to bottom, #faa61a 0, #e4ddd1 100%);
+}
 
 .column-title {
     font-weight: 700;
@@ -88,4 +91,12 @@
 
 #grid1 > tr > td {
     vertical-align: middle;
+}
+.rowselector {
+    transform: scale(1.5);
+    -moz-transform: scale(1.5);
+    -ms-transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+    -o-transform: scale(1.5);
+    width: 35px;
 }

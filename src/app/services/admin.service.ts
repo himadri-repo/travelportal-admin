@@ -451,4 +451,7 @@ export class AdminService {
   public settleWalletTransaction(query: any): any {
     return this.httpClient.post(this.baseUrl + `/company/wallet/transactions/settle`, query);
   }
+  public getBookingPaymentDetails(query: any): any {
+    return this.httpClient.post(this.baseUrl + `/query/bookings/payment_details`, query);
+  }
 }

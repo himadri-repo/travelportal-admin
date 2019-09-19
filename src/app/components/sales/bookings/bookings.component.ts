@@ -59,6 +59,7 @@ export class BookingsComponent implements OnInit {
   public rowSelection = 'single';
   public currentUser: User;
   public booking: Booking;
+  public bookingPmtDetails: Booking;
   public tickets: Ticket[];
   public assignedSuppliers: Booking[];
   public mode = 'noshow';
@@ -121,9 +122,13 @@ export class BookingsComponent implements OnInit {
   createTicketControls(tickets: Ticket[]): FormGroup[] {
     const formGroups = [];
     // const ticketControls = this.handlebookingform.get('tickets') as FormArray;
+    // ticket.controls.tktid.value === booking.ticket.id
 
     tickets.forEach((ticket, idx) => {
+      // const select = (parseInt(ticket.id.toString(), 10) === parseInt(this.booking.ticket.id.toString(), 10)) ? 1 : 0;
+      const select = (ticket.id === this.booking.ticket.id) ? 1 : 0;
       formGroups.push(this.formBuilder.group({
+        select: new FormControl(select),
         tktid: new FormControl(ticket.id),
         source: new FormControl(ticket.source_city),
         destination: new FormControl(ticket.destination_city),
@@ -137,7 +142,7 @@ export class BookingsComponent implements OnInit {
         costprice: new FormControl(ticket.cost_price),
         no_of_person: new FormControl(ticket.no_of_person),
         order_qty: new FormControl(this.booking.qty),
-        status:  new FormControl(0)
+        status:  new FormControl((select === 1) ? 2 : 0)
       }));
     });
 
@@ -266,6 +271,14 @@ export class BookingsComponent implements OnInit {
         'no_of_person': 1,
       };
 
+      this.getBookingPaymentDetails({'bk.id': this.booking.id}).subscribe((res: any) => {
+        if (res !== null && res !== undefined && res.length > 0) {
+          parentObj.bookingPmtDetails = res[0];
+        } else {
+          parentObj.bookingPmtDetails = null;
+        }
+      });
+
       this.getAssignedSuppliers({'pbooking_id': this.booking.id}).subscribe((res: any[]) => {
         if (res !== null && res !== undefined && res.length > 0) {
           parentObj.assignedSuppliers = res;
@@ -346,6 +359,10 @@ export class BookingsComponent implements OnInit {
     return this.adminService.getAssignedSuppliers(arg);
   }
 
+  getBookingPaymentDetails(arg) {
+    return this.adminService.getBookingPaymentDetails(arg);
+  }
+
   onHandleChangeBooking() {
 
   }
@@ -409,11 +426,12 @@ export class BookingsComponent implements OnInit {
     // seperated out own orders and other supplier's orders
     tickets.forEach(ticket => {
       const tktid = parseInt(ticket.tktid, 10);
+      const ticket_status = parseInt(ticket.status, 10);
       this.tickets.forEach(tkt => {
-        if (tktid === parseInt(tkt.id.toString(), 10) && (ticket.status === '2' || ticket.status === '1') && parseInt(ticket.order_qty, 10) > 0) {
+        if (tktid === parseInt(tkt.id.toString(), 10) && (ticket_status === 2 || ticket_status === 1) && parseInt(ticket.order_qty, 10) > 0) {
           // only approved with qty assigned ticket should be considered for processing.
           tkt.ordered_qty = ticket.order_qty;
-          tkt.ordered_status = ticket.status;
+          tkt.ordered_status = parseInt(ticket.status, 10);
 
           orderedQty += parseInt(ticket.order_qty, 10);
           // if (tkt.companyid === companyid) {
@@ -444,7 +462,9 @@ export class BookingsComponent implements OnInit {
       // and the new booking will be ticket wise and supplier wise.
 
       const bookings = [];
+      let selectedticket = null;
       orderedOthersTickets.forEach(ticket => {
+        selectedticket = ticket;
         const refBooking = this.getBookingFromSelectedTicket(ticket, this.booking.customers);
         if (refBooking.customers && refBooking.customers.length > 0) {
           bookings.push(refBooking);
@@ -452,7 +472,7 @@ export class BookingsComponent implements OnInit {
       });
 
       if (bookings.length > 0) {
-        this.adminService.saveBooking(bookings).subscribe((res: any) => {
+        this.adminService.saveBooking({bookings, selectedticket, originalbooking: this.booking}).subscribe((res: any) => {
           // I think response has come. Now we should change the status of originiting booking
           const mainBooking: any = {};
           mainBooking.id = this.booking.id;
@@ -679,5 +699,24 @@ export class BookingsComponent implements OnInit {
     }
 
     return statusCode;
+  }
+
+  handleChange(tkt, control, $event) {
+    const selection = $event.target.checked;
+
+    const ticketsFormArray = this.handlebookingform.get('tickets') as FormArray;
+
+    ticketsFormArray.controls.forEach(ticketForm => {
+      if (ticketForm.value.tktid === tkt) {
+        // (ticketForm.get('select') as FormControl).value = $event.target.checked ? 1 : 0;
+        (ticketForm.get('select') as FormControl).setValue($event.target.checked ? 1 : 0);
+        (ticketForm.get('order_qty') as FormControl).setValue(this.booking.qty);
+        (ticketForm.get('status') as FormControl).setValue(2);
+      } else {
+        (ticketForm.get('select') as FormControl).setValue(0);
+        (ticketForm.get('order_qty') as FormControl).setValue(0);
+        (ticketForm.get('status') as FormControl).setValue(0);
+      }
+    });
   }
 }
