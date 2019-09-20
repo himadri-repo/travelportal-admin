@@ -66,6 +66,11 @@ export class BookingsComponent implements OnInit {
   public fullyProcessed = false;
   public allApproved = false;
   public handlebookingform: FormGroup;
+  public processed_qty = 0;
+  public approved_qty = 0;
+  public booking_req_qty = 0;
+  public selectedTicket: Ticket;
+  public action = 'pass';
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
@@ -285,45 +290,52 @@ export class BookingsComponent implements OnInit {
         } else {
           parentObj.assignedSuppliers = [];
         }
-        let processedQty = 0;
-        let approvedQty = 0;
+        // let processedQty = 0;
+        // let approvedQty = 0;
         const bookingQty = parseInt(parentObj.booking.qty.toString(), 10);
 
-        row.data.customers.forEach((customer, idx) => {
-          const customerStatus = parseInt(customer.status, 10);
-          const refid = parseInt(customer.refrence_id, 10);
-          if (customerStatus !== 3 && customerStatus !== 4) {
-            // 1 = Pending | 3 = Rejected | 4 = Cancelled
-            // processedQty += parseInt(supplier.qty.toString(), 10);
-            if (customerStatus === 1) {
-              // This flow failing when orders are splitted into two parts and send into two booking id.
-              // if (row.data.status === 'PROCESSING') {
-              if (refid !== 0) {
-                processedQty++;
-              }
-            } else {
-              processedQty++;
-            }
+        const processed_data = this._evaluate_booked_passengers(row.data.customers);
 
-            if (customerStatus === 2 || customerStatus === 3 || customerStatus === 4 || customerStatus === 127) {
-              // Mainly settled one.
-              // Settlement can be done either by Approve, Reject or Cancel the booking.
-              // Approved one
-              approvedQty++;
-            }
-          } else if ((customerStatus === 3 || customerStatus === 4) && refid === 0) {
-            processedQty++; // count rejected and cancelled one also.
-          }
-        });
+        // row.data.customers.forEach((customer, idx) => {
+        //   const customerStatus = parseInt(customer.status, 10);
+        //   const refid = parseInt(customer.refrence_id, 10);
+        //   if (customerStatus !== 3 && customerStatus !== 4) {
+        //     // 1 = Pending | 3 = Rejected | 4 = Cancelled
+        //     // processedQty += parseInt(supplier.qty.toString(), 10);
+        //     if (customerStatus === 1) {
+        //       // This flow failing when orders are splitted into two parts and send into two booking id.
+        //       // if (row.data.status === 'PROCESSING') {
+        //       if (refid !== 0) {
+        //         processedQty++;
+        //       }
+        //     } else {
+        //       processedQty++;
+        //     }
+
+        //     if (customerStatus === 2 || customerStatus === 3 || customerStatus === 4 || customerStatus === 127) {
+        //       // Mainly settled one.
+        //       // Settlement can be done either by Approve, Reject or Cancel the booking.
+        //       // Approved one
+        //       approvedQty++;
+        //     }
+        //   } else if ((customerStatus === 3 || customerStatus === 4) && refid === 0) {
+        //     processedQty++; // count rejected and cancelled one also.
+        //   }
+        // });
+
         // parentObj.assignedSuppliers.forEach(supplier => {
         //   if (supplier.status !== 'REJECTED' && supplier.status !== 'CANCELLED') {
         //     processedQty += parseInt(supplier.qty.toString(), 10);
         //   }
         // });
 
-        if (processedQty < bookingQty && parseInt(parentObj.booking.parent_booking_id.toString(), 10) === 0) {
-          parentObj.booking.qty = (bookingQty - processedQty);
-          (row.data as Booking).qty = (bookingQty - processedQty);
+        this.processed_qty = processed_data.processedQty;
+        this.approved_qty = processed_data.approvedQty;
+        this.booking_req_qty = bookingQty;
+
+        if (this.processed_qty < bookingQty && parseInt(parentObj.booking.parent_booking_id.toString(), 10) === 0) {
+          parentObj.booking.qty = (bookingQty - this.processed_qty);
+          (row.data as Booking).qty = (bookingQty - this.approved_qty);
           parentObj.fullyProcessed = false;
           this.getTickets(query).subscribe((res1: any[]) => {
             if (res1 !== null && res1 !== undefined && res1.length > 0) {
@@ -336,7 +348,7 @@ export class BookingsComponent implements OnInit {
           });
         } else {
           parentObj.fullyProcessed = true;
-          if (approvedQty === bookingQty) {
+          if (this.approved_qty === bookingQty) {
             parentObj.allApproved = true;
           } else {
             parentObj.allApproved = false;
@@ -349,6 +361,43 @@ export class BookingsComponent implements OnInit {
       this.mode = 'edit';
       // alert(inboxMessage.message);
     }
+  }
+
+  _evaluate_booked_passengers(customers: any[]) {
+    let processedQty = 0;
+    let approvedQty = 0;
+
+    customers.forEach((customer, idx) => {
+      const customerStatus = parseInt(customer.status, 10);
+      const refid = parseInt(customer.refrence_id, 10);
+      if (customerStatus !== 3 && customerStatus !== 4) {
+        // 1 = Pending | 3 = Rejected | 4 = Cancelled
+        // processedQty += parseInt(supplier.qty.toString(), 10);
+        if (customerStatus === 1) {
+          // This flow failing when orders are splitted into two parts and send into two booking id.
+          // if (row.data.status === 'PROCESSING') {
+          if (refid !== 0) {
+            processedQty++;
+          }
+        } else {
+          processedQty++;
+        }
+
+        if (customerStatus === 2 || customerStatus === 3 || customerStatus === 4 || customerStatus === 127) {
+          // Mainly settled one.
+          // Settlement can be done either by Approve, Reject or Cancel the booking.
+          // Approved one
+          approvedQty++;
+        }
+      } else if ((customerStatus === 3 || customerStatus === 4) && refid === 0) {
+        processedQty++; // count rejected and cancelled one also.
+      }
+    });
+
+    this.processed_qty = processedQty;
+    this.approved_qty = approvedQty;
+
+    return {processedQty, approvedQty};
   }
 
   getTickets(query) {
@@ -383,6 +432,8 @@ export class BookingsComponent implements OnInit {
             }
           });
           parentObj.init(parentObj.booking, parentObj.tickets);
+
+          const processed_data = parentObj._evaluate_booked_passengers(parentObj.booking.customers);
         }
       });
     } else {
@@ -446,8 +497,8 @@ export class BookingsComponent implements OnInit {
     });
 
     // if (orderedOthersTickets.length === 0 ||  (orderedQty > this.booking.qty)) {
-    if (orderedOthersTickets.length === 0 ||  (orderedQty > pendingQty)) {
-      alert('Before placing order selective seller(s) should be [APPROVED] | [HOLD] and some qty should be assigned. Please also note that sum of ordered quantity should not be more than total ordered quantity.');
+    if (orderedOthersTickets.length === 0 ||  (orderedQty !== pendingQty)) {
+      alert('Before placing order selective seller(s) should be [APPROVED] | [HOLD] and you need to settle full quantity of the order. Please note that sum of ordered quantity should be same with total ordered quantity.');
       return;
     }
 
@@ -471,8 +522,8 @@ export class BookingsComponent implements OnInit {
         }
       });
 
-      if (bookings.length > 0) {
-        this.adminService.saveBooking({bookings, selectedticket, originalbooking: this.booking}).subscribe((res: any) => {
+      if (bookings.length > 0 && this.booking.qty === pendingQty) {
+        this.adminService.saveBooking({bookings, selectedticket, originalbooking: this.booking, 'price_diff_action': this.action}).subscribe((res: any) => {
           // I think response has come. Now we should change the status of originiting booking
           const mainBooking: any = {};
           mainBooking.id = this.booking.id;
@@ -485,7 +536,7 @@ export class BookingsComponent implements OnInit {
           });
         });
       } else {
-        alert('Please check at least one customer is approved/rejected');
+        alert('Please check at least one customer is approved/rejected. Total order quality must be settled in one go.');
       }
     }
   }
@@ -708,6 +759,7 @@ export class BookingsComponent implements OnInit {
 
     ticketsFormArray.controls.forEach(ticketForm => {
       if (ticketForm.value.tktid === tkt) {
+        this.selectedTicket = ticketForm.value;
         // (ticketForm.get('select') as FormControl).value = $event.target.checked ? 1 : 0;
         (ticketForm.get('select') as FormControl).setValue($event.target.checked ? 1 : 0);
         (ticketForm.get('order_qty') as FormControl).setValue(this.booking.qty);
@@ -718,5 +770,17 @@ export class BookingsComponent implements OnInit {
         (ticketForm.get('status') as FormControl).setValue(0);
       }
     });
+  }
+
+  handlePriceDiffChange(tktid, action, $event) {
+    const selection = $event.target.checked;
+    this.action = action;
+    const ticketsFormArray = this.handlebookingform.get('tickets') as FormArray;
+
+    // ticketsFormArray.controls.forEach(ticketForm => {
+    //   if (ticketForm.value.tktid === tktid) {
+
+    //   }
+    // });
   }
 }
