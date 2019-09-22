@@ -334,8 +334,8 @@ export class BookingsComponent implements OnInit {
         this.booking_req_qty = bookingQty;
 
         if (this.processed_qty < bookingQty && parseInt(parentObj.booking.parent_booking_id.toString(), 10) === 0) {
-          parentObj.booking.qty = (bookingQty - this.processed_qty);
-          (row.data as Booking).qty = (bookingQty - this.approved_qty);
+          parentObj.booking.qty = bookingQty; // (bookingQty - this.processed_qty);
+          (row.data as Booking).qty = bookingQty; // (bookingQty - this.approved_qty);
           parentObj.fullyProcessed = false;
           this.getTickets(query).subscribe((res1: any[]) => {
             if (res1 !== null && res1 !== undefined && res1.length > 0) {
@@ -497,8 +497,13 @@ export class BookingsComponent implements OnInit {
     });
 
     // if (orderedOthersTickets.length === 0 ||  (orderedQty > this.booking.qty)) {
-    if (orderedOthersTickets.length === 0 ||  (orderedQty !== pendingQty)) {
-      alert('Before placing order selective seller(s) should be [APPROVED] | [HOLD] and you need to settle full quantity of the order. Please note that sum of ordered quantity should be same with total ordered quantity.');
+    if ((orderedOthersTickets.length === 0 ||  (orderedQty !== pendingQty)) || pendingQty === 0) {
+      if(pendingQty === 0) {
+        alert('You should have at least one customer in a booking');
+      } else {
+        alert('Before placing order selective seller(s) should be [APPROVED] | [HOLD] and you need to settle full quantity of the order. Please note that sum of ordered quantity should be same with total ordered quantity.');
+      }
+
       return;
     }
 

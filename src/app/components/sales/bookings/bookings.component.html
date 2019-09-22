@@ -260,7 +260,7 @@
                   <td>
                     <input type="hidden" name="seller_id" value="1">
                     <input type="hidden" name="ticket_no" value="{{ticket.controls.tktid.value}}">
-                    <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%; height: calc(1.5em + .75rem + 2px)" value="{{booking_req_qty-processed_qty}}" *ngIf="(ticket.controls.select.value)" readonly/>
+                    <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%; height: calc(1.5em + .75rem + 2px)" value="{{booking_req_qty}}" *ngIf="(ticket.controls.select.value)" readonly/>
                     <div style="font-size: small;" *ngIf="(ticket.controls.price.value!==booking.rate) && ticket.controls.select.value">
                       <!-- <span>{{ticket.controls.price.value}} | {{booking.total}}</span> -->
                       <div style="padding: 5px 0px;line-height: 10px;"><input type="radio" name="extravalue_choice" id="extravalue-{{ticket.controls.tktid.value}}_1" class="rowselector" (change)="handlePriceDiffChange(ticket.controls.tktid.value, 'absorbe', $event)">Absorbe rate differance</div>
