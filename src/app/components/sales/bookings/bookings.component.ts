@@ -158,6 +158,8 @@ export class BookingsComponent implements OnInit {
         flight_no: new FormControl(ticket.flight_no),
         class: new FormControl(ticket.class),
         supplier: new FormControl(ticket.companyname),
+        chargesntaxes: new FormControl((ticket.whl_srvchg + ticket.whl_cgst + ticket.whl_sgst)),
+        rate: new FormControl(ticket.price - (ticket.whl_srvchg + ticket.whl_cgst + ticket.whl_sgst)),
         price: new FormControl(ticket.price),
         costprice: new FormControl(ticket.cost_price),
         no_of_person: new FormControl(ticket.no_of_person),
@@ -353,7 +355,7 @@ export class BookingsComponent implements OnInit {
     let processedQty = 0;
     let approvedQty = 0;
     let bookingQty = 0;
-    let pendingQty = 0;
+    // let pendingQty = 0;
 
     customers.forEach((customer, idx) => {
       const customerStatus = parseInt(customer.status, 10);
@@ -489,7 +491,7 @@ export class BookingsComponent implements OnInit {
 
     // if (orderedOthersTickets.length === 0 ||  (orderedQty > this.booking.qty)) {
     if ((orderedOthersTickets.length === 0 ||  (orderedQty !== pendingQty)) || pendingQty === 0) {
-      if(pendingQty === 0) {
+      if (pendingQty === 0) {
         alert('You should have at least one customer in a booking');
       } else {
         alert('Before placing order selective seller(s) should be [APPROVED] | [HOLD] and you need to settle full quantity of the order. Please note that sum of ordered quantity should be same with total ordered quantity.');
