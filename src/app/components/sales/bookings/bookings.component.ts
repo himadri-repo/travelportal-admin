@@ -346,6 +346,8 @@ export class BookingsComponent implements OnInit {
         }
       });
 
+      parentObj.booking.ticket_rate = (parentObj.booking.total / parentObj.booking.qty);
+      console.log(`Ticket Rate => ${parentObj.booking.ticket_rate}`);
       this.mode = 'edit';
       // alert(inboxMessage.message);
     }
@@ -805,5 +807,13 @@ export class BookingsComponent implements OnInit {
     });
 
     this.isAllPAXRejected = (totalCount === rejectionCount);
+  }
+
+  getTicketRate(objBooking) {
+    return parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10);
+  }
+
+  getSubTotal(objBooking) {
+    return (parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10)) * parseInt(objBooking.qty, 10);
   }
 }

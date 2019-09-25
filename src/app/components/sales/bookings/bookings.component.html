@@ -132,13 +132,13 @@
                 <tr>
                   <th class="column-head"><div class="column-left">Booking Date.</div><div class="column-right">{{booking.date | date:'dd-MMM-yyyy hh:mm:ss aa'}}</div></th>
                   <td rowspan="2" style="padding: 0px;">
-                    <div class="column-left column-head column-title">Ticket Rate</div><div class="column-right">{{booking.rate}}</div>
+                    <div class="column-left column-head column-title">Ticket Rate</div><div class="column-right">{{getTicketRate(booking)}}</div>
                     <div class="column-left column-head column-title">Qty</div><div class="column-right">{{booking.qty}}</div>
-                    <div class="column-left column-head column-title">Sub Total</div><div class="column-right">{{booking.amount}}</div>
+                    <div class="column-left column-head column-title">Sub Total</div><div class="column-right">{{getSubTotal(booking)}}</div>
                     <div class="column-left column-head column-title">Service Charge</div><div class="column-right">{{booking.service_charge}}</div>
                     <div class="column-left column-head column-title">GST</div><div class="column-right">{{booking.igst}}</div>
                     <div class="column-left column-head column-title">Grand Total</div><div class="column-right">{{booking.total}}</div>
-                    <div class="column-left column-head column-title column-attension" *ngIf="bookingPmtDetails!=null">Payment received</div><div class="column-right" *ngIf="bookingPmtDetails!=null">{{bookingPmtDetails.credit ? (bookingPmtDetails.credit + ' (' + bookingPmtDetails.payment_id +') ') : 'No (Credit Booking)'}}</div>
+                    <div class="column-left column-head column-title column-attension" *ngIf="bookingPmtDetails!=null">Payment received</div><div class="column-right" *ngIf="bookingPmtDetails!=null">{{(bookingPmtDetails.credit | number) ? (bookingPmtDetails.credit + ' (' + bookingPmtDetails.payment_id +') ') : 'No (Credit Booking)'}}</div>
                     <div class="column-left column-head column-title column-attension" *ngIf="bookingPmtDetails!=null">Customer Wallet Balance</div><div class="column-right" *ngIf="bookingPmtDetails!=null">{{bookingPmtDetails ? (bookingPmtDetails.balance | number: '1.0-1') : ''}}</div>
                   </td>
                 </tr>
@@ -261,7 +261,7 @@
                     <input type="hidden" name="seller_id" value="1">
                     <input type="hidden" name="ticket_no" value="{{ticket.controls.tktid.value}}">
                     <input type="number" formControlName="order_qty" placeholder="Please provide quantity to order to respective seller" style="width: 100%; height: calc(1.5em + .75rem + 2px)" value="{{pending_qty}}" *ngIf="(ticket.controls.select.value)" readonly/>
-                    <div style="font-size: small;" *ngIf="(ticket.controls.rate.value!==booking.rate) && ticket.controls.select.value">
+                    <div style="font-size: small;" *ngIf="(ticket.controls.price.value!==booking.ticket_rate) && ticket.controls.select.value">
                       <!-- <span>{{ticket.controls.price.value}} | {{booking.total}}</span> -->
                       <div style="padding: 5px 0px;line-height: 10px;"><input type="radio" name="extravalue_choice" id="extravalue-{{ticket.controls.tktid.value}}_1" class="rowselector" (change)="handlePriceDiffChange(ticket.controls.tktid.value, 'absorbe', $event)">Absorbe rate differance</div>
                       <div style="padding: 5px 0px;line-height: 10px;"><input type="radio" name="extravalue_choice" id="extravalue-{{ticket.controls.tktid.value}}_2" class="rowselector" (change)="handlePriceDiffChange(ticket.controls.tktid.value, 'pass', $event)" checked>Pass rate differance to customer</div>
