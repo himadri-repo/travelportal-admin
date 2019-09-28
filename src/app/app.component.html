@@ -3,7 +3,12 @@
   <div class="container-fluid no-padding">
     <!-- replace everything in this file with this -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky">
-      <a class="navbar-brand" routerLink="#"><h3 class="company-title"><i class="fa fa-university"></i>&nbsp;{{currentCompany.display_name}}</h3></a>
+      <button type="button" id="sidebarCollapse" class="btn-collapsor">
+        <i class="fa fa-align-left"></i>&nbsp;
+        <!-- <span>Toggle Sidebar</span> -->
+      </button>      
+      <a class="navbar-brand" routerLink="#"><h3 class="company-title"><i class="fa fa-university"></i>&nbsp;{{navigationMessage}}</h3></a>
+      <!-- <a class="navbar-brand" routerLink="#"><h3 class="company-title"><i class="fa fa-university"></i>&nbsp;{{currentCompany.display_name}}</h3></a> -->
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>

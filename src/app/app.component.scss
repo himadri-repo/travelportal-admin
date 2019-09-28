@@ -22,7 +22,8 @@ a:focus {
 
 .navbar {
     padding: 15px 10px;
-    background-color: #faa61a !important;
+    /*background-color: #faa61a !important;*/
+    background-image: linear-gradient(to right, #5d5ad0, #faa61a);
     border: none;
     border-radius: 0;
     margin-bottom: 0px; /* 40px */
@@ -30,7 +31,7 @@ a:focus {
 }
 
 a.navbar-brand {
-    margin: 0px 0px 0px 25px;
+    margin: 0px 0px 0px 10px;
 }
 
 .navbar-btn {
@@ -53,10 +54,28 @@ span {
 
 #content {
     /*margin: 0px 10px 0px 10px;*/
-    width: 100%;
+    /*width: 100%;*/
     padding: 10px 40px;
     /*background-color: #ffffff;*/
     background-color: #f2f8f9;
+    height: 100vh; 
+    width: 88%; 
+    margin-left: auto;    
+}
+@media (max-width: 768px) {
+    #content {
+        padding: 10px 10px;
+        width: 100%; 
+    }
+}
+
+@media (min-width: 768px) {
+    #sidebar1 {
+        height: 90vh; 
+        position: fixed;
+        z-index: 9 !important;
+        box-shadow: 4px 5px 6px rgba(101, 95, 95, 0.55);
+    }
 }
 
 .no-padding {
@@ -75,6 +94,7 @@ span {
     align-items: stretch;
     height: 100%;
     margin: 0;
+    background-color: #f2f8f9;
     /*margin: 20px 10px 20px 10px;*/
 }
 
@@ -82,7 +102,7 @@ span {
     /*width: 50%;
     float: right;*/
     color: #ffffff;
-    background-color: #faa61a;
+    /*background-color: #faa61a;*/
     padding: 0px 10px;
 }
 
@@ -97,6 +117,13 @@ span {
     border: 0px;
 }
 
+.company-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.0rem;
+    font-weight: 100;
+    margin: 0px;
+}
+
 @media (max-width: 768px) {
     .header-menu {
         border: 1px inset #888888;    
@@ -105,10 +132,52 @@ span {
     .right-floated {
         border-bottom: 1px outset #888;
     }
+
+    .company-title {
+        font-size: 1.4rem;
+    }    
 }
 
-.company-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 2.0rem;
-    font-weight: 100;
+.btn-collapsor {
+    padding: 0px;
+    font-size: 1.2rem;
+    position: relative;
+    color: inherit;
+    height: 50px;
+    font-size: 1.125rem;
+    line-height: 30px;
+    padding: 6px;
+    font-weight: 300;
+    margin-left: 1rem;
+    vertical-align: bottom;
+    color: #fff;
+    background-color: #ffffff00;
+    border-color: #ffffff00;
+    top: 10px;
+    box-shadow: none;    
+}
+.btn-collapsor i {
+    font-size: 1.7rem;
+}
+
+@media (max-width: 991px) {
+    .show {
+        display: block !important;
+        width: 100%;
+    }
+    .show div {
+        color: #000000;
+    }
+    .show div a {
+        color: #000000;
+    }
+    .btn-collapsor {
+        top: 5px;
+    }
+    .btn-collapsor i {
+        font-size: 1.4rem;
+    }
+    a.navbar-brand {
+        margin: 0px;
+    }    
 }

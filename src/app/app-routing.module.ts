@@ -12,6 +12,8 @@ import { NotificationComponent } from './components/notification/notification.co
 import { RateplanComponent } from './components/general/rateplan/rateplan.component';
 import { BookingsComponent } from './components/sales/bookings/bookings.component';
 import { WalletsComponent } from './components/wallets/wallets.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { UseractivityComponent } from './components/useractivity/useractivity.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -31,6 +33,8 @@ const routes: Routes = [
   {path: 'admin/wholesalers/search', component: WholesalerSearchComponent},
   {path: 'admin/rateplan', component: RateplanComponent},
   {path: 'admin/profile', component: UsersComponent},
+  {path: 'admin/dashboard', component: DashboardComponent},
+  {path: 'admin/useractivity', component: UseractivityComponent},
   {path: 'admin/:uuid', component: AppComponent},
   {path: '**', component: AppComponent}
 ];

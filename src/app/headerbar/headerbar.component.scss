@@ -14,3 +14,27 @@
     font-size: 3rem;
     font-weight: 300;
 }
+
+.btn-info:focus {
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .feature-title {
+        color: #cc5b08;
+        font-family: "Segoe UI", "Poppins", sans-serif;
+        font-size: 1.3rem;
+        font-weight: 100;
+    }
+
+    .btn-info {
+        font-size: 1rem;
+        font-weight: 100;
+        color: #0471e6;
+        background-color: #ffffff00;
+        border-color: #ffffff00;
+    }
+    .btn-info span {
+        display: none;
+    }
+}

@@ -1,16 +1,16 @@
 <!-- Sidebar  -->
 <nav id="sidebar">
     <div class="sidebar-header">
-        <h3 class="menu-title">Manage Account</h3>
-        <strong>MA</strong>
+        <h3 class="menu-title">{{company.display_name}}</h3>
+        <strong>{{getabbreviation(company.display_name)}}</strong>
     </div>
 
     <ul class="list-unstyled components" *ngIf="(modules | json) != '[]'">
         <li *ngFor="let category of modules | keyvalue" class="{{get_activeClass(category.key).activeClass}}">
-            <a href="#{{category.key | replaceStringPipe:' ':'_'}}" data-toggle="collapse" class="dropdown-toggle collapsed" aria-expanded="false" >
+            <a href="#{{category.key | replaceStringPipe:' ':'_'}}" data-toggle="collapse" class="dropdown-toggle collapsed" aria-expanded="false" *ngIf="category">
                 <i class="fa fa-paper-plane"></i>{{category.key}}
             </a>
-            <ul class="list-unstyled collapse get_activeClass(category.key).show" id="{{category.key | replaceStringPipe:' ':'_'}}">
+            <ul class="list-unstyled collapse {{get_activeClass(category.key).show}}" id="{{category.key | replaceStringPipe:' ':'_'}}" *ngIf="category">
                 <li *ngFor="let module of category.value"><a routerLink="{{module.path}}" routerLinkActive="active" skipLocationChange="true"><i class="fa fa-plane"></i>&nbsp;{{module.display_name}}</a></li>
             </ul>
         </li>
@@ -117,4 +117,5 @@
             <li class="nav-item"><a class="nav-link" href="#">Export</a></li>
         </ul>
     </div> -->
+
 </nav>

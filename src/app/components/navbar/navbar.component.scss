@@ -8,10 +8,10 @@
 #sidebar {
     min-width: 250px;
     max-width: 250px;
-    background: #060397;
-    background: -webkit-linear-gradient(#060397, #5351b6);
-    background:    -moz-linear-gradient(#060397, #5351b6);
-    background:         linear-gradient(#060397, #5351b6);
+    background: #5e5bd0;
+    background: -webkit-linear-gradient(#5e5bd0, #5e5bd0);
+    background:    -moz-linear-gradient(#5e5bd0, #5e5bd0);
+    background:         linear-gradient(#5e5bd0, #5e5bd0);
     color: #fff;
     transition: all 0.3s;
     height: 100%;
@@ -71,8 +71,9 @@
 }
 
 #sidebar .sidebar-header {
-    padding: 20px;
-    background: #060397;
+    padding: 20px 0px;
+    /*background: #060397;*/
+    background: #5e5bd0;
     text-align: center;
 }
 
@@ -94,6 +95,7 @@
 }
 
 #sidebar ul li a:hover {
+    /*color: #060397;*/
     color: #060397;
     background: #fff;
 }
@@ -123,7 +125,8 @@ a[data-toggle="collapse"] {
 ul ul a {
     font-size: 0.9em !important;
     padding-left: 30px !important;
-    background: #6d7fcc;
+    /*background: #6d7fcc;*/
+    background: #2f36569c;
 }
 
 ul.CTAs {
@@ -207,6 +210,10 @@ a.article:hover {
     font-family: 'Poppins', sans-serif;
     font-size: 2.1rem;
     font-weight: 300;
+    border-bottom-width: 1px;
+    border-bottom-style: ridge;
+    border-color: coral;
+    /*border-image: linear-gradient(to right, red, rgba(0, 0, 0, 0)) 1 100%;*/
 }
 
 

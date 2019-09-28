@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
 import { User } from '../models/user';
 import { map } from 'rxjs/operators';
+import { UserActivity } from '../models/useractivity';
 
 @Injectable({
   providedIn: 'root'
@@ -15,5 +16,9 @@ export class UsersService {
 
   public getUsersByCompany(companyid): any {
     return this.httpClient.post<User[]>(this.baseUrl + '/users', {companyid});
+  }
+
+  public getUserActivities(postdata): any {
+    return this.httpClient.post<UserActivity[]>(this.baseUrl + '/users/activity', postdata);
   }
 }

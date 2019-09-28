@@ -1,0 +1,123 @@
+<div class="content">
+  <mat-toolbar color="primary" class="mat-elevation-z8" >
+    <mat-form-field class="search-form-field" floatLabel="never">
+      <input matInput type="text" [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter()">
+      <button matSuffix mat-icon-button aria-level="Clear" class="btn btn-primary" *ngIf="searchKey" (click)="searchClear($event)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <!-- <span class="secondary" style="font-weight: 100; font-size: 20px;">{{message}}</span> -->
+    <span class="example-spacer"></span>
+    <!-- <mat-radio-group aria-label="Select an option" (change)="recordQueryChanged($event);" [value]="recordStatus" style="margin: 0px 15px; font-size: 15px;">
+      <mat-radio-button value="0" checked>Pending</mat-radio-button>&nbsp;
+      <mat-radio-button value="1">Approved</mat-radio-button>&nbsp;
+      <mat-radio-button value="2">Rejected</mat-radio-button>&nbsp;&nbsp;
+    </mat-radio-group>     -->
+    <a class="btn btn-sm btn-success text-white" (click)="loadUnapprovedWalletTransactions()" role="button">
+        <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+    </a>
+  </mat-toolbar>
+  <div class="mat-elevation-z8">
+    <mat-table [dataSource]="userActivitySource" matSort>
+      <!-- Customer Name Column-->
+      <ng-container matColumnDef="requested_on">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 12%;" mat-sort-header> Requested On</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 12%;"> {{element.requested_on}} </mat-cell>
+      </ng-container>
+
+      <!-- User Type Column-->
+      <ng-container matColumnDef="membername">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 15%; justify-content: flex-start" mat-sort-header> Member Name</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 15%;">
+          <div>{{element.membername}}</div>
+          <div> ({{element.mobile}})</div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Remote Information Column-->
+      <ng-container matColumnDef="remote">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 15%;" mat-sort-header> Remote IP/Port</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 15%;">
+          <div><a href='https://www.ip2location.com/demo/{{element.remote_ip}}' title="Search details of this IP" alt="Search details of this IP" target="new" rel="noreferrer">{{element.remote}}</a></div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Access Device Column-->
+      <ng-container matColumnDef="device">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 10%; justify-content: flex-end" mat-sort-header> Device</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 10%; justify-content: flex-end;">
+          {{element.device}}
+        </mat-cell>
+      </ng-container>
+
+      <!-- Requesting Module Column-->
+      <ng-container matColumnDef="controller">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 12%; justify-content: flex-end;" mat-sort-header> Module</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 12%; justify-content: flex-end;"> {{element.controller}} </mat-cell>
+      </ng-container>
+      
+      <!-- Source Column-->
+      <ng-container matColumnDef="travel_date">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 16%;" mat-sort-header> Travel Date</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 16%;"> {{element.travel_date}} </mat-cell>
+      </ng-container>
+
+      <!-- Source Column-->
+      <ng-container matColumnDef="source_city_name">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 16%;" mat-sort-header> Source</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 16%;"> {{element.source_city_name}} </mat-cell>
+      </ng-container>
+
+      <!-- Destination Column-->
+      <ng-container matColumnDef="destination_city_name">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 16%;" mat-sort-header> Destination</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 16%;"> {{element.destination_city_name}} </mat-cell>
+      </ng-container>
+
+      <!-- No of Tickets Column-->
+      <ng-container matColumnDef="no_of_person">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 8%; justify-content: flex-end;" mat-sort-header> # Tickets</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 8%; display: block; text-align: center;"> {{element.no_of_person}} </mat-cell>
+      </ng-container>
+
+      <!-- Action Column-->
+      <!-- <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 15%;">Actions</mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 15%;">  -->
+          <!-- <button mat-icon-button color="warm"><mat-icon>launch</mat-icon></button> -->
+          <!-- <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-up"></mat-icon>&nbsp;&nbsp;
+          <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-down"></mat-icon> -->
+          <!-- <div *ngIf="element.status==0">
+            <i class="fa fa-thumbs-up" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #26b926;" title="Approve the transaction" (click)="takeAction('approve', element)"></i>&nbsp;&nbsp;&nbsp;
+            <i class="fa fa-thumbs-down" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #f72525;" title="Reject the transaction" (click)="takeAction('reject', element)"></i>&nbsp;&nbsp;&nbsp;
+          </div>
+          <div *ngIf="element.status!=0">
+            <i class="fa fa-thumbs-up" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #26b926;" title="Approved transaction" *ngIf="element.status==1"></i>&nbsp;&nbsp;&nbsp;
+            <i class="fa fa-thumbs-down" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #f72525;" title="Rejected transaction" *ngIf="element.status==2"></i>&nbsp;&nbsp;&nbsp;
+          </div> -->
+        <!-- </mat-cell>
+      </ng-container> -->
+
+      <!-- Footer column -->
+      <ng-container matColumnDef="loading">
+        <mat-footer-cell *matFooterCellDef colspan="8" style="justify-content: center;">
+          <span style="font-weight: 600; font-size: medium; font-style: italic; color: #ea6808;">*** Loading ***</span>
+        </mat-footer-cell>
+      </ng-container>
+
+      <!-- Footer column -->
+      <ng-container matColumnDef="noData">
+        <mat-footer-cell *matFooterCellDef colspan="8" style="justify-content: center;">
+          <span style="font-weight: 600; font-size: medium; font-style: italic; color: #ea6808;">*** No Data ***</span>
+        </mat-footer-cell>
+      </ng-container>
+  
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" mat-ripple (click)="edit(row, $event)"></mat-row>
+
+      <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide': userActivitySource!=null}"></mat-footer-row>
+      <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide': !(userActivitySource!=null && userActivitySource.data.length==0)}"></mat-footer-row>
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

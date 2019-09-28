@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { AuthenticationService } from './services/authentication.service';
 import { User } from './models/user';
@@ -6,13 +6,14 @@ import { Subscription } from 'rxjs';
 import { Company } from './models/company';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, ActivatedRoute, Params, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { CommonService } from './services/common.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   currentUser: User;
   currentCompany: Company;
   currentUserSubscription: Subscription;
@@ -20,8 +21,9 @@ export class AppComponent implements OnInit, OnDestroy {
   companyname = 'OxyTra';
   currentUUID = '';
   public message: string;
+  public navigationMessage: string;
 
-  constructor(private headTitle: Title, private authenticationService: AuthenticationService,
+  constructor(private headTitle: Title, private authenticationService: AuthenticationService, private commonService: CommonService,
               private route: ActivatedRoute, private router: Router)
   // tslint:disable-next-line:one-line
   {
@@ -55,33 +57,33 @@ export class AppComponent implements OnInit, OnDestroy {
     this.currentUserSubscription.unsubscribe();
   }
 
+  ngAfterViewInit(): void {
+    this.router.navigate(['admin/dashboard'], {skipLocationChange: true, replaceUrl: false});
+  }
+
   navigationChangeEvent($event) {
     this.message = $event;
   }
 
   private initInitialValues(): void {
     if (this.currentUUID !== null && this.currentUUID !== undefined) {
-      // this.currentUserSubscription = this.authenticationService.currentUser.subscribe(user => {
-      //   if (user !== null && user !== undefined) {
-      //     this.currentUser = user;
-      //     this.getCompany(this.currentUser.companyid);
-      //   }
-      //   if (user === null) {
-          this.authenticationService.getCurrentUser(this.currentUUID).subscribe((obsr) => {
-            this.currentUser = obsr;
-            this.getCompany(this.currentUser.companyid);
-            // this.authenticationService.getCompany(this.currentUser.companyid).subscribe((cmpny) => {
-            //   this.currentCompany = cmpny;
-            // });
-          });
-      //   }
-      // });
+      this.authenticationService.getCurrentUser(this.currentUUID).subscribe((obsr) => {
+        this.currentUser = obsr;
+        this.getCompany(this.currentUser.companyid);
+      });
+
+      this.commonService.getTitle().subscribe(obsrv => {
+        this.navigationMessage = obsrv.toString();
+      });
     }
   }
 
   private getCompany(companyid): void {
     this.authenticationService.getCompany(this.currentUser.companyid).subscribe((cmpny) => {
       this.currentCompany = cmpny;
+
+      // inform subscriber that user has been authenticated
+      this.commonService.setAuthenticated({'Company': this.currentCompany});
     });
   }
 }

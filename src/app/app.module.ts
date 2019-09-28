@@ -18,7 +18,7 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
 
-import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl, MatRippleModule } from '@angular/material';
+import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl, MatRippleModule, MatTooltipModule, MatInputModule } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
@@ -46,6 +46,8 @@ import { TicketFormComponent } from './components/tickets/ticket-form/ticket-for
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { WalletsComponent } from './components/wallets/wallets.component';
 import { WalletinfoComponent } from './components/wallets/walletinfo/walletinfo.component';
+import { UseractivityComponent } from './components/useractivity/useractivity.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -74,6 +76,8 @@ import { WalletinfoComponent } from './components/wallets/walletinfo/walletinfo.
     TicketFormComponent,
     WalletsComponent,
     WalletinfoComponent,
+    UseractivityComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -94,6 +98,8 @@ import { WalletinfoComponent } from './components/wallets/walletinfo/walletinfo.
     MatPaginatorModule,
     MatSortModule,
     MatRippleModule,
+    MatTooltipModule,
+    MatInputModule,
     ReactiveFormsModule,
     FormsModule,
     NgxEditorModule,
