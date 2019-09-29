@@ -17,6 +17,7 @@ export class NavbarComponent implements OnInit {
   private currentUser: User;
   public company: Company = new Company();
   private uuid: any;
+  public selectedMenu: any = {'path': 'admin/dashboard', 'display_name': ''};
   constructor(private commonService: CommonService, private route: ActivatedRoute, private authenticationService: AuthenticationService) { }
 
   ngOnInit() {

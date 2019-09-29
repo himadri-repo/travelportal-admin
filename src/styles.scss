@@ -94,3 +94,13 @@ a:hover {
     cursor: pointer;
     cursor: hand;
 }
+
+.fullcontent {
+    width: 97% !important;
+}
+
+@media (max-width: 991px) {
+    .fullcontent {
+        width: 100% !important;
+    }
+}

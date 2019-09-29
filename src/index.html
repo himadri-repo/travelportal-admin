@@ -28,6 +28,7 @@
         $('#sidebarCollapse').on('click', function () {
             //alert('hi');
             $('#sidebar').toggleClass('active');
+            $('#content').toggleClass('fullcontent');
             if($('#contentContainer').hasClass("col-sm-10 col-md-10 col-xs-10"))
             {
               $('#contentContainer').removeClass("col-sm-10 col-md-10 col-xs-10");

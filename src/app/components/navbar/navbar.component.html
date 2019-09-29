@@ -11,7 +11,11 @@
                 <i class="fa fa-paper-plane"></i>{{category.key}}
             </a>
             <ul class="list-unstyled collapse {{get_activeClass(category.key).show}}" id="{{category.key | replaceStringPipe:' ':'_'}}" *ngIf="category">
-                <li *ngFor="let module of category.value"><a routerLink="{{module.path}}" routerLinkActive="active" skipLocationChange="true"><i class="fa fa-plane"></i>&nbsp;{{module.display_name}}</a></li>
+                <li *ngFor="let module of category.value" [ngClass]="(module.path==selectedMenu.path?'selected-menu-item':'')">
+                    <a routerLink="{{module.path}}" routerLinkActive="active" skipLocationChange="true" (click)="selectedMenu=module">
+                        <i class="fa fa-plane"></i>&nbsp;{{module.display_name}}
+                    </a>
+                </li>
             </ul>
         </li>
     </ul>
