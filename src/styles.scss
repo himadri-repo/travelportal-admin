@@ -13,7 +13,7 @@ html, body {
     // background:    -moz-linear-gradient(#ffffff, #293f50);
     // background:         linear-gradient(#ffffff, #293f50);
     /* background-color: #cecece;*/
-    height: 100%;
+    height: max-content;
     margin: 0;
     background-color: #f2f8f9;
 }
@@ -96,11 +96,29 @@ a:hover {
 }
 
 .fullcontent {
-    width: 97% !important;
+    /*width: 97% !important;*/
+    width: 100% !important;
 }
 
 @media (max-width: 991px) {
     .fullcontent {
         width: 100% !important;
+        overflow: auto;
     }
+}
+
+div.ct-chart {
+    padding: 10px 0px;
+}
+svg.ct-chart-bar, svg.ct-chart-line{
+    overflow: visible;
+}
+span.ct-label.ct-horizontal.ct-end {
+  position: relative;
+  justify-content: flex-end;
+  text-align: right;
+  transform-origin: 100% 0;
+  transform: translate(-100%) rotate(-45deg);
+  white-space:nowrap;
+  font-size: 9px;
 }

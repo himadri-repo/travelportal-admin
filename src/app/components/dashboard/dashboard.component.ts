@@ -7,6 +7,8 @@ import { AdminService } from 'src/app/services/admin.service';
 import { User } from 'src/app/models/user';
 import { Company } from 'src/app/models/company';
 import * as Chartist from 'chartist';
+import { Statistics } from 'src/app/models/statistics';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +18,7 @@ import * as Chartist from 'chartist';
 export class DashboardComponent implements OnInit {
   public currentUser: User;
   public company: Company;
+  public statistics: Statistics = new Statistics();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
               private usersService: UsersService, private adminService: AdminService) {
@@ -23,7 +26,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.statistics = new Statistics();
     if (this.authenticationService.currentLoggedInUser) {
       this.commonService.setTitle('Dashboard');
       this.currentUser = this.authenticationService.currentLoggedInUser;
@@ -104,51 +107,52 @@ export class DashboardComponent implements OnInit {
   }
 
   init() {
+      this.getStatistics();
       /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
 
-      const dataDailySalesChart: any = {
-          labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-          series: [
-              [12, 17, 7, 17, 23, 18, 38]
-          ]
-      };
+      // const dataDailySalesChart: any = {
+      //     labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      //     series: [
+      //         [12, 17, 7, 17, 23, 18, 38]
+      //     ]
+      // };
 
-      const optionsDailySalesChart: any = {
-          lineSmooth: Chartist.Interpolation.cardinal({
-              tension: 0
-          }),
-          low: 0,
-          high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-          chartPadding: { top: 0, right: 0, bottom: 0, left: 0},
-      };
+      // const optionsDailySalesChart: any = {
+      //     lineSmooth: Chartist.Interpolation.cardinal({
+      //         tension: 0
+      //     }),
+      //     low: 0,
+      //     high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      //     chartPadding: { top: 0, right: 0, bottom: 0, left: 0},
+      // };
 
-      const dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
+      // const dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
 
-      this.startAnimationForLineChart(dailySalesChart);
+      // this.startAnimationForLineChart(dailySalesChart);
 
 
       /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
 
-      const dataCompletedTasksChart: any = {
-          labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
-          series: [
-              [230, 750, 450, 300, 280, 240, 200, 190]
-          ]
-      };
+      // const dataCompletedTasksChart: any = {
+      //     labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
+      //     series: [
+      //         [230, 750, 450, 300, 280, 240, 200, 190]
+      //     ]
+      // };
 
-      const optionsCompletedTasksChart: any = {
-          lineSmooth: Chartist.Interpolation.cardinal({
-              tension: 0
-          }),
-          low: 0,
-          high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-          chartPadding: { top: 0, right: 0, bottom: 0, left: 0}
-      };
+      // const optionsCompletedTasksChart: any = {
+      //     lineSmooth: Chartist.Interpolation.cardinal({
+      //         tension: 0
+      //     }),
+      //     low: 0,
+      //     high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      //     chartPadding: { top: 0, right: 0, bottom: 0, left: 0}
+      // };
 
-      const completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
+      // const completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
 
-      // start animation for the Completed Tasks Chart - Line Chart
-      this.startAnimationForLineChart(completedTasksChart);
+      // // start animation for the Completed Tasks Chart - Line Chart
+      // this.startAnimationForLineChart(completedTasksChart);
 
 
 
@@ -186,5 +190,203 @@ export class DashboardComponent implements OnInit {
 
       // start animation for the Emails Subscription Chart
       this.startAnimationForBarChart(websiteViewsChart);
+  }
+
+  getStatistics() {
+    const objParent = this;
+    this.adminService.getStatistics({filter: {companyid: this.currentUser.companyid}}).subscribe((result: any) => {
+      if (result) {
+        const stats = result.stats;
+        stats.forEach(stat => {
+          switch (stat.code) {
+            case 'BKNG_MTH':
+              objParent.statistics.total_booking = parseInt(stat.value, 10);
+              break;
+            case 'BKNG':
+              objParent.statistics.pending_booking = parseInt(stat.value, 10);
+              break;
+            case 'RVNU_MTH':
+              objParent.statistics.total_revenue = parseInt(stat.value, 10);
+              break;
+            case 'WLSR':
+              objParent.statistics.total_wholesaler = parseInt(stat.value, 10);
+              break;
+            case 'SUPL':
+              objParent.statistics.total_suppliers = parseInt(stat.value, 10);
+              break;
+            case 'RL_CUST':
+              objParent.statistics.total_retailers = parseInt(stat.value, 10);
+              break;
+            case 'TA_CUST':
+              objParent.statistics.total_agents = parseInt(stat.value, 10);
+              break;
+            case 'TKTSRCH_MTH':
+              objParent.statistics.total_ticket_enq = parseInt(stat.value, 10);
+              break;
+            case 'WLT_DUE':
+              objParent.statistics.pending_wallet_trans = parseInt(stat.value, 10);
+              break;
+            case 'RQ_CUST':
+              objParent.statistics.user_pending_req = parseInt(stat.value, 10);
+              break;
+            case 'NEW_MSG':
+              objParent.statistics.new_message = parseInt(stat.value, 10);
+              break;
+            case 'USER':
+              objParent.statistics.staff = parseInt(stat.value, 10);
+              break;
+            case 'OWN_TKT':
+              objParent.statistics.own_ticket = parseInt(stat.value, 10);
+              break;
+            case 'SRC_TKT':
+              objParent.statistics.sourced_ticket = parseInt(stat.value, 10);
+              break;
+            default:
+              break;
+          }
+        });
+
+        this.prepareSalesChart(result.historical_sales, '#dailySalesChart');
+        this.prepareInventorySearchChart(result.inventory_search, '#websiteViewsChart');
+        this.prepareInventoryByCircleChart(result.inventory_circle, '#completedTasksChart');
+      }
+
+      return objParent.statistics;
+    }, (error: any) => {
+      console.log(`Error : ${error}`);
+    });
+  }
+
+  prepareSalesChart(chardata, element = '#dailySalesChart') {
+    let maxvalue = 0;
+    const dataDailySalesChart: any = {
+      labels: [],
+      series: [
+          []
+      ]
+    };
+
+    if (chardata) {
+      let current_date = moment(new Date()).subtract({days: 7});
+      let idx = 0;
+      let recidx = 0;
+
+      while (idx <= 7) {
+        dataDailySalesChart.labels[idx] = current_date.format('MM-DD');
+        if ((recidx < chardata.length) && (chardata[recidx].day === current_date.format('MM-DD'))) {
+          dataDailySalesChart.series[0][idx] = parseFloat(chardata[recidx].total);
+
+          if (maxvalue < parseFloat(chardata[recidx].total)) {
+            maxvalue = parseFloat(chardata[recidx].total);
+          }
+
+          recidx++;
+        } else {
+          dataDailySalesChart.series[0][idx] = 0;
+        }
+
+        idx++;
+        current_date = current_date.add({days: 1});
+      }
+
+      console.log(JSON.stringify(dataDailySalesChart));
+      const optionsDailySalesChart: any = {
+          lineSmooth: Chartist.Interpolation.cardinal({
+              tension: 0
+          }),
+          low: 0,
+          high: maxvalue, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+          chartPadding: { top: 0, right: 0, bottom: 0, left: 0},
+      };
+
+      const dailySalesChart = new Chartist.Line(element, dataDailySalesChart, optionsDailySalesChart);
+
+      this.startAnimationForLineChart(dailySalesChart);
+    }
+  }
+
+  prepareInventoryByCircleChart(chardata, element = '#completedTasksChart') {
+    let maxvalue = 0;
+    const dataDailySalesChart: any = {
+      labels: [],
+      series: [
+          []
+      ]
+    };
+
+    if (chardata) {
+      chardata.forEach((inventoryData, idx) => {
+        dataDailySalesChart.labels[idx] = inventoryData.circle;
+        dataDailySalesChart.series[0][idx] = parseInt(inventoryData.inventory, 10);
+
+        if (maxvalue < parseInt(inventoryData.inventory, 10)) {
+          maxvalue = parseInt(inventoryData.inventory, 10);
+        }
+      });
+
+      console.log(JSON.stringify(dataDailySalesChart));
+      const optionsDailySalesChart: any = {
+          lineSmooth: Chartist.Interpolation.cardinal({
+              tension: 0,
+              showGrid: false
+          }),
+          low: 0,
+          high: maxvalue, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+          chartPadding: { top: 0, right: 0, bottom: 0, left: 0},
+      };
+
+      const chart = new Chartist.Bar(element, dataDailySalesChart, optionsDailySalesChart);
+
+      this.startAnimationForLineChart(chart);
+    }
+  }
+
+  prepareInventorySearchChart(chardata, element = '#websiteViewsChart') {
+    let maxvalue = 0;
+    const dataDailySalesChart: any = {
+      labels: [],
+      series: [
+          []
+      ]
+    };
+
+    if (chardata) {
+      let current_date = moment(new Date()).subtract({days: 12});
+      let idx = 0;
+      let recidx = 0;
+
+      while (idx <= 12) {
+        dataDailySalesChart.labels[idx] = current_date.format('DD-MMM');
+        if ((recidx < chardata.length) && (chardata[recidx].req_date === current_date.format('DD-MMM'))) {
+          dataDailySalesChart.series[0][idx] = parseFloat(chardata[recidx].enquiry);
+
+          if (maxvalue < parseFloat(chardata[recidx].enquiry)) {
+            maxvalue = parseFloat(chardata[recidx].enquiry);
+          }
+
+          recidx++;
+        } else {
+          dataDailySalesChart.series[0][idx] = 0;
+        }
+
+        idx++;
+        current_date = current_date.add({days: 1});
+      }
+
+      console.log(JSON.stringify(dataDailySalesChart));
+      const optionsDailySalesChart: any = {
+          lineSmooth: Chartist.Interpolation.cardinal({
+              tension: 0,
+              showGrid: false
+          }),
+          low: 0,
+          high: maxvalue, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+          chartPadding: { top: 0, right: 0, bottom: 0, left: 0},
+      };
+
+      const dailySalesChart = new Chartist.Bar(element, dataDailySalesChart, optionsDailySalesChart);
+
+      this.startAnimationForLineChart(dailySalesChart);
+    }
   }
 }

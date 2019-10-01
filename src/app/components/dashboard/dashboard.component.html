@@ -5,17 +5,18 @@
               <div class="card card-stats">
                   <div class="card-header card-header-warning card-header-icon">
                       <div class="card-icon">
-                          <i class="material-icons">content_copy</i>
+                          <i class="material-icons">shopping_cart</i>
                       </div>
-                      <p class="card-category">Used Space</p>
-                      <h3 class="card-title">49/50
-                          <small>GB</small>
+                      <p class="card-category">This month's booking</p>
+                      <h3 class="card-title">{{statistics.total_booking}}
+                          <small>#</small>
                       </h3>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons text-danger">warning</i>
-                          <a href="javascript:void(0)">Get More Space...</a>
+                          <!-- <i class="material-icons text-danger">warning</i> -->
+                          <i class="material-icons">info_outline</i>
+                          <a href="javascript:void(0)">Your customers are active enough</a>
                       </div>
                   </div>
               </div>
@@ -24,14 +25,14 @@
               <div class="card card-stats">
                   <div class="card-header card-header-success card-header-icon">
                       <div class="card-icon">
-                          <i class="material-icons">store</i>
+                          <i class="material-icons">attach_money</i>
                       </div>
                       <p class="card-category">Revenue</p>
-                      <h3 class="card-title">$34,245</h3>
+                      <h3 class="card-title">{{statistics.total_revenue | currency:'INR'}}</h3>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons">date_range</i> Last 24 Hours
+                          <i class="material-icons">info_outline</i> Revenue in Current Month
                       </div>
                   </div>
               </div>
@@ -40,14 +41,14 @@
               <div class="card card-stats">
                   <div class="card-header card-header-danger card-header-icon">
                       <div class="card-icon">
-                          <i class="material-icons">info_outline</i>
+                          <i class="material-icons">people</i>
                       </div>
-                      <p class="card-category">Fixed Issues</p>
-                      <h3 class="card-title">75</h3>
+                      <p class="card-category">Operating partners</p>
+                      <h3 class="card-title">{{statistics.total_suppliers + statistics.total_wholesaler}}</h3>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons">local_offer</i> Tracked from Github
+                          <i class="material-icons">info_outline</i> Connected suppliers & wholesalers
                       </div>
                   </div>
               </div>
@@ -56,14 +57,146 @@
               <div class="card card-stats">
                   <div class="card-header card-header-info card-header-icon">
                       <div class="card-icon">
-                          <i class="fa fa-twitter"></i>
+                          <i class="material-icons">storefront</i>
                       </div>
-                      <p class="card-category">Followers</p>
-                      <h3 class="card-title">+245</h3>
+                      <p class="card-category">Total Retail Customers</p>
+                      <h3 class="card-title">{{statistics.total_retailers}}</h3>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons">update</i> Just Updated
+                          <i class="material-icons">info_outline</i> Your retail customers (B2C)
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-warning card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">local_shipping</i>
+                      </div>
+                      <p class="card-category">Travel Agent Customers (B2B)</p>
+                      <h3 class="card-title">{{statistics.total_agents}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">info_outline</i> Your travel agent customers (B2B)
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-success card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">flight</i>
+                      </div>
+                      <p class="card-category">Total air ticket query</p>
+                      <h3 class="card-title">{{statistics.total_ticket_enq}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">info_outline</i> Air ticket queries made by customers
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-danger card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">account_balance_wallet</i>
+                      </div>
+                      <p class="card-category">Pending Wallet Transactions</p>
+                      <h3 class="card-title">{{statistics.pending_wallet_trans | currency: 'INR'}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">info_outline</i> Pending wallet transactions
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">person</i>
+                      </div>
+                      <p class="card-category">New user registration</p>
+                      <h3 class="card-title">{{statistics.user_pending_req}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">update</i> New user registration not yet approved
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-warning card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">message</i>
+                      </div>
+                      <p class="card-category">Unread Messaged</p>
+                      <h3 class="card-title">{{statistics.new_message}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">info_outline</i> New messages received
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-success card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">accessibility_new</i>
+                      </div>
+                      <p class="card-category">Staff/Employees</p>
+                      <h3 class="card-title">{{statistics.staff}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">info_outline</i> Total number of staff/employee
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-danger card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">room_service</i>
+                      </div>
+                      <p class="card-category">Own Air Ticket Inventory</p>
+                      <h3 class="card-title">{{statistics.own_ticket}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">local_offer</i> Air Tickets inventory owned by you
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                      <div class="card-icon">
+                          <i class="material-icons">extension</i>
+                      </div>
+                      <p class="card-category">Air Tickets sourced from suppliers</p>
+                      <h3 class="card-title">{{statistics.sourced_ticket}}</h3>
+                  </div>
+                  <div class="card-footer">
+                      <div class="stats">
+                          <i class="material-icons">info_outline</i> Tickets sourced from connected suppliers
                       </div>
                   </div>
               </div>
@@ -76,13 +209,12 @@
                       <div class="ct-chart" id="dailySalesChart"></div>
                   </div>
                   <div class="card-body">
-                      <h4 class="card-title">Daily Sales</h4>
-                      <p class="card-category">
-                          <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>
+                      <h4 class="card-title">Daily Sales Past 8 days</h4>
+                      <!-- <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p> -->
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons">access_time</i> updated 4 minutes ago
+                          <!-- <i class="material-icons">access_time</i> updated 4 minutes ago -->
                       </div>
                   </div>
               </div>
@@ -93,12 +225,12 @@
                       <div class="ct-chart" id="websiteViewsChart"></div>
                   </div>
                   <div class="card-body">
-                      <h4 class="card-title">Email Subscriptions</h4>
-                      <p class="card-category">Last Campaign Performance</p>
+                      <h4 class="card-title">Ticket Search Trends - Last 13 Days</h4>
+                      <!-- <p class="card-category">Last Campaign Performance</p> -->
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons">access_time</i> campaign sent 2 days ago
+                          <!-- <i class="material-icons">access_time</i> campaign sent 2 days ago -->
                       </div>
                   </div>
               </div>
@@ -109,18 +241,19 @@
                       <div class="ct-chart" id="completedTasksChart"></div>
                   </div>
                   <div class="card-body">
-                      <h4 class="card-title">Completed Tasks</h4>
-                      <p class="card-category">Last Campaign Performance</p>
+                      <h4 class="card-title">Available Inventory by Circle (Top 12 circles)</h4>
+                      <!-- <p class="card-category">Last Campaign Performance</p> -->
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons">access_time</i> campaign sent 2 days ago
+                          <!-- <i class="material-icons">access_time</i> campaign sent 2 days ago -->
                       </div>
                   </div>
               </div>
           </div>
       </div>
-      <div class="row">
+      <!-- Two grids : Commenting now. Later we will be adding some feature here-->
+      <!-- <div class="row">
           <div class="col-lg-6 col-md-12">
               <div class="card">
                   <div class="card-header card-header-tabs card-header-primary">
@@ -410,6 +543,7 @@
                   </div>
               </div>
           </div>
-      </div>
+      </div> -->
+      <!-- End of Two grids : Commenting now. Later we will be adding some feature here-->
   </div>
 </div>

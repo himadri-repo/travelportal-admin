@@ -454,4 +454,7 @@ export class AdminService {
   public getBookingPaymentDetails(query: any): any {
     return this.httpClient.post(this.baseUrl + `/query/bookings/payment_details`, query);
   }
+  public getStatistics(postdata: any): any {
+    return this.httpClient.post(this.baseUrl + `/company/statistics`, postdata);
+  }
 }
