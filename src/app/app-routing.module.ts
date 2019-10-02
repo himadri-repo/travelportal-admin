@@ -14,6 +14,7 @@ import { BookingsComponent } from './components/sales/bookings/bookings.componen
 import { WalletsComponent } from './components/wallets/wallets.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UseractivityComponent } from './components/useractivity/useractivity.component';
+import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -35,6 +36,7 @@ const routes: Routes = [
   {path: 'admin/profile', component: UsersComponent},
   {path: 'admin/dashboard', component: DashboardComponent},
   {path: 'admin/useractivity', component: UseractivityComponent},
+  {path: 'admin/pnrsearch', component: PnrsearchComponent},
   {path: 'admin/:uuid', component: AppComponent},
   {path: '**', component: AppComponent}
 ];

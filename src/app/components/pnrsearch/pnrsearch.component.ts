@@ -8,7 +8,6 @@ import { AdminService } from 'src/app/services/admin.service';
 import { Supplier } from 'src/app/models/supplier';
 import { Ticket } from 'src/app/models/ticket';
 import {MatDialog, MatDialogConfig, MatDialogRef, MatPaginator, MatTableDataSource, MatRipple, MatSort, MatTabChangeEvent, MatRadioChange} from '@angular/material';
-import { UserActivity } from 'src/app/models/useractivity';
 import { FormBuilder } from '@angular/forms';
 
 // import {MatPaginator} from '@angular/material/paginator';
@@ -20,13 +19,14 @@ import { Airline } from 'src/app/models/airline';
 import * as $ from 'jquery';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Company } from 'src/app/models/company';
+import { PNR } from 'src/app/models/pnr_details';
 
 @Component({
-  selector: 'app-useractivity',
-  templateUrl: './useractivity.component.html',
-  styleUrls: ['./useractivity.component.scss']
+  selector: 'app-pnrsearch',
+  templateUrl: './pnrsearch.component.html',
+  styleUrls: ['./pnrsearch.component.scss']
 })
-export class UseractivityComponent implements OnInit {
+export class PnrsearchComponent implements OnInit {
   public title = 'app';
   menuTitle = 'inventory';
   public message = '';
@@ -34,7 +34,7 @@ export class UseractivityComponent implements OnInit {
   public current_url: string;
   public gridColumnApi: any;
 
-  public activities: UserActivity[] = [];
+  public activities: PNR[] = [];
 
   public rowSelection = 'single';
   public currentUser: User;
@@ -44,8 +44,8 @@ export class UseractivityComponent implements OnInit {
   public searchKey = '';
 
   // @Output() navigationChangeEvent = new EventEmitter<string>();
-  userActivitySource: MatTableDataSource<any>;
-  displayedColumns: string[] = ['requested_on', 'membername', 'remote', 'device', 'controller', 'source_city_name', 'destination_city_name', 'no_of_person', 'travel_date'];
+  PNRSource: MatTableDataSource<any>;
+  displayedColumns: string[] = ['source', 'destination', 'name', 'age', 'airline_ticket_no', 'pnr', 'booking_id', 'actions'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sorter: MatSort;
 
@@ -54,37 +54,36 @@ export class UseractivityComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.commonService.setTitle('User Activity');
+    this.commonService.setTitle('PNR Search');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.activities = [];
     this.current_url = this.router.url;
 
-    this.loadUnapprovedWalletTransactions();
+    this.refreshPNRdata();
   }
 
-  loadUnapprovedWalletTransactions() {
-    this.userActivitySource = null;
-    this.usersService.getUserActivities({filter: {flow: 'search', companyid: this.currentUser.companyid}}).subscribe(resp => {
-      let walletTrans = [];
+  refreshPNRdata() {
+    this.PNRSource = null;
+    this.adminService.doPNRSearch({filter: {pnr: this.searchKey, companyid: this.currentUser.companyid}}).subscribe(resp => {
+      let travellersByPNR = [];
       if (resp) {
-        walletTrans = resp.map(item => {
+        travellersByPNR = resp.map(item => {
           return {
-            'remote': item.remote_ip + ':' + item.remote_port,
             ...item
           };
         });
       }
 
-      this.userActivitySource = new MatTableDataSource(walletTrans);
-      this.userActivitySource.paginator = this.paginator;
-      this.userActivitySource.sort = this.sorter;
-      this.userActivitySource.filterPredicate = ((data, filter) => {
-        return this.displayedColumns.some(col => {
-          // console.log(col);
-          return (col !== 'actions' && data[col].toString().toLowerCase().indexOf(filter) !== -1);
-        });
-      });
+      this.PNRSource = new MatTableDataSource(travellersByPNR);
+      this.PNRSource.paginator = this.paginator;
+      this.PNRSource.sort = this.sorter;
+      // this.PNRSource.filterPredicate = ((data, filter) => {
+      //   return this.displayedColumns.some(col => {
+      //     // console.log(col);
+      //     return (col !== 'actions' && data[col].toString().toLowerCase().indexOf(filter) !== -1);
+      //   });
+      // });
     });
   }
 
@@ -100,8 +99,6 @@ export class UseractivityComponent implements OnInit {
   }
 
   applyFilter() {
-    if (this.userActivitySource) {
-      this.userActivitySource.filter = this.searchKey.toLowerCase();
-    }
+    this.refreshPNRdata();
   }
 }

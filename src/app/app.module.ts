@@ -48,6 +48,7 @@ import { WalletsComponent } from './components/wallets/wallets.component';
 import { WalletinfoComponent } from './components/wallets/walletinfo/walletinfo.component';
 import { UseractivityComponent } from './components/useractivity/useractivity.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     WalletinfoComponent,
     UseractivityComponent,
     DashboardComponent,
+    PnrsearchComponent,
   ],
   imports: [
     BrowserModule,

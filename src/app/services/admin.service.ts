@@ -457,4 +457,7 @@ export class AdminService {
   public getStatistics(postdata: any): any {
     return this.httpClient.post(this.baseUrl + `/company/statistics`, postdata);
   }
+  public doPNRSearch(postdata: any): any {
+    return this.httpClient.post(this.baseUrl + `/query/pnr`, postdata);
+  }
 }
