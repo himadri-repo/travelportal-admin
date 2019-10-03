@@ -460,4 +460,7 @@ export class AdminService {
   public doPNRSearch(postdata: any): any {
     return this.httpClient.post(this.baseUrl + `/query/pnr`, postdata);
   }
+  public savePNRDetails(postdata: any): any {
+    return this.httpClient.post(this.baseUrl + `/save/pnr`, postdata);
+  }
 }

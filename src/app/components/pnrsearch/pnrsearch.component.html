@@ -1,10 +1,11 @@
 <div class="content">
     <mat-toolbar color="primary" class="mat-elevation-z8" >
       <mat-form-field class="search-form-field" floatLabel="never">
-        <input matInput type="text" [(ngModel)]="searchKey" placeholder="PNR" autocomplete="off" (keyup)="applyFilter()" style="text-transform: uppercase;">
+        <input matInput type="text" [(ngModel)]="searchKey" placeholder="Please input PNR number to see traveller's list" autocomplete="off" (keyup)="applyFilter()" style="text-transform: uppercase;">
         <button matSuffix mat-icon-button aria-level="Clear" class="btn btn-primary" *ngIf="searchKey" (click)="searchClear($event)">
           <mat-icon>close</mat-icon>
         </button>
+        <!-- <span style="color: #ffffff; font-size: 12px; display: block;">** Please input right PNR number to see get traveller's list</span> -->
       </mat-form-field>
       <!-- <span class="secondary" style="font-weight: 100; font-size: 20px;">{{message}}</span> -->
       <span class="example-spacer"></span>
@@ -38,8 +39,23 @@
         <!-- Name -->
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 20%; justify-content: flex-start" mat-sort-header> Traveller Name</mat-header-cell>
-          <mat-cell *matCellDef="let element" style="flex: 20%;">
-            <div>{{element.prefix}} {{element.first_name}} {{element.last_name}}</div>
+          <mat-cell *matCellDef="let element" style="flex: 20%;" [ngClass]="{'': element.action==1}">
+            <div *ngIf="element.action===0">{{element.prefix}} {{element.first_name}} {{element.last_name}}</div>
+            <mat-form-field *ngIf="element.action==1" class="table-input-field w20p">
+              <mat-label>Prefix</mat-label>
+              <select matNativeControl required [(ngModel)]="element.prefix" [value]="element.prefix">
+                <option value="Mr.">Mr.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Miss">Miss</option>
+                <option value="Master">Master</option>
+              </select>
+            </mat-form-field>            
+            <mat-form-field class="table-input-field w40p" *ngIf="element.action==1">
+              <input matInput placeholder="First Name" [(ngModel)]="element.first_name" style="text-transform: uppercase;">
+            </mat-form-field>            
+            <mat-form-field class="table-input-field w40p" *ngIf="element.action==1">
+              <input matInput placeholder="Last Name" [(ngModel)]="element.last_name" style="text-transform: uppercase;">
+            </mat-form-field>            
           </mat-cell>
         </ng-container>
   
@@ -75,17 +91,19 @@
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 12%;">Actions</mat-header-cell>
           <mat-cell *matCellDef="let element" style="flex: 12%;">
-            <!-- <button mat-icon-button color="warm"><mat-icon>launch</mat-icon></button> -->
+            <!-- <button mat-icon-button color="corel" (click)="edit(element, $event)" *ngIf="element.action==0"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="#2047b7" (click)="save(element, $event)" *ngIf="element.action==1"><mat-icon>save</mat-icon></button>
+            <button mat-icon-button color="#2047b7" (click)="cancel(element, $event)" *ngIf="element.action==1"><mat-icon>cancel</mat-icon></button> -->
+
             <!-- <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-up"></mat-icon>&nbsp;&nbsp;
             <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-down"></mat-icon> -->
-            <!-- <div *ngIf="element.status==0">
-              <i class="fa fa-thumbs-up" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #26b926;" title="Approve the transaction" (click)="takeAction('approve', element)"></i>&nbsp;&nbsp;&nbsp;
-              <i class="fa fa-thumbs-down" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #f72525;" title="Reject the transaction" (click)="takeAction('reject', element)"></i>&nbsp;&nbsp;&nbsp;
+            <div *ngIf="element.action==0">
+              <i class="fa fa-pencil-square-o" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #140b9b;" title="Edit PAX" (click)="edit(element, $event)"></i>&nbsp;&nbsp;&nbsp;
             </div>
-            <div *ngIf="element.status!=0">
-              <i class="fa fa-thumbs-up" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #26b926;" title="Approved transaction" *ngIf="element.status==1"></i>&nbsp;&nbsp;&nbsp;
-              <i class="fa fa-thumbs-down" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #f72525;" title="Rejected transaction" *ngIf="element.status==2"></i>&nbsp;&nbsp;&nbsp;
-            </div> -->
+            <div *ngIf="element.action==1">
+              <i class="fa fa-floppy-o" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #0d580d;" title="Save" (click)="save(element, $event)"></i>&nbsp;&nbsp;&nbsp;
+              <i class="fa fa-times" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #f72525;" title="Cancel" (click)="cancel(element, $event)"></i>&nbsp;&nbsp;&nbsp;
+            </div>
           </mat-cell>
         </ng-container>
   
@@ -104,7 +122,7 @@
         </ng-container>
     
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;" mat-ripple (click)="edit(row, $event)"></mat-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" mat-ripple></mat-row>
   
         <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide': PNRSource!=null}"></mat-footer-row>
         <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide': !(PNRSource!=null && PNRSource.data.length==0)}"></mat-footer-row>

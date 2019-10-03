@@ -279,7 +279,7 @@ export class BookingsComponent implements OnInit {
     if (row.node.selected) {
       const parentObj = this;
       parentObj.booking = row.data;
-      parentObj.init(row.data, parentObj.tickets);
+      // parentObj.init(row.data, parentObj.tickets);
 
       const query = {
         'companyid': this.currentUser.companyid,
@@ -461,6 +461,9 @@ export class BookingsComponent implements OnInit {
       pendingQty = 0;
       customers.forEach((customer, idx) => {
         this.booking.customers[idx].status = customer.action;
+        if (parseInt(customer.action, 10) === 1) {
+          this.booking.customers[idx].refrence_id = 0;
+        }
         const status = parseInt(this.booking.customers[idx].status.toString(), 10);
 
         if (status === 1 || status === 3 || status === 8) {
@@ -789,12 +792,29 @@ export class BookingsComponent implements OnInit {
   passenger_status_change(customer, $event) {
 
     console.log(JSON.stringify(customer.controls.status.value));
+
+    const originalStatus = parseInt(customer.controls.status.value, 10);
+    const custid = parseInt(customer.controls.id.value, 10);
     let rejectionCount = 0;
     let totalCount = 0;
-    const customers = this.f.customers.value;
+    // const customers = this.f.customers.value;
+    const customers = this.f.customers as FormArray;
 
-    customers.forEach(eachCustomer => {
-      const status = parseInt(eachCustomer.action.toString(), 10);
+    customers.controls.forEach(eachCustomer => {
+      const status = parseInt(eachCustomer.get('action').value.toString(), 10);
+      if (originalStatus === 3) {
+        const id = parseInt(eachCustomer.get('id').value.toString(), 10);
+
+        if (custid === id) {
+          if (status === 2) {
+            eachCustomer.get('refrence_id').setValue(0);
+            eachCustomer.get('status').setValue(1);
+            eachCustomer.get('action').setValue(1);
+            // eachCustomer.status = 1;
+          }
+        }
+      }
+
       if (status !== 127) {
         totalCount++;
         if (status === 3) {
@@ -805,6 +825,27 @@ export class BookingsComponent implements OnInit {
         // }
       }
     });
+
+    // customers.forEach(eachCustomer => {
+    //   const status = parseInt(eachCustomer.action.toString(), 10);
+
+    //   if (custid === parseInt(eachCustomer.id, 10)) {
+    //     if (status !== originalStatus && status === 2) {
+    //       eachCustomer.refrence_id = 0;
+    //       eachCustomer.status = 1;
+    //     }
+    //   }
+
+    //   if (status !== 127) {
+    //     totalCount++;
+    //     if (status === 3) {
+    //       rejectionCount++;
+    //     }
+    //     // else if (customer.pnr === null || customer.pnr === '') {
+    //     //   rejectionCount++;
+    //     // }
+    //   }
+    // });
 
     this.isAllPAXRejected = (totalCount === rejectionCount);
   }

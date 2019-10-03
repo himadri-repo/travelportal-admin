@@ -70,6 +70,7 @@ export class PnrsearchComponent implements OnInit {
       if (resp) {
         travellersByPNR = resp.map(item => {
           return {
+            'action': 0,
             ...item
           };
         });
@@ -88,17 +89,41 @@ export class PnrsearchComponent implements OnInit {
   }
 
   edit(row, $event) {
-    if (row._id > -1) {
+    if (parseInt(row.id, 10) > 0 && row.action === 0) {
       const record = row;
+      row.action = 1; // 1 = edit
     }
   }
 
   searchClear($event) {
     this.searchKey = '';
-    this.applyFilter();
+    this.refreshPNRdata();
   }
 
   applyFilter() {
     this.refreshPNRdata();
+  }
+
+  cancel(row, $event) {
+    if (parseInt(row.id, 10) > 0 && row.action === 1) {
+      const record = row;
+      row.action = 0; // 1 = edit
+    }
+  }
+
+  save(row, $event) {
+    if (parseInt(row.id, 10) > 0 && row.action === 1) {
+      const record = row;
+      row.action = 0; // 1 = edit
+      console.log(`Saving data - ${JSON.stringify(row)}`);
+      this.adminService.savePNRDetails(row).subscribe(res => {
+        if (res) {
+          console.log(res);
+          this.applyFilter();
+        }
+      });
+
+      console.log('Saving data');
+    }
   }
 }
