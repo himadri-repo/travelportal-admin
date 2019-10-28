@@ -40,8 +40,8 @@
             <div class="form-group">
               <label>Type of message</label>
               <select name="type" formControlName="type" class="form-control">
-                <option value="-1">-- Select --</option>
-                <option value="0">Message</option>
+                <option value="-1" *ngIf="invitation_type !== 1 && invitation_type !== 2">-- Select --</option>
+                <option value="0" *ngIf="invitation_type !== 1 && invitation_type !== 2">Message</option>
                 <option value="1" *ngIf="this.options.showInvite">Invite</option>
               </select>
             </div>

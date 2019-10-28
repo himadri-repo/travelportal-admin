@@ -1,6 +1,7 @@
 import { CommunicationDetail } from './communication_details';
 
 export class Communication {
+    [x: string]: any;
     id: number;
     title: string;
     active: number;

@@ -28,6 +28,7 @@ export class InviteComponent implements OnInit {
   public inviteeid = 0;
   public invitorname = '';
   public inviteename = '';
+  public invitation_type = 0; /* 1 = Wholesaler | 2 = Supplier */
   public tabindex = 0;
   public currentUser: User;
   public communicationDetails: CommunicationDetail[];
@@ -89,14 +90,14 @@ export class InviteComponent implements OnInit {
   public rowSelection = 'single';
 
   constructor(@Inject(MAT_DIALOG_DATA) public data, public dialogRef: MatDialogRef<InviteComponent>, private authenticationService: AuthenticationService,
-              private formBuilder: FormBuilder, private adminService: AdminService)
-  {
+              private formBuilder: FormBuilder, private adminService: AdminService) {
     const self = this;
     this.title = data.type;
     this.invitorid = data.invitorid;
     this.inviteeid = data.inviteeid;
     this.invitorname = data.invitorname;
     this.inviteename = data.inviteename;
+    this.invitation_type = (data.type === 'INVITE_WHOLESALER') ? 1 : ((data.type === 'INVITE_SUPPLIER') ? 2 : -1); /* Invitation Type : 1 = Wholesaler | 2 = Supplier */
     this.options = data.option || {showInvite: true, defaultTabIndex: 0};
 
     this.tabindex = this.options.defaultTabIndex;
@@ -109,7 +110,7 @@ export class InviteComponent implements OnInit {
     this.communication.created_by = -1;
 
     if (data.invitorid >= -1) {
-      this.adminService.getCommunications(this.inviteeid, this.invitorid).subscribe(obsrv => {
+      this.adminService.getCommunications(this.inviteeid, this.invitorid, this.invitation_type).subscribe(obsrv => {
         if (obsrv !== null && obsrv !== undefined && obsrv.length > 0) {
           self.communication = new Communication();
 
@@ -218,6 +219,7 @@ export class InviteComponent implements OnInit {
       this.communication.created_by = this.currentUser.id;
       this.communication.active = 1;
       this.communication.title = postedForm.title;
+      this.communication.status = (this.invitation_type === 1 || this.invitation_type === 2) ? 1 : 0;
 
       try {
         this.communication.details = new Array<CommunicationDetail>();
@@ -236,7 +238,7 @@ export class InviteComponent implements OnInit {
         communicationDetail.to_companyid = this.inviteeid;
         communicationDetail.type = postedForm.type;
         if (postedForm.type === 1) {
-          communicationDetail.invitation_type = (this.title.toLocaleLowerCase() === 'invite wholesaler') ? 1 : 2;
+          communicationDetail.invitation_type = (this.title.toLocaleLowerCase() === 'INVITE_WHOLESALER') ? 1 : 2;
         }
         communicationDetail.ref_no = '';
         this.communication.details.push(communicationDetail);
@@ -245,11 +247,11 @@ export class InviteComponent implements OnInit {
       }
 
       await this.adminService.saveMessage(this.communication, (msg) => {
-          // this.dialogRef.close('Close');
-          this.tabindex = 2; // Lets move to outbox to see just sent invitation or message
-          this.communicationform.reset();
-          // After reset we need to allow user to send another message to the same user.
-          return;
+        // this.dialogRef.close('Close');
+        this.tabindex = 2; // Lets move to outbox to see just sent invitation or message
+        this.communicationform.reset();
+        // After reset we need to allow user to send another message to the same user.
+        return;
       });
 
       // const isValid = await this.adminService.is_valid(this.customerInfoData);

@@ -196,7 +196,7 @@ export class SuppliersearchComponent implements OnInit {
     dialogConfig.hasBackdrop = true;
     dialogConfig.width = '70%';
     dialogConfig.height = '700px';
-    dialogConfig.data = {type: 'Invite Supplier', inviteeid: supplierid, inviteename: suppliername, invitorid: companyid, invitorname: companyname, option};
+    dialogConfig.data = {type: 'INVITE_SUPPLIER', inviteeid: supplierid, inviteename: suppliername, invitorid: companyid, invitorname: companyname, option};
 
     this.matDialogRef = this.dialog.open(InviteComponent, dialogConfig);
     this.matDialogRef.afterClosed().subscribe(obsrv => {

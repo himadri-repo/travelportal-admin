@@ -51,8 +51,9 @@ export class AdminService {
     return this.httpClient.post<Company[]>(this.baseUrl + '/admin/suppliers', {});
   }
 
-  public getCommunications(inviteeid, invitorid): any {
-    return this.httpClient.post<Communication[]>(this.baseUrl + '/admin/communications', {inviteeid, invitorid});
+  public getCommunications(inviteeid, invitorid, invitation_type = 1): any {
+    /* Invitation Type : 1 = Wholesaler | 2 = Supplier */
+    return this.httpClient.post<Communication[]>(this.baseUrl + '/admin/communications', {inviteeid, invitorid, invitationType: invitation_type});
   }
 
   public getCommunicationDetails(communicationid): any {
