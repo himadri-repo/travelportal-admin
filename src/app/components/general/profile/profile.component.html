@@ -1,3 +1,87 @@
-<p>
-  profile works!
-</p>
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row titlebar">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <h2 class="display-4">Profile : {{company.display_name}}</h2>
+      </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12" style="text-align: center;">
+              <img src="{{logo_path}}" class="img-fluid img-logo" alt="Profile image"/> <!-- style="width: 125px; height: 50px;" -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12" *ngIf="uploadResponse.status === 'error' || error">
+              {{uploadResponse.message || error.message}}
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                  <div *ngIf="uploaded_file!==''" class="upload_status">{{uploaded_file}}</div>
+                  <label for="logo_file" class="form-label">Upload profile image/logo</label>
+                  <input type="file" name="logo" class="lcform-control-file" id="logo_file" (change)="onFileChange($event)">
+                  <button type="submit" class="btn btn-primary" *ngIf="enable_upload">Save</button>
+                </div>
+              </form>            
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <div class="row">
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                  <label class="form-control-label">Member since</label>
+                </div>
+                <div class="col-lg-8 col-md-12 col-sm-12 form-control-value">
+                  {{company.created_on | date:'dd-MMM-yyyy'}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                  <label class="form-control-label">Last login date</label>
+                </div>
+                <div class="col-lg-7 col-md-7 col-sm-7 form-control-value">
+                  2019-Nov-11 13:00:00
+                </div>
+              </div>
+            </div>
+          </div> -->
+        </div>
+        <div class="col-lg-9 col-md-6 col-sm-6">
+          <mat-horizontal-stepper [linear]="false" #stepper>
+            <mat-step [stepControl]="firstFormGroup">
+              <form [formGroup]="firstFormGroup">
+                <ng-template matStepLabel>General Information</ng-template>
+                <app-companyinfo [company]="company" [currentUser]="currentUser" (afterSave)="companyProfileSaved($event, stepper)"></app-companyinfo>
+                <!-- <div>
+                  <button mat-button matStepperNext>Next</button>
+                </div> -->
+              </form>
+            </mat-step>
+            <mat-step [stepControl]="secondFormGroup" [optional]="isOptional">
+              <form [formGroup]="secondFormGroup">
+                <ng-template matStepLabel>Fill out your address</ng-template>
+                <div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext>Next</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step>
+              <ng-template matStepLabel>Done</ng-template>
+              You are now done.
+              <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button (click)="stepper.reset()">Reset</button>
+              </div>
+            </mat-step>
+          </mat-horizontal-stepper>          
+        </div>
+    </div>
+  </div>
+</div>

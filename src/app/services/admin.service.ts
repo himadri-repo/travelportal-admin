@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpEventType} from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -463,5 +463,31 @@ export class AdminService {
   }
   public savePNRDetails(postdata: any): any {
     return this.httpClient.post(this.baseUrl + `/save/pnr`, postdata);
+  }
+  public saveCompanyInfo(companyinfo: Company): any {
+    return this.httpClient.post(this.baseUrl + `/save/company/generalinfo`, companyinfo);
+  }
+
+  public upload(data, companyid) {
+    const uploadURL = `${this.baseUrl}/save/company/logo/${companyid}`;
+
+    return this.httpClient.post<any>(uploadURL, data, {
+      reportProgress: true,
+      observe: 'events'
+    }).pipe(map((event) => {
+
+      switch (event.type) {
+
+        case HttpEventType.UploadProgress:
+          const progress = Math.round(100 * event.loaded / event.total);
+          return { status: 'progress', message: progress };
+
+        case HttpEventType.Response:
+          return event.body;
+        default:
+          return `Unhandled event: ${event.type}`;
+      }
+    })
+    );
   }
 }

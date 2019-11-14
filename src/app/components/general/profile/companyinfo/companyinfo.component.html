@@ -1,0 +1,114 @@
+<form [formGroup]="handlecompanyinfoform" autocomplete="off" (ngSubmit)="onHandleCompanyInfoSave()" novalidate>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="display_name">Company Name</label>
+      <input type="text" class="form-control" name="display_name" id="display_name" placeholder="Your company name" formControlName="display_name" required>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="baseurl">Base URL</label>
+      <input type="text" class="form-control" name="baseurl" id="baseurl" placeholder="Your base URL" value="{{company.baseurl}}" disabled>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="email">Email Address</label>
+      <input type="email" class="form-control" name="email" id="email" placeholder="abc@something.com" formControlName="email" required>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="phone">Phone/Mobile #</label>
+      <input type="tel" class="form-control" name="phone" id="phone" placeholder="+91 8888899999" formControlName="phone" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="address">Address</label>
+    <input type="text" class="form-control" name="address" id="address" placeholder="123 Main road" formControlName="address" required>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="state">State</label>
+      <select id="state" class="form-control" formControlName="state" required>
+        <option>Select state</option>
+        <option *ngFor="let state of states" value="{{state.id}}">{{state.datavalue}}</option>
+      </select>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="country">Country</label>
+      <select id="country" class="form-control" formControlName="country" required>
+        <option>Select country</option>
+        <option *ngFor="let country of countries" value="{{country.id}}">{{country.datavalue}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="fax">FAX</label>
+      <input type="tel" class="form-control" name="fax" id="fax" placeholder="+91 0234 2345 9876" formControlName="fax">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="pin">ZIP</label>
+      <input type="number" class="form-control" name="pin" id="pin" placeholder="830034" formControlName="pin" required>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="gst">GST</label>
+      <input type="text" class="form-control" name="gst" id="gst" placeholder="Your GST Number" formControlName="gst" style="text-transform: uppercase;">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="pan">PAN</label>
+      <input type="text" class="form-control" name="pan" id="pan" placeholder="ERWTP9823F" maxlength="10" formControlName="pan" required style="text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="facebook_link">Facebook Link</label>
+      <input type="url" class="form-control" name="facebook_link" id="facebook_link" placeholder="http://facebook.com/xxxxx" formControlName="facebook_link">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="twitter_link">Twitter Link</label>
+      <input type="url" class="form-control" name="twitter_link" id="twitter_link" placeholder="http://twitter.com/xxxxx" formControlName="twitter_link">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="youtube_link">Youtube Link</label>
+      <input type="url" class="form-control" name="youtube_link" id="youtube_link" placeholder="http://youtube.com/xxxxx" formControlName="youtube_link">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="googlemap">Google Map Link</label>
+      <input type="url" class="form-control" name="googlemap" id="googlemap" placeholder="https://www.google.co.in/map" formControlName="map">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="instagram_link">Instagram Link</label>
+      <input type="url" class="form-control" name="instagram_link" id="instagram_link" placeholder="https://www.instagram.com/accounts/login/" formControlName="instagram_link">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="pinterest_link">Pinterest Link</label>
+      <input type="url" class="form-control" name="pinterest_link" id="pinterest_link" placeholder="https://in.pinterest.com/" formControlName="pinterest_link">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="primary_user_id">Primary User</label>
+      <select id="primary_users" class="form-control" formControlName="primary_user_id" required>
+        <option>Select admin user</option>
+        <option *ngFor="let employee of employees" value="{{employee.id}}">{{employee.name}}</option>
+      </select>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="type">Company Type</label>
+      <input type="text" class="form-control" name="type" id="type" placeholder="Wholesaler + Supplier" value="{{company.type_name}}" disabled>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-control">
+      <input class="form_check_input" type="checkbox" id="active" formControlName="active">
+      <label class="form-check-label" for="active">
+        Active
+      </label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Save &amp; Proceed Next</button>
+</form>

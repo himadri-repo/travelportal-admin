@@ -1,0 +1,61 @@
+.main-content {
+    background-color: #ffffff;;
+}
+.display-4 {
+    font-family: "Segoe UI",Arial,sans-serif;
+    font-size: 3.5rem;
+    font-weight: 300;
+    line-height: 1.2;    
+}
+
+// .lcform-control-file {
+//     opacity: 100;
+//     position: relative;
+// }
+
+.form-label {
+    cursor: pointer;
+    margin: 4px 12px;
+    background-color: #9c27b0;
+    padding: 10px 10px;
+    border-radius: 5px;
+    color: #ffffff;
+}
+
+.img-logo {
+    border: 1px solid #cdcdcdcc;
+    max-width: 300px;
+    max-height: 300px;
+}
+
+.titlebar {
+    margin: 10px 5px;
+    background-color: #5e5bd0;
+    color: #f9ff00;
+}
+
+.form-control-label {
+    font-size: 14px;
+    line-height: 1.42857;
+    color: #AAAAAA;
+    font-weight: 400;    
+}
+
+.form-control-value {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px;
+    vertical-align: middle;
+    color: rgba(0,0,0,.87);
+    font-size: 14px;
+}
+
+.upload_status {
+    margin: 0px 14px;
+    background-color: #1a2092;
+    padding: 10px 10px;
+    color: #ffffff;
+    border-radius: 5px;    
+}

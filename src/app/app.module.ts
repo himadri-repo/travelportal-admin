@@ -50,6 +50,9 @@ import { UseractivityComponent } from './components/useractivity/useractivity.co
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
 
+import {MatStepperModule} from '@angular/material/stepper';
+import { CompanyinfoComponent } from './components/general/profile/companyinfo/companyinfo.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -80,6 +83,7 @@ import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
     UseractivityComponent,
     DashboardComponent,
     PnrsearchComponent,
+    CompanyinfoComponent
   ],
   imports: [
     BrowserModule,
@@ -102,6 +106,7 @@ import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
     MatRippleModule,
     MatTooltipModule,
     MatInputModule,
+    MatStepperModule,
     ReactiveFormsModule,
     FormsModule,
     NgxEditorModule,
