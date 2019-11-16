@@ -1,0 +1,170 @@
+<div class="content">
+    <mat-toolbar color="primary" class="mat-elevation-z8" >
+      <!-- <mat-form-field class="search-form-field" floatLabel="never">
+        <input matInput type="text" [(ngModel)]="searchKey" placeholder="Please input your search term" autocomplete="off" (keyup)="applyFilter()" style="text-transform: uppercase;">
+        <button matSuffix mat-icon-button aria-level="Clear" class="btn btn-primary" *ngIf="searchKey" (click)="searchClear($event)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field> -->
+      <!-- <span class="secondary" style="font-weight: 100; font-size: 20px;">{{message}}</span> -->
+      <span class="example-spacer"></span>
+      <!-- <mat-radio-group aria-label="Select an option" (change)="recordQueryChanged($event);" [value]="recordStatus" style="margin: 0px 15px; font-size: 15px;">
+        <mat-radio-button value="0" checked>Pending</mat-radio-button>&nbsp;
+        <mat-radio-button value="1">Approved</mat-radio-button>&nbsp;
+        <mat-radio-button value="2">Rejected</mat-radio-button>&nbsp;&nbsp;
+      </mat-radio-group>     -->
+      <a class="btn btn-sm btn-success text-white" (click)="refreshBankDetails()" role="button" style="margin: 0px 10px;">
+        <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+      </a>
+      <a class="btn btn-sm btn-success text-white" (click)="addnew()" role="button" style="margin: 0px 10px;">
+        <i class="fa fa-plus" aria-hidden="true"></i> Add New Bank
+      </a>
+    </mat-toolbar>
+    <div class="mat-elevation-z8">
+      <div *ngIf="mode==1">
+        <app-bankinfo [company]="company" [currentUser]="currentUser" (afterSave)="bankInfoSaved($event)"></app-bankinfo>
+      </div>
+      <mat-table [dataSource]="BankDetailsSource" matSort>
+        <!-- Id -->
+        <!-- <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 5%;" mat-sort-header> Id</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 5%;"> 
+            <div>{{element.id}}</div>
+          </mat-cell>
+        </ng-container> -->
+
+        <!-- Bank Name -->
+        <ng-container matColumnDef="bank_name">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%;" mat-sort-header> Bank Name</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 10%;"> 
+            <div *ngIf="element.action==0">{{element.bank_name}}</div>
+            <mat-form-field class="table-input-field w90p" *ngIf="element.action==1">
+              <input matInput placeholder="Bank Name" [(ngModel)]="element.bank_name" style="text-transform: uppercase;" floatLabel="never">
+            </mat-form-field>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Bank Branch -->
+        <ng-container matColumnDef="bank_branch">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%;" mat-sort-header> Bank Branch</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 10%;"> 
+            <div *ngIf="element.action==0">{{element.bank_branch}}</div>
+            <mat-form-field class="table-input-field w90p" *ngIf="element.action==1">
+              <input matInput placeholder="Branch Name" [(ngModel)]="element.bank_branch" style="text-transform: uppercase;" floatLabel="never">
+            </mat-form-field>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Account Number-->
+        <ng-container matColumnDef="acc_no">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 15%;" mat-sort-header> Account Number</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 15%;"> 
+            <div *ngIf="element.action==0">{{element.acc_no}}</div>
+            <mat-form-field class="table-input-field w90p" *ngIf="element.action==1">
+              <input matInput placeholder="Account Number" [(ngModel)]="element.acc_no" style="text-transform: uppercase;" floatLabel="never">
+            </mat-form-field>
+          </mat-cell>
+        </ng-container>
+
+        <!-- IFSC -->
+        <ng-container matColumnDef="ifsc">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 15%;" mat-sort-header> IFSC Code</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 15%;"> 
+            <div *ngIf="element.action==0">{{element.ifsc}}</div>
+            <mat-form-field class="table-input-field w90p" *ngIf="element.action==1">
+              <input matInput placeholder="IFSC Code" [(ngModel)]="element.ifsc" style="text-transform: uppercase;" floatLabel="never">
+            </mat-form-field>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Account Name -->
+        <ng-container matColumnDef="acc_name">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 20%;" mat-sort-header> Account Name</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 20%;"> 
+            <div *ngIf="element.action==0">{{element.acc_name}}</div>
+            <mat-form-field class="table-input-field w90p" *ngIf="element.action==1">
+              <input matInput placeholder="Account Name" [(ngModel)]="element.acc_name" style="text-transform: uppercase;" floatLabel="never">
+            </mat-form-field>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Account Type -->
+        <ng-container matColumnDef="acc_type">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%; justify-content: flex-start;" mat-sort-header> Account Type</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 10%;" [ngClass]="{'': element.action==1}">
+            <div *ngIf="element.action==0">{{element.acc_type}}</div>
+            <mat-form-field *ngIf="element.action==1" class="table-input-field w90p">
+              <select matNativeControl required [(ngModel)]="element.acc_type" [value]="element.acc_type" floatLabel="never">
+                <option value="Current">Current</option>
+                <option value="Savings">Savings</option>
+              </select>
+            </mat-form-field>            
+            <!-- <mat-form-field class="table-input-field w40p" *ngIf="element.action==1">
+              <input matInput placeholder="First Name" [(ngModel)]="element.first_name" style="text-transform: uppercase;">
+            </mat-form-field>            
+            <mat-form-field class="table-input-field w40p" *ngIf="element.action==1">
+              <input matInput placeholder="Last Name" [(ngModel)]="element.last_name" style="text-transform: uppercase;">
+            </mat-form-field> -->
+          </mat-cell>
+        </ng-container>
+  
+        <!-- Account Head -->
+        <ng-container matColumnDef="account">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 15%;" mat-sort-header> Account Head</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 15%;">
+            <div *ngIf="element.action==0">{{element.account.group_name}}</div>
+            <mat-form-field class="table-input-field w90p" *ngIf="element.action==1">
+              <!-- <input matInput placeholder="First Name" [(ngModel)]="element.first_name" style="text-transform: uppercase;"> -->
+              <select matNativeControl required [(ngModel)]="element.account.id" [value]="element.account.id" floatLabel="never">
+                <option value="-1">Select account head</option>
+                <option *ngFor="let account of accounts" value="{{account.id}}">{{account.group_name}}</option>
+              </select>
+            </mat-form-field>
+          </mat-cell>
+        </ng-container>
+  
+        <!-- Action Column-->
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%;">Actions</mat-header-cell>
+          <mat-cell *matCellDef="let element" style="flex: 10%;">
+            <!-- <button mat-icon-button color="corel" (click)="edit(element, $event)" *ngIf="element.action==0"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="#2047b7" (click)="save(element, $event)" *ngIf="element.action==1"><mat-icon>save</mat-icon></button>
+            <button mat-icon-button color="#2047b7" (click)="cancel(element, $event)" *ngIf="element.action==1"><mat-icon>cancel</mat-icon></button> -->
+
+            <!-- <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-up"></mat-icon>&nbsp;&nbsp;
+            <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-down"></mat-icon> -->
+            <div *ngIf="element.action==0">
+              <i class="fa fa-pencil-square-o" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #140b9b;" title="Edit Bank Details" (click)="edit(element, $event)"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+              <i class="fa fa-times" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #140b9b;" title="Delete Bank Details" (click)="delete(element, $event)"></i>&nbsp;&nbsp;&nbsp;
+            </div>
+            <div *ngIf="element.action==1">
+              <i class="fa fa-floppy-o" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #0d580d;" title="Save" (click)="save(element, $event)"></i>&nbsp;&nbsp;&nbsp;
+              <i class="fa fa-times" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #f72525;" title="Cancel" (click)="cancel(element, $event)"></i>&nbsp;&nbsp;&nbsp;
+            </div>
+          </mat-cell>
+        </ng-container>
+  
+        <!-- Footer column -->
+        <ng-container matColumnDef="loading">
+          <mat-footer-cell *matFooterCellDef colspan="8" style="justify-content: center;">
+            <span style="font-weight: 600; font-size: medium; font-style: italic; color: #ea6808;">*** Loading ***</span>
+          </mat-footer-cell>
+        </ng-container>
+  
+        <!-- Footer column -->
+        <ng-container matColumnDef="noData">
+          <mat-footer-cell *matFooterCellDef colspan="8" style="justify-content: center;">
+            <span style="font-weight: 600; font-size: medium; font-style: italic; color: #ea6808;">*** No Data ***</span>
+          </mat-footer-cell>
+        </ng-container>
+    
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" mat-ripple></mat-row>
+  
+        <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide': BankDetailsSource!=null}"></mat-footer-row>
+        <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide': !(BankDetailsSource!=null && BankDetailsSource.data.length==0)}"></mat-footer-row>
+      </mat-table>
+      <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+  

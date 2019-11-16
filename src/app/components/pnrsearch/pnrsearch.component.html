@@ -124,8 +124,8 @@
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;" mat-ripple></mat-row>
   
-        <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide': PNRSource!=null}"></mat-footer-row>
-        <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide': !(PNRSource!=null && PNRSource.data.length==0)}"></mat-footer-row>
+        <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide': BankDetailsSource!=null}"></mat-footer-row>
+        <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide': !(BankDetailsSource!=null && BankDetailsSource.data.length==0)}"></mat-footer-row>
       </mat-table>
       <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons></mat-paginator>
     </div>

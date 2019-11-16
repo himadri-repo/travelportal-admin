@@ -1,0 +1,161 @@
+.example-icon {
+    padding: 0 14px;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+.toolbar-wrapper {
+    margin: 25px 5px 1px 5px; height:35px;
+}
+
+.grid-default {
+    width: 100%; height: 400px; margin: 0px 5px 20px 5px;
+}
+
+// .mat-elevation-z1 a {
+//     margin: 0px 5px;
+// }
+
+.page-content .page-title {
+    margin: 4vh 0px;
+}
+.column-head {
+    background-image: linear-gradient(to bottom, #9ccaf1 0, #80bcef 100%);
+    width: 50%;
+}
+
+.column-title {
+    font-weight: 700;
+}
+
+.column-left {
+    display:inline-block; 
+    width: 50%;
+    padding: 5px;
+}
+.column-right {
+    float:right; 
+    width: 30%;
+    text-align: right;
+    font-weight: 500;
+    padding: 5px;
+}
+.page-title-section {
+    box-shadow: 4px 4px 3px 4px #888888 !important;
+    padding: 10px;    
+}
+
+.blink_me {
+    color: #1c6d11;
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px;
+    animation: blinker 2s linear infinite;
+}
+  
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.processed-customer {
+    background-color: #8ef580 !important;
+}
+
+.rejected-customer {
+    background-color: #f79f9f !important;
+}
+
+.fyi-notes {
+    color: #142bd6;
+    font-size: 12px;
+}
+
+.title-heading {
+    color:#2679b5;
+    font-size:18px;
+    margin: 30px 0px 10px 0px;
+}
+
+.field-title {
+    background-color: #e7e7e7;
+    color:#2679b5;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 5px 3px;
+}
+
+div.card {
+    margin: 20px 0px;
+    border: 1px solid #142bd6;
+}
+
+.number-field {
+    text-align: right;
+}
+
+.mat-header-cell-style {
+    font-size: 1vw;
+    font-weight: 300;    
+    background-color: #3f51b569;
+}
+
+.mat-cell, .mat-header-cell {
+    padding: 0px 8px;
+    /*border: 1px solid #cdcdcd;*/
+}
+
+.mat-column-date, .mat-column-amount, .mat-column-trans_ref_id {
+    justify-content: flex-end;
+}
+
+.mat-column-type, .mat-column-trans_type_name {
+    justify-content: center;
+}
+
+.hide {
+    display: none;
+}
+
+.search-form-field {
+    width: 50%;
+}
+
+.table-input-field {
+    margin: 0px 5px;
+}
+
+.w10p {
+    width: 10%;
+}
+.w20p {
+    width: 20%;
+}
+.w30p {
+    width: 30%;
+}
+.w40p {
+    width: 40%;
+}
+.w50p {
+    width: 50%;
+}
+.w60p {
+    width: 60%;
+}
+.w70p {
+    width: 70%;
+}
+.w80p {
+    width: 80%;
+}
+.w90p {
+    width: 90%;
+}
+
+.table-header {
+    font-size: 15px;
+}

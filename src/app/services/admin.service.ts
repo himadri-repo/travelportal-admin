@@ -490,4 +490,12 @@ export class AdminService {
     })
     );
   }
+
+  public getAccounts(): any {
+    return this.httpClient.get(this.baseUrl + `/admin/accounts`);
+  }
+
+  public save_bankdetails(companyid, bankdetails) {
+    return this.httpClient.post(this.baseUrl + `/save/company/bankdetails`, {companyid, bankdetails});
+  }
 }

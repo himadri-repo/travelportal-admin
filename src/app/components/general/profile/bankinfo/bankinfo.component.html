@@ -1,0 +1,36 @@
+<form [formGroup]="bankinfoform" autocomplete="off" novalidate style="padding: 0px 5px; font-size: 15px;">
+  <div class="form-row">
+    <mat-form-field class="col-md-2">
+      <input type="text" matInput name="bank_name" id="bank_name" placeholder="Bank name" formControlName="bank_name" required>
+    </mat-form-field>
+    <mat-form-field class="col-md-1">
+      <input type="text" matInput name="bank_branch" id="bank_branch" placeholder="Bank Branch" formControlName="bank_branch" required>
+    </mat-form-field>
+    <mat-form-field class="col-md-2">
+      <input type="text" matInput name="acc_no" id="acc_no" placeholder="Account Number" formControlName="acc_no" required>
+    </mat-form-field>
+    <mat-form-field class="col-md-1">
+      <input type="text" matInput name="ifsc" id="ifsc" placeholder="IFSC Code" formControlName="ifsc" required>
+    </mat-form-field>
+    <mat-form-field class="col-md-2">
+      <input type="text" matInput name="acc_name" id="acc_name" placeholder="Account Name" formControlName="acc_name" required>
+    </mat-form-field>
+    <mat-form-field class="col-md-1">
+      <mat-select name="acc_type" id="acc_type" placeholder="Account Type" formControlName="acc_type" required>
+        <mat-option value="">Select Acc Type</mat-option>
+        <mat-option value="Current">Current</mat-option>
+        <mat-option value="Savings">Savings</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-md-2">
+      <select matNativeControl name="accountid" id="accountid" placeholder="Mapped Account" formControlName="accountid" required>
+        <option value="-1">Select account head</option>
+        <option *ngFor="let account of accounts" value="{{account.id}}">{{account.group_name}}</option>
+      </select>
+    </mat-form-field>
+    <div class="col-md-1">
+      <i class="fa fa-floppy-o" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #0d580d; padding: 15px 0px 0px 5px;" title="Save" (click)="save($event)"></i>&nbsp;&nbsp;&nbsp;
+      <i class="fa fa-times" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #f72525; padding: 15px 0px 0px 5px;" title="Cancel" (click)="cancel($event)"></i>&nbsp;&nbsp;&nbsp;
+    </div>
+  </div>
+</form>

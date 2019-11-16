@@ -63,23 +63,20 @@
                 </div> -->
               </form>
             </mat-step>
-            <mat-step [stepControl]="secondFormGroup" [optional]="isOptional">
+            <mat-step [stepControl]="secondFormGroup" [optional]="false">
               <form [formGroup]="secondFormGroup">
-                <ng-template matStepLabel>Fill out your address</ng-template>
-                <div>
-                  <button mat-button matStepperPrevious>Back</button>
-                  <button mat-button matStepperNext>Next</button>
-                </div>
+                <ng-template matStepLabel>Your bank details</ng-template>
+                <app-banklist [company]="company" [currentUser]="currentUser" (afterSave)="companyProfileSaved($event, stepper)"></app-banklist>
               </form>
             </mat-step>
-            <mat-step>
+            <!--<mat-step>
               <ng-template matStepLabel>Done</ng-template>
               You are now done.
               <div>
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button (click)="stepper.reset()">Reset</button>
               </div>
-            </mat-step>
+            </mat-step>-->
           </mat-horizontal-stepper>          
         </div>
     </div>

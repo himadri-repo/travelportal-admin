@@ -52,6 +52,8 @@ import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
 
 import {MatStepperModule} from '@angular/material/stepper';
 import { CompanyinfoComponent } from './components/general/profile/companyinfo/companyinfo.component';
+import { BanklistComponent } from './components/general/profile/banklist/banklist.component';
+import { BankinfoComponent } from './components/general/profile/bankinfo/bankinfo.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +85,9 @@ import { CompanyinfoComponent } from './components/general/profile/companyinfo/c
     UseractivityComponent,
     DashboardComponent,
     PnrsearchComponent,
-    CompanyinfoComponent
+    CompanyinfoComponent,
+    BanklistComponent,
+    BankinfoComponent
   ],
   imports: [
     BrowserModule,
