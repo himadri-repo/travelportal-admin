@@ -4,6 +4,7 @@
 
 .example-spacer {
     flex: 1 1 auto;
+    width: 20%;
 }
 
 .toolbar-wrapper {
@@ -122,4 +123,7 @@ div.card {
 
 .search-form-field {
     width: 50%;
+}
+.datepicker-control {
+    margin: 5px 10px;
 }

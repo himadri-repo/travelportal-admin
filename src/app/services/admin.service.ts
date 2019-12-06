@@ -404,12 +404,14 @@ export class AdminService {
     return this.httpClient.post(this.baseUrl + '/admin/rateplan/save', {'rateplan': rateplan});
   }
 
-  public getBookings(companyid = 0, userid = 0): any {
+  public getBookings(companyid = 0, userid = 0, filter = {}): any {
     // tslint:disable-next-line: object-literal-key-quotes
     if (userid === undefined || userid === null || userid === 0) {
-      return this.httpClient.get(this.baseUrl + `/bookings/${companyid}`);
+      // return this.httpClient.get(this.baseUrl + `/bookings/${companyid}`);
+      return this.httpClient.post(this.baseUrl + `/bookings/${companyid}`, filter);
     } else if (companyid === undefined || companyid === null || companyid === 0) {
-      return this.httpClient.get(this.baseUrl + `/bookings/-1/${userid}`);
+      // return this.httpClient.get(this.baseUrl + `/bookings/-1/${userid}`);
+      return this.httpClient.post(this.baseUrl + `/bookings/-1/${userid}`, filter);
     }
   }
 

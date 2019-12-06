@@ -18,7 +18,7 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
 
-import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl, MatRippleModule, MatTooltipModule, MatInputModule } from '@angular/material';
+import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl, MatRippleModule, MatTooltipModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, MAT_DATE_FORMATS } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
@@ -111,6 +111,8 @@ import { BankinfoComponent } from './components/general/profile/bankinfo/bankinf
     MatTooltipModule,
     MatInputModule,
     MatStepperModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     ReactiveFormsModule,
     FormsModule,
     NgxEditorModule,
@@ -125,6 +127,7 @@ import { BankinfoComponent } from './components/general/profile/bankinfo/bankinf
   ],
   providers: [CommonService,
       { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true }
+      // { provide: MAT_DATE_FORMATS, useValue: {strict: true}}
   ],
   bootstrap: [AppComponent]
 })

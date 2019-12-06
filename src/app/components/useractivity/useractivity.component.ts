@@ -43,6 +43,9 @@ export class UseractivityComponent implements OnInit {
 
   public searchKey = '';
 
+  public fromdate;
+  public todate;
+
   // @Output() navigationChangeEvent = new EventEmitter<string>();
   userActivitySource: MatTableDataSource<any>;
   displayedColumns: string[] = ['requested_on', 'membername', 'remote', 'device', 'controller', 'source_city_name', 'destination_city_name', 'no_of_person', 'travel_date'];
@@ -57,15 +60,19 @@ export class UseractivityComponent implements OnInit {
     this.commonService.setTitle('User Activity');
 
     this.currentUser = this.authenticationService.currentLoggedInUser;
+    this.company = this.authenticationService.currentCompany;
     this.activities = [];
     this.current_url = this.router.url;
+
+    this.fromdate = new FormControl(new Date());
+    this.todate = new FormControl(new Date());
 
     this.loadUnapprovedWalletTransactions();
   }
 
   loadUnapprovedWalletTransactions() {
     this.userActivitySource = null;
-    this.usersService.getUserActivities({filter: {flow: 'search', companyid: this.currentUser.companyid}}).subscribe(resp => {
+    this.usersService.getUserActivities({filter: {flow: 'search', companyid: this.currentUser.companyid, admin_userid: this.company.primary_user_id, fromdate: moment(this.fromdate).format('YYYY-MM-DD 00:00:00'), todate: moment(this.todate).format('YYYY-MM-DD 23:59:59')}}).subscribe(resp => {
       let walletTrans = [];
       if (resp) {
         walletTrans = resp.map(item => {
@@ -103,5 +110,10 @@ export class UseractivityComponent implements OnInit {
     if (this.userActivitySource) {
       this.userActivitySource.filter = this.searchKey.toLowerCase();
     }
+  }
+
+  dateFilterChanged(ctrl) {
+    console.log(`From Date : ${moment(this.fromdate.value).format('YYYY-MM-DD')} | To Date : ${moment(this.todate.value).format('YYYY-MM-DD')}`);
+    this.loadUnapprovedWalletTransactions();
   }
 }

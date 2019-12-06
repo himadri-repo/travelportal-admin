@@ -27,6 +27,8 @@ export class BookingsComponent implements OnInit {
   public gridApi: any;
   public current_url: string;
   public gridColumnApi: any;
+  public fromdate = new FormControl((new Date()).toISOString()); // new FormControl(new Date());
+  public todate = new FormControl((new Date()).toISOString());
   public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your bookings are getting loaded ...</span>';
   public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
 
@@ -95,6 +97,15 @@ export class BookingsComponent implements OnInit {
   }
 
   init(booking, tickets) {
+    const d = new Date();
+    const mth = d.getMonth() + 1;
+    const day = d.getDay() + 1;
+    const year = d.getFullYear();
+
+    // this.fromdate = new FormControl(new Date(year + '-' + mth + '-01'));
+    this.fromdate = new FormControl(new Date());
+    this.todate = new FormControl(new Date());
+
     this.handlebookingform = this.formBuilder.group({
       id: new FormControl(booking.id),
       pnr: new FormControl(booking.pnr),
@@ -182,8 +193,8 @@ export class BookingsComponent implements OnInit {
     if (this.gridApi !== null && this.gridApi !== undefined) {
       this.gridApi.showLoadingOverlay();
     }
-
-    this.adminService.getBookings(companyid).subscribe((res: any[]) => {
+    self.bookings = null;
+    this.adminService.getBookings(companyid, 0, {fromdate: moment(this.fromdate.value).format('YYYY-MM-DD 00:00:00'), todate: moment(this.todate.value).format('YYYY-MM-DD 23:59:59')}).subscribe((res: any[]) => {
       if (res !== null && res !== undefined && res.length > 0) {
         this.gridApi.hideOverlay();
         self.bookings = res;
@@ -203,7 +214,9 @@ export class BookingsComponent implements OnInit {
   journeyrenderer(params): any {
     const action_container = document.createElement('span');
     action_container.setAttribute('style', 'text-align: cneter');
-    const updated_on = moment(new Date(params.value + ' UTC')).format('DD-MM-YYYY HH:mm:ss');
+    // const updated_on = moment(new Date(params.value + ' UTC')).format('DD-MM-YYYY HH:mm:ss');
+    // const updated_on = moment(new Date(params.value + ' IST')).format('DD-MM-YYYY HH:mm:ss');
+    const updated_on = moment(new Date(params.value)).format('DD-MM-YYYY HH:mm:ss');
 
     action_container.appendChild(document.createTextNode(updated_on));
 
@@ -283,8 +296,8 @@ export class BookingsComponent implements OnInit {
 
       const query = {
         'companyid': this.currentUser.companyid,
-        'source': parseInt(this.booking.ticket.source, 10),
-        'destination': parseInt(this.booking.ticket.destination, 10),
+        'source': parseInt(this.booking.ticket.sourceid, 10),
+        'destination': parseInt(this.booking.ticket.destinationid, 10),
         'from_date': moment(this.booking.departure_date_time).format('YYYY-MM-DD'),
         'to_date': moment(this.booking.arrival_date_time).format('YYYY-MM-DD'),
         'trip_type': 'ONE',
@@ -856,5 +869,10 @@ export class BookingsComponent implements OnInit {
 
   getSubTotal(objBooking) {
     return (parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10)) * parseInt(objBooking.qty, 10);
+  }
+
+  dateFilterChanged(datevalue) {
+    console.log(`From Date : ${moment(this.fromdate.value).format('YYYY-MM-DD')} | To Date : ${moment(this.todate.value).format('YYYY-MM-DD')}`);
+    this.RefreshData(this.currentUser.companyid);
   }
 }

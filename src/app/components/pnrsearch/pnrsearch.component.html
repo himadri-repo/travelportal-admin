@@ -40,7 +40,7 @@
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef class="mat-header-cell-style" style="flex: 20%; justify-content: flex-start" mat-sort-header> Traveller Name</mat-header-cell>
           <mat-cell *matCellDef="let element" style="flex: 20%;" [ngClass]="{'': element.action==1}">
-            <div *ngIf="element.action===0">{{element.prefix}} {{element.first_name}} {{element.last_name}}</div>
+            <div *ngIf="element.action===0 && currentUser.companyid==element.companyid">{{element.prefix}} {{element.first_name}} {{element.last_name}}</div>
             <mat-form-field *ngIf="element.action==1" class="table-input-field w20p">
               <mat-label>Prefix</mat-label>
               <select matNativeControl required [(ngModel)]="element.prefix" [value]="element.prefix">
@@ -97,7 +97,7 @@
 
             <!-- <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-up"></mat-icon>&nbsp;&nbsp;
             <mat-icon style="cursor: pointer; cursor: hand;" class="fa fa-thumbs-o-down"></mat-icon> -->
-            <div *ngIf="element.action==0">
+            <div *ngIf="element.action==0 && currentUser.companyid==element.companyid">
               <i class="fa fa-pencil-square-o" aria-hidden="true" style="cursor: pointer; cursor: hand; font-size: x-large; color: #140b9b;" title="Edit PAX" (click)="edit(element, $event)"></i>&nbsp;&nbsp;&nbsp;
             </div>
             <div *ngIf="element.action==1">
@@ -124,8 +124,8 @@
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;" mat-ripple></mat-row>
   
-        <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide': BankDetailsSource!=null}"></mat-footer-row>
-        <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide': !(BankDetailsSource!=null && BankDetailsSource.data.length==0)}"></mat-footer-row>
+        <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide': PNRSource!=null}"></mat-footer-row>
+        <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide': !(PNRSource!=null && PNRSource.data.length==0)}"></mat-footer-row>
       </mat-table>
       <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons></mat-paginator>
     </div>

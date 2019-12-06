@@ -1,21 +1,42 @@
 <div class="content">
   <mat-toolbar color="primary" class="mat-elevation-z8" >
-    <mat-form-field class="search-form-field" floatLabel="never">
-      <input matInput type="text" [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter()">
-      <button matSuffix mat-icon-button aria-level="Clear" class="btn btn-primary" *ngIf="searchKey" (click)="searchClear($event)">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
+    <mat-toolbar-row>
+      <mat-form-field class="search-form-field" floatLabel="never">
+        <input matInput type="text" [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter()">
+        <button matSuffix mat-icon-button aria-level="Clear" class="btn btn-primary" *ngIf="searchKey" (click)="searchClear($event)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <span class="example-spacer"></span>
+      <a class="btn btn-sm btn-success text-white" (click)="loadUnapprovedWalletTransactions()" role="button">
+          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+      </a>
+    </mat-toolbar-row>
+    <mat-toolbar-row>
+      <label>From Date</label>
+      <mat-form-field class="datepicker-control">
+        <input matInput [matDatepicker]="picker1" [formControl]="fromdate" (dateChange)="dateFilterChanged(this)">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+
+      <label>To Date</label>
+      <mat-form-field class="datepicker-control">
+        <input matInput [matDatepicker]="picker2" [formControl]="todate" (dateChange)="dateFilterChanged(this)">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>      
+    </mat-toolbar-row>  
     <!-- <span class="secondary" style="font-weight: 100; font-size: 20px;">{{message}}</span> -->
-    <span class="example-spacer"></span>
+    <!-- <span class="example-spacer"></span> -->
     <!-- <mat-radio-group aria-label="Select an option" (change)="recordQueryChanged($event);" [value]="recordStatus" style="margin: 0px 15px; font-size: 15px;">
       <mat-radio-button value="0" checked>Pending</mat-radio-button>&nbsp;
       <mat-radio-button value="1">Approved</mat-radio-button>&nbsp;
       <mat-radio-button value="2">Rejected</mat-radio-button>&nbsp;&nbsp;
     </mat-radio-group>     -->
-    <a class="btn btn-sm btn-success text-white" (click)="loadUnapprovedWalletTransactions()" role="button">
+    <!-- <a class="btn btn-sm btn-success text-white" (click)="loadUnapprovedWalletTransactions()" role="button">
         <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
-    </a>
+    </a> -->
   </mat-toolbar>
   <div class="mat-elevation-z8">
     <mat-table [dataSource]="userActivitySource" matSort>
