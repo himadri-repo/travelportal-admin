@@ -43,8 +43,8 @@ export class UseractivityComponent implements OnInit {
 
   public searchKey = '';
 
-  public fromdate;
-  public todate;
+  public fromdate = new Date();
+  public todate = new Date();
 
   // @Output() navigationChangeEvent = new EventEmitter<string>();
   userActivitySource: MatTableDataSource<any>;
@@ -64,8 +64,8 @@ export class UseractivityComponent implements OnInit {
     this.activities = [];
     this.current_url = this.router.url;
 
-    this.fromdate = new FormControl(new Date());
-    this.todate = new FormControl(new Date());
+    this.fromdate = new Date();
+    this.todate = new Date();
 
     this.loadUnapprovedWalletTransactions();
   }
@@ -113,7 +113,7 @@ export class UseractivityComponent implements OnInit {
   }
 
   dateFilterChanged(ctrl) {
-    console.log(`From Date : ${moment(this.fromdate.value).format('YYYY-MM-DD')} | To Date : ${moment(this.todate.value).format('YYYY-MM-DD')}`);
+    console.log(`From Date : ${moment(this.fromdate).format('YYYY-MM-DD')} | To Date : ${moment(this.todate).format('YYYY-MM-DD')}`);
     this.loadUnapprovedWalletTransactions();
   }
 }

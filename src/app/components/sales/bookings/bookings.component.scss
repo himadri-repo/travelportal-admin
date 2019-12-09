@@ -103,3 +103,10 @@
 .datepicker-control {
     margin: 5px 10px;
 }
+
+.select-control {
+    -webkit-appearance: button;
+    border: 2px solid;
+    text-align-last: center;
+    cursor: pointer;
+}

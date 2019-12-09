@@ -10,14 +10,14 @@
     <mat-toolbar-row>
       <label>From Date</label>
       <mat-form-field class="datepicker-control">
-        <input matInput [matDatepicker]="picker1" [formControl]="fromdate" (dateChange)="dateFilterChanged(this)">
+        <input matInput [matDatepicker]="picker1" [(ngModel)]="fromdate" (dateChange)="dateFilterChanged(this)">
         <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
         <mat-datepicker #picker1></mat-datepicker>
       </mat-form-field>
 
       <label>To Date</label>
       <mat-form-field class="datepicker-control">
-        <input matInput [matDatepicker]="picker2" [formControl]="todate" (dateChange)="dateFilterChanged(this)">
+        <input matInput [matDatepicker]="picker2" [(ngModel)]="todate" (dateChange)="dateFilterChanged(this)">
         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
         <mat-datepicker #picker2></mat-datepicker>
       </mat-form-field>      
@@ -43,7 +43,7 @@
       <div class="page-header page-title page-title-section" id="header">
         <!--.page-header -->
         <h1 style="font-weight: 100; font-size: 1.5vw; color: #0000ff; width: 80%; display: inline-block">
-          {{booking.source_city}} TO {{booking.destination_city}} ( {{booking.trip_type}} WAY ) - {{booking.status}}
+          {{booking.source_city}} TO {{booking.destination_city}} ( {{booking.trip_type}} WAY ) - {{finalstatus}}
         </h1>
         <button (click)="onBack($event)" class="btn btn-primary" style="float:right"><i class="fa fa-sign-out" aria-hidden="true"></i> Back to Bookings</button>
       </div><!-- /.page-header -->
@@ -81,17 +81,17 @@
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.mobile.value : 'XXXXXXXXXX'}}</td>
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.email.value : 'XXXXXXXXXX@XXXXX.com'}}</td>
                     <td>
-                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;" *ngIf="(customer.controls.status.value==1) || customer.controls.status.value==8"/>
+                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;" *ngIf="(customer.controls.status.value==1 || customer.controls.status.value==8) && showpnr"/>
                       <span *ngIf="!(customer.controls.status.value==1 || customer.controls.status.value==8)">{{customer.controls.pnr.value}}</span>
                       <input id="cust-{{customer.controls.id.value}}" name="customer-{{customer.controls.id.value}}" type="hidden" formControlName="id"/>
                     </td>
                     <td>
-                      <input formControlName="airline_ticket_no" placeholder="Please provide Airline Ticket Number" style="width: 100%;" *ngIf="(customer.controls.status.value==1) || customer.controls.status.value==8"/>
+                      <input formControlName="airline_ticket_no" placeholder="Please provide Airline Ticket Number" style="width: 100%;" *ngIf="(customer.controls.status.value==1 || customer.controls.status.value==8) && showpnr"/>
                       <span *ngIf="!(customer.controls.status.value==1 || customer.controls.status.value==8)">{{customer.controls.airline_ticket_no.value}}</span>
                     </td>
                     <td>
                       <div class="" *ngIf="((customer.controls.status.value==1) || customer.controls.status.value==8 || customer.controls.status.value==3)">
-                        <select id="action" class="form-control" formControlName="action" (change)="passenger_status_change(customer, $event)">
+                        <select id="action" class="form-control select-control" formControlName="action" (change)="passenger_status_change(customer, $event)">
                           <option value="0"> -- Select --</option>
                           <option value="1">Pending</option>
                           <option value="2">Approved</option>
@@ -163,7 +163,7 @@
                 </tr>
                 <tr>
                   <th class="column-head"><div class="column-left">Seller Name</div><div class="column-right">{{booking.seller}}</div><div class="column-right">({{booking.seller_companyname}})</div></th>
-                  <th class="column-head"><div class="column-left">Status</div><div class="column-right blink_me">{{booking.status}}</div></th>
+                  <th class="column-head"><div class="column-left">Status</div><div class="column-right blink_me">{{finalstatus}}</div></th>
                 </tr>
               </table>
             </div>

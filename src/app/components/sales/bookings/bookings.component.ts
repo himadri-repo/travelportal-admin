@@ -14,6 +14,7 @@ import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
 import { CustomerInfo } from 'src/app/models/customerInfo';
 import { DatediffPipe } from 'src/app/common/datediff.pipe';
 import { BookingActivity } from 'src/app/models/booking_activity';
+import { PENDING } from '@angular/forms/src/model';
 
 @Component({
   selector: 'app-bookings',
@@ -27,8 +28,8 @@ export class BookingsComponent implements OnInit {
   public gridApi: any;
   public current_url: string;
   public gridColumnApi: any;
-  public fromdate = new FormControl((new Date()).toISOString()); // new FormControl(new Date());
-  public todate = new FormControl((new Date()).toISOString());
+  public fromdate = new Date(); // new FormControl(new Date());
+  public todate = new Date();
   public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your bookings are getting loaded ...</span>';
   public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
 
@@ -76,6 +77,9 @@ export class BookingsComponent implements OnInit {
   public selectedTicket: Ticket;
   public action = 'pass';
   public isAllPAXRejected = false;
+  public showpnr = true;
+  public finalstatus = '';
+
   // @Output() navigationChangeEvent = new EventEmitter<string>();
 
   constructor(private router: Router, private commonService: CommonService, private authenticationService: AuthenticationService,
@@ -88,6 +92,8 @@ export class BookingsComponent implements OnInit {
     this.currentUser = this.authenticationService.currentLoggedInUser;
     this.tickets = [];
     this.current_url = this.router.url;
+    this.fromdate = new Date();
+    this.todate = new Date();
 
     this.init(new Booking(), this.tickets);
 
@@ -103,8 +109,37 @@ export class BookingsComponent implements OnInit {
     const year = d.getFullYear();
 
     // this.fromdate = new FormControl(new Date(year + '-' + mth + '-01'));
-    this.fromdate = new FormControl(new Date());
-    this.todate = new FormControl(new Date());
+    let supl_booking_status = null;
+    this.finalstatus = booking.status;
+    if (this.assignedSuppliers && this.assignedSuppliers.length > 0) {
+      supl_booking_status = this.getSupplierBookingStatus(this.assignedSuppliers);
+    } else {
+      supl_booking_status = booking.status;
+    }
+    const seller_booking_status = booking.status;
+    let pnr = booking.pnr;
+    let ticket_no = '';
+
+    if (booking && booking.ticket) {
+      if (supl_booking_status && seller_booking_status && supl_booking_status === seller_booking_status && seller_booking_status === 'APPROVED') {
+        pnr = booking.pnr;
+        this.showpnr = true;
+        this.finalstatus = 'APPROVED';
+      } else {
+        pnr = 'xxxxxxxxxx';
+        ticket_no = 'xxxxxxxxxxxx';
+        if (booking.seller_companyid ===  booking.ticket.companyid) {
+          this.showpnr = true;
+        } else {
+          this.showpnr = false;
+        }
+        if (parseInt(booking.parent_booking_id, 10) > 0) {
+          this.finalstatus = 'PENDING AT SUPPLIER';
+        } else {
+          this.finalstatus = 'PENDING AT SELLER';
+        }
+      }
+    }
 
     this.handlebookingform = this.formBuilder.group({
       id: new FormControl(booking.id),
@@ -113,6 +148,22 @@ export class BookingsComponent implements OnInit {
       tickets: this.formBuilder.array(this.createTicketControls(tickets)),
       notes: new FormControl(booking.notes),
     }, {});
+  }
+
+  getSupplierBookingStatus(suppliers) {
+    let status = 'APPROVED';
+    if (!suppliers) {
+      return status;
+    }
+
+    for (let index = 0; index < suppliers.length; index++) {
+      const supplier = suppliers[index];
+      if (supplier && supplier.status === 'PENDING') {
+        status = 'PENDING';
+      }
+    }
+
+    return status;
   }
 
   createCustomerControls(customers: CustomerInfo[]): FormGroup[] {
@@ -194,7 +245,7 @@ export class BookingsComponent implements OnInit {
       this.gridApi.showLoadingOverlay();
     }
     self.bookings = null;
-    this.adminService.getBookings(companyid, 0, {fromdate: moment(this.fromdate.value).format('YYYY-MM-DD 00:00:00'), todate: moment(this.todate.value).format('YYYY-MM-DD 23:59:59')}).subscribe((res: any[]) => {
+    this.adminService.getBookings(companyid, 0, {fromdate: moment(this.fromdate).format('YYYY-MM-DD 00:00:00'), todate: moment(this.todate).format('YYYY-MM-DD 23:59:59')}).subscribe((res: any[]) => {
       if (res !== null && res !== undefined && res.length > 0) {
         this.gridApi.hideOverlay();
         self.bookings = res;
@@ -541,9 +592,13 @@ export class BookingsComponent implements OnInit {
       if (bookings.length > 0 && this.booking.qty === pendingQty) {
         this.adminService.saveBooking({bookings, selectedticket, originalbooking: this.booking, 'price_diff_action': this.action}).subscribe((res: any) => {
           // I think response has come. Now we should change the status of originiting booking
+          const status = 4;
+          // if (res && res.feedback && res.feedback.sale_type === 'live') {
+          //   status = 2;
+          // }
           const mainBooking: any = {};
           mainBooking.id = this.booking.id;
-          mainBooking.status = 4; // Processing
+          mainBooking.status = status; // Processing
           mainBooking.parent_booking_id = this.booking.parent_booking_id;
           mainBooking.pnr = this.booking.pnr;
           mainBooking.notes = this.f.notes.value;
@@ -864,15 +919,31 @@ export class BookingsComponent implements OnInit {
   }
 
   getTicketRate(objBooking) {
-    return parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10);
-  }
+    const seller_companyid = parseInt(objBooking.seller_companyid, 10);
+    const ticket_ownerid = parseInt(objBooking.ticket.companyid, 10);
+    const isticketowner = seller_companyid === ticket_ownerid;
+
+    if (!isticketowner) {
+      return parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10);
+    } else {
+      return parseInt(objBooking.rate, 10);
+    }
+}
 
   getSubTotal(objBooking) {
-    return (parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10)) * parseInt(objBooking.qty, 10);
+    const seller_companyid = parseInt(objBooking.seller_companyid, 10);
+    const ticket_ownerid = parseInt(objBooking.ticket.companyid, 10);
+    const isticketowner = seller_companyid === ticket_ownerid;
+
+    if (!isticketowner) {
+      return (parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10)) * parseInt(objBooking.qty, 10);
+    } else {
+      return (parseInt(objBooking.rate, 10)) * parseInt(objBooking.qty, 10);
+    }
   }
 
   dateFilterChanged(datevalue) {
-    console.log(`From Date : ${moment(this.fromdate.value).format('YYYY-MM-DD')} | To Date : ${moment(this.todate.value).format('YYYY-MM-DD')}`);
+    console.log(`From Date : ${moment(this.fromdate).format('YYYY-MM-DD')} | To Date : ${moment(this.todate).format('YYYY-MM-DD')}`);
     this.RefreshData(this.currentUser.companyid);
   }
 }
