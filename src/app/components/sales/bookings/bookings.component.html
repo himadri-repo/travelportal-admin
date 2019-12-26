@@ -81,7 +81,8 @@
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.mobile.value : 'XXXXXXXXXX'}}</td>
                     <td>{{booking.parent_booking_id == 0 ? customer.controls.email.value : 'XXXXXXXXXX@XXXXX.com'}}</td>
                     <td>
-                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;" *ngIf="(customer.controls.status.value==1 || customer.controls.status.value==8) && showpnr"/>
+                      <!-- (change)="handleChange(ticket.controls.tktid.value, ticket.controls.select, $event)" -->
+                      <input formControlName="pnr" placeholder="Please provide PNR" style="width: 100%;" *ngIf="(customer.controls.status.value==1 || customer.controls.status.value==8) && showpnr" (input)="handlePNRChange(customer, $event)"/>
                       <span *ngIf="!(customer.controls.status.value==1 || customer.controls.status.value==8)">{{customer.controls.pnr.value}}</span>
                       <input id="cust-{{customer.controls.id.value}}" name="customer-{{customer.controls.id.value}}" type="hidden" formControlName="id"/>
                     </td>

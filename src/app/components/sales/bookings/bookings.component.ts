@@ -686,6 +686,13 @@ export class BookingsComponent implements OnInit {
 
           if (true) {
             this.adminService.saveBooking([mainbooking]).subscribe((res1: any) => {
+              if (res1 && res1.length > 0 && res1[0].feedback) {
+                const feedback = res1[0].feedback;
+
+                if(!feedback.status && feedback.message) {
+                  alert(feedback.message);
+                }
+              }
               this.onBack(ev);
             });
           }
@@ -945,5 +952,16 @@ export class BookingsComponent implements OnInit {
   dateFilterChanged(datevalue) {
     console.log(`From Date : ${moment(this.fromdate).format('YYYY-MM-DD')} | To Date : ${moment(this.todate).format('YYYY-MM-DD')}`);
     this.RefreshData(this.currentUser.companyid);
+  }
+
+  handlePNRChange(customer, $event) {
+    const customers = this.f.customers.value;
+    const pnr = customer.controls.pnr.value;
+    if (pnr && pnr !== '') {
+      // customer.controls.action.value = 2;
+      customer.controls.action.setValue(2);
+    } else {
+      customer.controls.action.setValue(3);
+    }
   }
 }
