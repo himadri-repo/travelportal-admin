@@ -44,7 +44,7 @@ export class CompanyinfoComponent implements OnInit {
       if (users && users.length > 0) {
         this.employees = [];
         users.forEach(user => {
-          if (user.type === 'EMP') {
+          if (user.type === 'EMP' || (user.type === 'B2B' && parseInt(user.is_admin.toString(), 10) === 1)) {
             this.employees.push(user);
           }
         });

@@ -930,7 +930,7 @@ export class BookingsComponent implements OnInit {
     const ticket_ownerid = parseInt(objBooking.ticket.companyid, 10);
     const isticketowner = seller_companyid === ticket_ownerid;
 
-    if (!isticketowner) {
+    if (isticketowner) {
       return parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10);
     } else {
       return parseInt(objBooking.rate, 10);
@@ -938,15 +938,17 @@ export class BookingsComponent implements OnInit {
 }
 
   getSubTotal(objBooking) {
-    const seller_companyid = parseInt(objBooking.seller_companyid, 10);
-    const ticket_ownerid = parseInt(objBooking.ticket.companyid, 10);
-    const isticketowner = seller_companyid === ticket_ownerid;
+    // const seller_companyid = parseInt(objBooking.seller_companyid, 10);
+    // const ticket_ownerid = parseInt(objBooking.ticket.companyid, 10);
+    // const isticketowner = seller_companyid === ticket_ownerid;
 
-    if (!isticketowner) {
-      return (parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10)) * parseInt(objBooking.qty, 10);
-    } else {
-      return (parseInt(objBooking.rate, 10)) * parseInt(objBooking.qty, 10);
-    }
+    // if (isticketowner) {
+    //   return (parseInt(objBooking.rate, 10) + parseInt(objBooking.markup, 10)) * parseInt(objBooking.qty, 10);
+    // } else {
+    //   return (parseInt(objBooking.rate, 10)) * parseInt(objBooking.qty, 10);
+    // }
+
+    return this.getTicketRate(objBooking) * parseInt(objBooking.qty, 10);
   }
 
   dateFilterChanged(datevalue) {
