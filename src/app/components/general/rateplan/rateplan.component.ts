@@ -142,8 +142,10 @@ export class RateplanComponent implements OnInit {
       assignedto_whl: new FormControl((this.currentRateplan.assigned_to & 2) === 2),
       assignedto_ta: new FormControl((this.currentRateplan.assigned_to & 4) === 4),
       assignedto_rc: new FormControl((this.currentRateplan.assigned_to & 8) === 8),
-      active: new FormControl(this.currentRateplan.active),
-      default: new FormControl(this.currentRateplan.default),
+      // tslint:disable-next-line: triple-equals
+      active: new FormControl(this.currentRateplan.active == 1),
+      // tslint:disable-next-line: triple-equals
+      default: new FormControl(this.currentRateplan.default == 1),
       headname: new FormControl(this.currentRateplanDetail.head_name, Validators.required),
       accounthead: new FormControl(this.currentRateplanDetail.head_code, [Validators.required, ValidateAccountHead]),
       amount: new FormControl(this.currentRateplanDetail.amount, Validators.required),
