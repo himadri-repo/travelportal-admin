@@ -500,4 +500,8 @@ export class AdminService {
   public save_bankdetails(companyid, bankdetails) {
     return this.httpClient.post(this.baseUrl + `/save/company/bankdetails`, {companyid, bankdetails});
   }
+
+  public cloneTicket(companyid, ticketid, metadata) {
+    return this.httpClient.post(this.baseUrl + `/company/ticket/clone`, {companyid, ticketid, ...metadata});
+  }
 }

@@ -110,3 +110,27 @@
     text-align-last: center;
     cursor: pointer;
 }
+.title {
+    background-color: #ffffff;
+    padding: 10px 5px;
+}
+
+.title:after {
+    content: "";
+    display: block;
+    width: 100%;
+    padding-top: 10px;
+    border-top: 1px solid #a8aaaf;
+    transition: .5s;    
+}
+.form-control-field {
+    width: 95%;
+    display: inline-block;
+    margin: 0px 5px;
+}
+.form-control-label {
+    padding: 7px 10px;
+    text-align: right;
+    color: #2679b5;
+    font-size: 15px;    
+}

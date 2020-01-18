@@ -7,7 +7,7 @@ import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { Supplier } from 'src/app/models/supplier';
 import { Ticket } from 'src/app/models/ticket';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import * as moment from 'moment';
 import { Booking } from 'src/app/models/booking';
 import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
@@ -15,6 +15,12 @@ import { CustomerInfo } from 'src/app/models/customerInfo';
 import { DatediffPipe } from 'src/app/common/datediff.pipe';
 import { BookingActivity } from 'src/app/models/booking_activity';
 import { PENDING } from '@angular/forms/src/model';
+
+
+export interface DialogData {
+  ticket: Ticket;
+  current_user: User;
+}
 
 @Component({
   selector: 'app-bookings',
@@ -29,6 +35,7 @@ export class BookingsComponent implements OnInit {
   public current_url: string;
   public gridColumnApi: any;
   public fromdate = new Date(); // new FormControl(new Date());
+  public lastGridRow: any;
   public todate = new Date();
   public overlayLoadingTemplate = '<span class="ag-overlay-loading-center" style="font-weight: 600; color: #0000ff">Please wait while your bookings are getting loaded ...</span>';
   public overlayNoRowsTemplate = '<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow;\">No records found</span>';
@@ -69,6 +76,7 @@ export class BookingsComponent implements OnInit {
   public fullyProcessed = false;
   public allApproved = false;
   public handlebookingform: FormGroup;
+  public handlecloneticket: FormGroup;
   public processed_qty = 0;
   public approved_qty = 0;
   public booking_req_qty = 0;
@@ -78,6 +86,8 @@ export class BookingsComponent implements OnInit {
   public action = 'pass';
   public isAllPAXRejected = false;
   public showpnr = true;
+  public showclone = false;
+  public tobeClonedTicket = null;
   public finalstatus = '';
 
   // @Output() navigationChangeEvent = new EventEmitter<string>();
@@ -148,6 +158,37 @@ export class BookingsComponent implements OnInit {
       tickets: this.formBuilder.array(this.createTicketControls(tickets)),
       notes: new FormControl(booking.notes),
     }, {});
+
+    const ticket = this.booking ? this.booking.ticket : null;
+    this.init_cloneform(ticket);
+  }
+
+  init_cloneform(ticket) {
+    if (ticket) {
+      this.handlecloneticket = this.formBuilder.group({
+        flight_no: new FormControl(ticket.flight_no),
+        no_of_pax: new FormControl(this.booking.qty),
+        price: new FormControl(ticket.costprice),
+        dept_date: new FormControl(moment(ticket.departure_date_time).format('YYYY-MM-DD')),
+        arrv_date: new FormControl(moment(ticket.arrival_date_time).format('YYYY-MM-DD')),
+        dept_time: new FormControl(moment(ticket.departure_date_time).format('HH:mm')),
+        arrv_time: new FormControl(moment(ticket.arrival_date_time).format('HH:mm')),
+        tag: new FormControl(''),
+        tktid: new FormControl(parseInt(ticket.tktid, 10))
+      }, {});
+    } else {
+      this.handlecloneticket = this.formBuilder.group({
+        flight_no: new FormControl(''),
+        no_of_pax: new FormControl(0),
+        price: new FormControl(0.00),
+        dept_date: new FormControl(moment().format('YYYY-MM-DD')),
+        arrv_date: new FormControl(moment().format('YYYY-MM-DD')),
+        dept_time: new FormControl('00:00'),
+        arrv_time: new FormControl('00:00'),
+        tag: new FormControl(''),
+        tktid: new FormControl(0)
+      }, {});
+    }
   }
 
   getSupplierBookingStatus(suppliers) {
@@ -226,7 +267,10 @@ export class BookingsComponent implements OnInit {
         costprice: new FormControl(ticket.cost_price),
         no_of_person: new FormControl(ticket.no_of_person),
         order_qty: new FormControl(this.booking.qty),
-        status:  new FormControl((select === 1) ? 2 : 0)
+        status:  new FormControl((select === 1) ? 2 : 0),
+        companyid: new FormControl(ticket.companyid),
+        // tslint:disable-next-line: triple-equals
+        ownticket: new FormControl(ticket.companyid == this.currentUser.companyid)
       }));
     });
 
@@ -341,6 +385,8 @@ export class BookingsComponent implements OnInit {
 
   onRowSelected(mode, row) {
     if (row.node.selected) {
+      this.showclone = false;
+      this.lastGridRow = row;
       const parentObj = this;
       parentObj.booking = row.data;
       // parentObj.init(row.data, parentObj.tickets);
@@ -965,5 +1011,43 @@ export class BookingsComponent implements OnInit {
     } else {
       customer.controls.action.setValue(3);
     }
+  }
+
+  showCloneForm(ticket_control, $event) {
+    this.showclone = true;
+    this.tobeClonedTicket = ticket_control.value;
+    this.init_cloneform(this.tobeClonedTicket);
+  }
+
+  closeCloneForm($event) {
+    this.showclone = false;
+    this.init_cloneform(this.booking.ticket);
+  }
+
+  onHandleTicketClone($event) {
+    const self = this;
+    const ticket_data = this.handlecloneticket.value;
+    const dept_date_time = moment(ticket_data.dept_date + ' ' + ticket_data.dept_time);
+    const arrv_date_time = moment(ticket_data.arrv_date + ' ' + ticket_data.arrv_time);
+    const ticketid = parseInt(this.tobeClonedTicket.tktid, 10);
+
+    this.adminService.cloneTicket(parseInt(this.currentUser.companyid.toString(), 10), ticketid, {
+      'current_userid': parseInt(this.currentUser.id.toString(), 10),
+      'ticketid': ticketid,
+      'flight_no': ticket_data.flight_no,
+      'no_of_pax': ticket_data.no_of_pax,
+      'price': ticket_data.price,
+      'tag': ticket_data.tag
+    }).subscribe((res: any[]) => {
+      if (res !== null && res !== undefined) {
+        // this.gridApi.hideOverlay();
+        // self.bookings = res;
+        // self.onBack(null);
+        alert('Ticket successfully cloned');
+        self.onRowSelected('show', self.lastGridRow);
+      } else {
+        alert('Unable to process now. Please try after some time');
+      }
+    });
   }
 }
