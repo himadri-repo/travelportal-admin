@@ -27,12 +27,14 @@ export class SuppliersearchComponent implements OnInit {
       {headerName: 'Address', field: 'address', sortable: true, filter: true, resizable: true, width: 120},
       {headerName: 'Email', field: 'email', sortable: true, filter: true, resizable: true, width: 200, cellRenderer: 'emailrenderer'},
       {headerName: 'Services', field: 'services', sortable: true, filter: true, resizable: true, width: 350},
+      {headerName: 'Stats', field: 'Circle', sortable: true, filter: true, resizable: true, width: 200, cellRenderer: 'statrenderer'},
       {headerName: 'Actions', field: 'id', sortable: true, filter: true, resizable: true, width: 200, cellRenderer: 'actionsrenderer', cellRendererParams: {onInviteClick: this.sendMessage.bind(this), onCommunicationClick: this.readMessage.bind(this)}},
   ];
 
   public components = {
     actionsrenderer: this.actionsrenderer.bind(this),
     emailrenderer: this.emailrenderer.bind(this),
+    statrenderer: this.statrenderer.bind(this),
     companynamerenderer: this.companynamerenderer.bind(this)
   };
 
@@ -49,8 +51,24 @@ export class SuppliersearchComponent implements OnInit {
 
   }
 
+  statrenderer(params): any {
+    const element = document.createElement('span');
+    // element.href = 'mailto: ' + params.value;
+    const data = params.data;
+    element.appendChild(document.createTextNode(`Sectors #: ${data.Circle} | Ticket #: ${data.Ticket_Count}`));
+    // const el1 = document.createElement('div');
+    // el1.appendChild(document.createTextNode(`Circle # : ${data.Circle}`));
+    // element.appendChild(el1);
+    // const el2 = document.createElement('div');
+    // el2.appendChild(document.createTextNode(`Ticket # : ${data.Ticket_Count}`));
+    // element.appendChild(el2);
+
+    return element;
+  }
+
   emailrenderer(params): any {
     const element = document.createElement('a');
+    const data = params.data;
     element.href = 'mailto: ' + params.value;
     element.appendChild(document.createTextNode(params.value));
     return element;
