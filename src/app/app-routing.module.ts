@@ -16,6 +16,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UseractivityComponent } from './components/useractivity/useractivity.component';
 import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
 import { ProfileComponent } from './components/general/profile/profile.component';
+import { UserQueryComponent } from './components/users/user-query/user-query.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -37,6 +38,7 @@ const routes: Routes = [
   {path: 'admin/profile', component: ProfileComponent},
   {path: 'admin/dashboard', component: DashboardComponent},
   {path: 'admin/useractivity', component: UseractivityComponent},
+  {path: 'admin/userquery', component: UserQueryComponent},
   {path: 'admin/pnrsearch', component: PnrsearchComponent},
   {path: 'admin/:uuid', component: AppComponent},
   {path: '**', component: AppComponent}

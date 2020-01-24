@@ -54,6 +54,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { CompanyinfoComponent } from './components/general/profile/companyinfo/companyinfo.component';
 import { BanklistComponent } from './components/general/profile/banklist/banklist.component';
 import { BankinfoComponent } from './components/general/profile/bankinfo/bankinfo.component';
+import { UserQueryComponent } from './components/users/user-query/user-query.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { BankinfoComponent } from './components/general/profile/bankinfo/bankinf
     PnrsearchComponent,
     CompanyinfoComponent,
     BanklistComponent,
-    BankinfoComponent
+    BankinfoComponent,
+    UserQueryComponent
   ],
   imports: [
     BrowserModule,

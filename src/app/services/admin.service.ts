@@ -504,4 +504,8 @@ export class AdminService {
   public cloneTicket(companyid, ticketid, metadata) {
     return this.httpClient.post(this.baseUrl + `/company/ticket/clone`, {companyid, ticketid, ...metadata});
   }
+
+  public getUserQueries(companyid: number, status: number, filter: any): any {
+    return this.httpClient.post(this.baseUrl + `/users/queries`, {companyid, filter, status});
+  }
 }
