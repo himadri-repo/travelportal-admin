@@ -238,7 +238,8 @@ export class InviteComponent implements OnInit {
         communicationDetail.to_companyid = this.inviteeid;
         communicationDetail.type = postedForm.type;
         if (postedForm.type === 1) {
-          communicationDetail.invitation_type = (this.title.toLocaleLowerCase() === 'INVITE_WHOLESALER') ? 1 : 2;
+          // communicationDetail.invitation_type = (this.title.toLocaleLowerCase() === 'INVITE_WHOLESALER') ? 1 : 2;
+          communicationDetail.invitation_type = this.invitation_type;
         }
         communicationDetail.ref_no = '';
         this.communication.details.push(communicationDetail);

@@ -126,6 +126,9 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <label>Message</label>
+                  <div *ngIf="submitted && g.message.errors" class="alert alert-danger">
+                    <div *ngIf="g.message.errors.required">Please provide some notes to your connecting partner</div>
+                  </div>                  
                   <app-ngx-editor name="message" [placeholder]="'Enter text here...'" [width]="'95%'" [minHeight]="'200px'" [spellcheck]="true" formControlName="message" required></app-ngx-editor>
                 </div>
               </div>
