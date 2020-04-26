@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_CHECKBOX_CLICK_ACTION } from '@angular/material';
+import { MAT_CHECKBOX_CLICK_ACTION } from '@angular/material/checkbox';
 import * as moment from 'moment';
 import * as uuid from 'uuid';
 import { FormGroup, FormBuilder, FormControl, Validators, ValidatorFn } from '@angular/forms';

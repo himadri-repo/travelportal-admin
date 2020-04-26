@@ -18,11 +18,28 @@ import { SuppliersComponent } from './components/suppliers/suppliers.component';
 import { CustomersComponent } from './components/customers/customers.component';
 import { TicketsComponent } from './components/tickets/tickets.component';
 
-import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatFormFieldControl, MatRippleModule, MatTooltipModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, MAT_DATE_FORMATS } from '@angular/material';
+// import { MatToolbarModule, MatDialogModule, MatCheckboxModule, MatRadioModule, MatSelectModule,
+// MatFormFieldControl
+// MatInputModule, MatDatepickerModule, MatNativeDateModule, MAT_DATE_FORMATS } from '@angular/material';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+// import { MatFormFieldControl } from '@angular/material/form-field';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatPaginatorModule} from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 import { CustomerinfoComponent } from './components/customers/customerinfo/customerinfo.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { WholesalerSearchComponent } from './components/wholesalers/search/wholesalersearch.component';

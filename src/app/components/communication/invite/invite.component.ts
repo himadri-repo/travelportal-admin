@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import * as moment from 'moment';
 import * as uuid from 'uuid';
 import { FormGroup, FormBuilder, FormControl, Validators, ValidatorFn } from '@angular/forms';

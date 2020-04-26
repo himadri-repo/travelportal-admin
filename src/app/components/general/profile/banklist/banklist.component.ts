@@ -7,13 +7,18 @@ import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { Supplier } from 'src/app/models/supplier';
 import { Ticket } from 'src/app/models/ticket';
-import {MatDialog, MatDialogConfig, MatDialogRef, MatPaginator, MatTableDataSource, MatRipple, MatSort, MatTabChangeEvent, MatRadioChange} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
+import {MatRipple} from '@angular/material/core';
+import {MatSort} from '@angular/material/sort';
+import {MatTabChangeEvent} from '@angular/material/tabs';
+import {MatRadioChange} from '@angular/material/radio';
+// MatTabChangeEvent, MatRadioChange
 import { FormBuilder } from '@angular/forms';
 import { Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-// import {MatPaginator} from '@angular/material/paginator';
-// import {MatTableDataSource} from '@angular/material/table';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource} from '@angular/material/table';
 import * as moment from 'moment';
 import { City } from 'src/app/models/city';
 import { Airline } from 'src/app/models/airline';

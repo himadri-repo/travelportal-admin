@@ -14,7 +14,7 @@ import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
 import { CustomerInfo } from 'src/app/models/customerInfo';
 import { DatediffPipe } from 'src/app/common/datediff.pipe';
 import { BookingActivity } from 'src/app/models/booking_activity';
-import { PENDING } from '@angular/forms/src/model';
+// import { PENDING } from '@angular/forms/src/model';
 
 
 export interface DialogData {

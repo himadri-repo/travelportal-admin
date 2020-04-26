@@ -6,7 +6,7 @@ import { User } from 'src/app/models/user';
 import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { Supplier } from 'src/app/models/supplier';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationComponent } from '../shared/confirmation/confirmation.component';
 import { Rateplan } from 'src/app/models/rateplan';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';

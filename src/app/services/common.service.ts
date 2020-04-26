@@ -19,7 +19,15 @@ export class CommonService {
   }
 
   setTitle(title: string) {
-    this.dataObs$.next(title);
+    try
+    {
+      setTimeout(() => {
+        this.dataObs$.next(title);
+      });
+    }
+    catch(ex) {
+      console.log(`Error => ${ex.message}`);
+    }
   }
 
   getAuthenticated() {

@@ -7,7 +7,14 @@ import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { Supplier } from 'src/app/models/supplier';
 import { Ticket } from 'src/app/models/ticket';
-import {MatDialog, MatDialogConfig, MatDialogRef, MatPaginator, MatTableDataSource, MatRipple, MatSort, MatTabChangeEvent, MatRadioChange} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatRipple} from '@angular/material/core';
+import {MatSort} from '@angular/material/sort';
+import {MatTabChangeEvent} from '@angular/material/tabs';
+import {MatRadioChange} from '@angular/material/radio';
+
 import { FormBuilder } from '@angular/forms';
 import { Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';

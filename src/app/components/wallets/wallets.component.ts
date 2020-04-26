@@ -7,7 +7,9 @@ import { UsersService } from 'src/app/services/users.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { Supplier } from 'src/app/models/supplier';
 import { Ticket } from 'src/app/models/ticket';
-import {MatDialog, MatDialogConfig, MatDialogRef, MatPaginator, MatTableDataSource, MatRipple, MatSort, MatTabChangeEvent, MatRadioChange} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
+import {MatPaginator} from '@angular/material/paginator'
+// MatTableDataSource, MatRipple, MatSort, MatTabChangeEvent, MatRadioChange
 // import {MatPaginator} from '@angular/material/paginator';
 // import {MatTableDataSource} from '@angular/material/table';
 import * as moment from 'moment';
@@ -17,6 +19,9 @@ import { Airline } from 'src/app/models/airline';
 import * as $ from 'jquery';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Company } from 'src/app/models/company';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatRadioChange } from '@angular/material/radio';
 
 @Component({
   selector: 'app-wallets',

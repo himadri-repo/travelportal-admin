@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { User } from 'src/app/models/user';
 import { Company } from 'src/app/models/company';
 import { AdminService } from 'src/app/services/admin.service';
-import { MatStepper } from '@angular/material';
+import { MatStepper } from '@angular/material/stepper';
 
 @Component({
   selector: 'app-profile',

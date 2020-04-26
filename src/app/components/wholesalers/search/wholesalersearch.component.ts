@@ -6,7 +6,7 @@ import { UsersService } from 'src/app/services/users.service';
 import { CommonService } from 'src/app/services/common.service';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { AdminService } from 'src/app/services/admin.service';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import { InviteComponent } from '../../communication/invite/invite.component';
 import { Wholesaler } from 'src/app/models/wholesaler';
 
