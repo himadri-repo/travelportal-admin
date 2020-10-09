@@ -146,7 +146,7 @@
                   <th class="column-head"><div class="column-left">Booking Date.</div><div class="column-right">{{booking.date | date:'dd-MMM-yyyy hh:mm:ss aa'}}</div></th>
                   <td rowspan="2" style="padding: 0px;">
                     <div class="column-left column-head column-title">Ticket Rate</div><div class="column-right">{{getTicketRate(booking)}}</div>
-                    <div class="column-left column-head column-title">Qty</div><div class="column-right">{{booking.qty}}</div>
+                    <div class="column-left column-head column-title">Qty</div><div class="column-right">{{booking.qty}} + {{booking.infant}}</div>
                     <div class="column-left column-head column-title">Sub Total</div><div class="column-right">{{getSubTotal(booking)}}</div>
                     <div class="column-left column-head column-title">Service Charge</div><div class="column-right">{{booking.service_charge}}</div>
                     <div class="column-left column-head column-title">GST</div><div class="column-right">{{booking.igst}}</div>

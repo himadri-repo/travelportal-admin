@@ -10,6 +10,7 @@ export class CustomerInfo {
     mobile: string;
     age: number;
     email: number;
+    passenger_type: number;
     pnr: string;
     ticket_fare: number;
     costprice: number;

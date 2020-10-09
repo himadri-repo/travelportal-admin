@@ -227,6 +227,7 @@ export class BookingsComponent implements OnInit {
         age: new FormControl(customer.age),
         mobile: new FormControl(`${customer.mobile_no}`),
         email: new FormControl(customer.email),
+        type: new FormControl(customer.passenger_type),
         pnr: new FormControl(customer.pnr),
         airline_ticket_no: new FormControl(customer.airline_ticket_no),
         refrence_id: new FormControl(customer.refrence_id),
@@ -456,7 +457,11 @@ export class BookingsComponent implements OnInit {
         }
       });
 
-      parentObj.booking.ticket_rate = (parentObj.booking.total / parentObj.booking.qty);
+      parentObj.booking.infant = parentObj.booking.infant || 0;
+      parentObj.booking.infant_price = parentObj.booking.infant_price || 0.00;
+
+      const infant_price = (parentObj.booking.infant_price * parentObj.booking.infant);
+      parentObj.booking.ticket_rate = ((parentObj.booking.total - infant_price)/ parentObj.booking.qty);
       console.log(`Ticket Rate => ${parentObj.booking.ticket_rate}`);
       this.mode = 'edit';
       // alert(inboxMessage.message);
@@ -470,6 +475,9 @@ export class BookingsComponent implements OnInit {
     // let pendingQty = 0;
 
     customers.forEach((customer, idx) => {
+      // if(parseInt(customer.type, 10) === 3) {
+      //   return;
+      // }
       const customerStatus = parseInt(customer.status, 10);
       const refid = parseInt(customer.refrence_id, 10);
       bookingQty++;
@@ -570,6 +578,9 @@ export class BookingsComponent implements OnInit {
     if (customers !== null && customers.length > 0) {
       pendingQty = 0;
       customers.forEach((customer, idx) => {
+        if(parseInt(customer.type, 10) === 3) {
+          return;
+        }
         this.booking.customers[idx].status = customer.action;
         if (parseInt(customer.action, 10) === 1) {
           this.booking.customers[idx].refrence_id = 0;
@@ -629,7 +640,7 @@ export class BookingsComponent implements OnInit {
       let selectedticket = null;
       orderedOthersTickets.forEach(ticket => {
         selectedticket = ticket;
-        const refBooking = this.getBookingFromSelectedTicket(ticket, this.booking.customers);
+        const refBooking = this.getBookingFromSelectedTicket(ticket, this.booking.customers, this.booking);
         if (refBooking.customers && refBooking.customers.length > 0) {
           bookings.push(refBooking);
         }
@@ -757,12 +768,15 @@ export class BookingsComponent implements OnInit {
     alert('Going to reject the booking from seller\'s end');
   }
 
-  getBookingFromSelectedTicket(ticket, customers) {
+  getBookingFromSelectedTicket(ticket, customers, cbooking) {
     const refBooking: any = {}; // new Booking();
     refBooking.activity = [{}]; // [new BookingActivity()];
 
     refBooking.id = -1;
     refBooking.qty = parseInt(ticket.ordered_qty, 10);
+
+    const infant = parseInt(cbooking.infant, 10);
+    const infant_price = parseFloat(cbooking.infant_price);
 
     if (parseInt(ticket.ordered_status, 10) === 1) {
       refBooking.status = '64'; // This will be request for hold
@@ -785,9 +799,12 @@ export class BookingsComponent implements OnInit {
     refBooking.sgst = parseFloat(ticket.spl_sgst);
     refBooking.igst = parseFloat(ticket.spl_igst);
     refBooking.total = ((refBooking.price + refBooking.markup + refBooking.srvchg + refBooking.cgst + refBooking.sgst) - parseFloat(ticket.spl_disc))  * parseFloat(refBooking.qty);
+    refBooking.total += infant_price * infant;
     refBooking.costprice = parseFloat(ticket.total);
     refBooking.rateplanid = ticket.rate_plan_id;
     refBooking.adult = refBooking.qty;
+    refBooking.infant = infant;
+    refBooking.infant_price = infant_price;
     refBooking.created_by = this.currentUser.id;
     refBooking.created_on = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -814,7 +831,7 @@ export class BookingsComponent implements OnInit {
     let indx = 0;
     let processedIndx = 0;
     const selectedCustomers: any = [];
-    while (customers && customers.length > 0 && indx < customers.length && processedIndx < refBooking.qty) {
+    while (customers && customers.length > 0 && indx < customers.length && processedIndx < (refBooking.qty+infant)) {
       // Ignore removed customers
       if ((parseInt(customers[indx].refrence_id, 10) === 0 || parseInt(customers[indx].status, 10) === 3) && parseInt(customers[indx].status, 10) !== 127) {
         const selectedCustomer: any = {};
@@ -994,7 +1011,7 @@ export class BookingsComponent implements OnInit {
     //   return (parseInt(objBooking.rate, 10)) * parseInt(objBooking.qty, 10);
     // }
 
-    return this.getTicketRate(objBooking) * parseInt(objBooking.qty, 10);
+    return this.getTicketRate(objBooking) * parseInt(objBooking.qty, 10) + (parseInt(objBooking.infant, 10) * parseFloat(objBooking.infant_price));
   }
 
   dateFilterChanged(datevalue) {
@@ -1044,6 +1061,7 @@ export class BookingsComponent implements OnInit {
         // self.bookings = res;
         // self.onBack(null);
         alert('Ticket successfully cloned');
+        self.onRowSelected.bind(self);
         self.onRowSelected('show', self.lastGridRow);
       } else {
         alert('Unable to process now. Please try after some time');
