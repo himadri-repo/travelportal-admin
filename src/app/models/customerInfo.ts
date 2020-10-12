@@ -9,6 +9,7 @@ export class CustomerInfo {
     last_name: string;
     mobile: string;
     age: number;
+    dob:Date;
     email: number;
     passenger_type: number;
     pnr: string;
