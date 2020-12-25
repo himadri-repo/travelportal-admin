@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Customer } from 'src/app/models/customer';
+import { Customer, Transaction } from 'src/app/models/customer';
 import * as moment from 'moment';
 import * as uuid from 'uuid';
 import { FormGroup, FormBuilder, FormControl, Validators, ValidatorFn } from '@angular/forms';
@@ -10,6 +10,9 @@ import { User } from 'src/app/models/user';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Rateplan } from 'src/app/models/rateplan';
 import { Metadata } from 'src/app/models/metadata';
+import { MatTableDataSource } from '@angular/material/table';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-customerinfo',
@@ -24,6 +27,13 @@ export class CustomerinfoComponent implements OnInit {
   public rateplans: Rateplan[];
   public states: Metadata[];
   public countries: Metadata[];
+  public CustomerTransactionsSource: MatTableDataSource<Transaction>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sorter: MatSort;
+
+  public tabindex = 0;
+
+  displayedColumns: string[] = ['rowIndex', 'trans_date', 'narration', 'debit', 'credit', 'balance'];  
 
   constructor(@Inject(MAT_DIALOG_DATA) public data, public dialogRef: MatDialogRef<CustomerinfoComponent>,
               private formBuilder: FormBuilder, private adminService: AdminService, private authenticationService: AuthenticationService) {
@@ -66,6 +76,11 @@ export class CustomerinfoComponent implements OnInit {
           this.customerInfoData.address = customer.address;
           this.customerInfoData.state = customer.state;
           this.customerInfoData.country = customer.country;
+          this.customerInfoData.transactions = this.get_customer_transactions(customer.transactions);
+
+          this.CustomerTransactionsSource = new MatTableDataSource(this.customerInfoData.transactions);
+          this.CustomerTransactionsSource.paginator = this.paginator;
+          this.CustomerTransactionsSource.sort = this.sorter;    
 
           this.f.name.setValue(customer.name);
           this.f.mobile.setValue(customer.mobile);
@@ -159,5 +174,57 @@ export class CustomerinfoComponent implements OnInit {
     } else {
       return;
     }
+  }
+
+  get_customer_transactions(transactions) {
+    if(!transactions) return [];
+
+    let customer_transactions:Transaction[] = [];
+    let balance: number = 0;
+
+    for (let index = 0; index < transactions.length; index++) {
+      const transaction = transactions[index];
+      
+      const cust_trans = new Transaction();
+      if(parseInt(transaction.id, 10) > 0) {
+        if(transaction.dr_cr_type === 'DR') {
+          balance = balance - parseFloat(transaction.amount);
+        }
+        else if(transaction.dr_cr_type === 'CR') {
+          balance = balance + parseFloat(transaction.amount);
+        }
+        
+        cust_trans.wallet_id = transaction.wallet_id;
+        cust_trans.allowed_transactions = transaction.allowed_transactions;
+        cust_trans.amount = transaction.amount;
+        cust_trans.balance = balance;
+        cust_trans.bank = transaction.bank;
+        cust_trans.branch = transaction.branch;
+        cust_trans.date = transaction.date;
+        cust_trans.dr_cr_type = transaction.dr_cr_type;
+        cust_trans.narration = transaction.narration;
+        cust_trans.sponsoring_companyid = transaction.sponsoring_companyid;
+        cust_trans.status = transaction.status;
+        cust_trans.target_accountid = transaction.target_accountid;
+        cust_trans.target_bank_transid = transaction.target_bank_transid;
+        cust_trans.target_companyid = transaction.target_companyid;
+        cust_trans.trans_document_id = transaction.trans_document_id;
+        cust_trans.trans_id = transaction.trans_id;
+        cust_trans.trans_ref_id = transaction.trans_ref_id;
+        cust_trans.trans_ref_type = transaction.trans_ref_type;
+        cust_trans.trans_tracking_id = transaction.trans_tracking_id;
+        cust_trans.trans_type = transaction.trans_type;
+        cust_trans.wallet_status = transaction.wallet_status;
+        cust_trans.wallet_type = transaction.wallet_type;
+
+        customer_transactions.push(cust_trans);
+      }
+    }
+
+    return customer_transactions;
+  }
+
+  onSelectedTabChanged(tabindex) {
+    console.log(tabindex);
   }
 }

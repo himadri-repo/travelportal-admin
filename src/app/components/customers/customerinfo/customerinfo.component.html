@@ -8,99 +8,178 @@
 <!-- <h4 class="display-4"></h4>
 <hr> -->
 <mat-dialog-content>
-<form [formGroup]="custinfoform" autocomplete="off" (ngSubmit)="onSubmit()" novalidate>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="form-group">
-            <label>Name</label>
-            <input name="name" formControlName="name" class="form-control" required>
-            <div *ngIf="submitted && f.name.errors" class="alert alert-danger">
-                <div *ngIf="f.name.errors.required">Name can't be empty</div>
+  <mat-tab-group animationDuration="2000ms" [(selectedIndex)]="tabindex" (selectedIndexChange)="onSelectedTabChanged($event)">
+    <mat-tab label="Customer Information" style="width: 100%;">
+      <form [formGroup]="custinfoform" autocomplete="off" (ngSubmit)="onSubmit()" novalidate>
+          <div class="row no-gutters justify-content-between">
+            <div class="col-md-6">
+              <div class="form-group">
+                  <label>Name</label>
+                  <input name="name" formControlName="name" class="form-control" required>
+                  <div *ngIf="submitted && f.name.errors" class="alert alert-danger">
+                      <div *ngIf="f.name.errors.required">Name can't be empty</div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Mobile</label>
+                  <input name="mobile" formControlName="mobile" class="form-control" required>
+                  <div *ngIf="submitted && f.mobile.errors" class="alert alert-danger">
+                      <div *ngIf="f.mobile.errors.required">Please provide mobile number, as it is mandatory.</div>
+                      <div *ngIf="f.mobile.errors.uniqueMatch">Mobile and Email must be unique</div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Password</label>
+                  <input type="password" name="password" formControlName="password" class="form-control" required>
+                  <div *ngIf="submitted && f.password.errors" class="alert alert-danger">
+                      <div *ngIf="f.password.errors.required">Password can't be empty</div>
+                  </div>
+              </div>
+              <div class="form-group" style="width: 50%; float: left; z-index: 9999;">
+                  <label>Active</label>
+                  <input type="checkbox" name="active" formControlName="active" class="form-check-input-control">
+              </div>
+              <div class="form-group" style="width: 50%; float: right; z-index: 9999;">
+                <label>Allow Credit</label>
+                <input type="checkbox" name="credit_ac" formControlName="credit_ac" class="form-check-input-control">
+              </div>
+              <div class="form-group">
+                <label>Address</label>
+                <textarea name="address" id="address" formControlName="address" class="form-control" rows="3" cols="10"></textarea>
+              </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label>Mobile</label>
-            <input name="mobile" formControlName="mobile" class="form-control" required>
-            <div *ngIf="submitted && f.mobile.errors" class="alert alert-danger">
-                <div *ngIf="f.mobile.errors.required">Please provide mobile number, as it is mandatory.</div>
-                <div *ngIf="f.mobile.errors.uniqueMatch">Mobile and Email must be unique</div>
+            <div class="col-md-5">
+              <div class="form-group">
+                  <label>Email</label>
+                  <input name="email" formControlName="email" class="form-control" required>
+                  <div *ngIf="submitted && f.email.errors" class="alert alert-danger">
+                      <div *ngIf="f.email.errors.required">Please provide your email id</div>
+                      <div *ngIf="f.email.errors.uniqueMatch">Mobile and Email must be unique</div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Customer is a</label>
+                  <select name="type" formControlName="type" class="form-control">
+                    <option value="-1">-- Select --</option>
+                    <option value="B2B">Travel Agent</option>
+                    <option value="B2C">Retail Customer</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label>Confirm Password</label>
+                  <input type="password" name="password1" formControlName="password1" class="form-control" required>
+                  <div *ngIf="submitted && f.password1.errors" class="alert alert-danger">
+                      <div *ngIf="f.password1.errors.required">Comfirm password is mandatory and it should match with password</div>
+                      <div *ngIf="f.password1.errors.mustMatch">Passwords must match</div>
+                  </div>
+              </div>
+              <div class="form-group">
+                <label>Rateplan</label>
+                <select name="rateplanid" formControlName="rateplanid" class="form-control">
+                  <option value="-1">-- Select --</option>
+                  <option *ngFor="let rp of rateplans" value="{{rp.id}}">{{rp.planname}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>State</label>
+                <select name="state" formControlName="state" class="form-control">
+                  <option value="-1">-- Select --</option>
+                  <option *ngFor="let state of states" value="{{state.id}}">{{state.datavalue}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Country</label>
+                <select name="country" formControlName="country" class="form-control">
+                  <option value="-1">-- Select --</option>
+                  <option *ngFor="let country of countries" value="{{country.id}}">{{country.datavalue}}</option>
+                </select>
+              </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" formControlName="password" class="form-control" required>
-            <div *ngIf="submitted && f.password.errors" class="alert alert-danger">
-                <div *ngIf="f.password.errors.required">Password can't be empty</div>
+          </div>
+          <div class="row no-gutters justify-content-between">
+            <div class="col-md-12" style="float:right; border: 1px solid #cdcdcd; padding: 15ps 0px;">
+              <div style="float:right">
+                <button type="submit" class="btn btn-sm btn-primary active" style="margin: 0px 10px">Submit</button>
+                <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Cancel</button>
+              </div>
             </div>
-        </div>
-        <div class="form-group" style="width: 50%; float: left; z-index: 9999;">
-            <label>Active</label>
-            <input type="checkbox" name="active" formControlName="active" class="form-check-input-control">
-        </div>
-        <div class="form-group" style="width: 50%; float: right; z-index: 9999;">
-          <label>Allow Credit</label>
-          <input type="checkbox" name="credit_ac" formControlName="credit_ac" class="form-check-input-control">
-        </div>
-        <div class="form-group">
-          <label>Address</label>
-          <textarea name="address" id="address" formControlName="address" class="form-control" rows="3" cols="10"></textarea>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-group">
-            <label>Email</label>
-            <input name="email" formControlName="email" class="form-control" required>
-            <div *ngIf="submitted && f.email.errors" class="alert alert-danger">
-                <div *ngIf="f.email.errors.required">Please provide your email id</div>
-                <div *ngIf="f.email.errors.uniqueMatch">Mobile and Email must be unique</div>
+          </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="Transactions" style="width: 100%;">
+      <mat-table [dataSource]="CustomerTransactionsSource" matSort class="mat-elevation-z8 field-content">
+
+        <!-- Index Column -->
+        <ng-container matColumnDef="rowIndex">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 5%;" mat-sort-header> Sl # </mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index" style="flex: 5%;"> 
+            <div> {{i+1}} </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Trans.Date Column -->
+        <ng-container matColumnDef="trans_date">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 15%;" mat-sort-header> Trans.Date </mat-header-cell>
+          <mat-cell *matCellDef="let element;" style="flex: 15%;"> 
+            <div> {{element.date}} </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Trans.Id Column -->
+        <!-- <ng-container matColumnDef="trans_id">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%;" mat-sort-header> Trans.Id </mat-header-cell>
+          <mat-cell *matCellDef="let element;" style="flex: 10%;"> 
+            <div> {{element.trans_id}} </div>
+          </mat-cell>
+        </ng-container> -->
+
+        <!-- Narration Column -->
+        <ng-container matColumnDef="narration">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 40%;" mat-sort-header> Narration </mat-header-cell>
+          <mat-cell *matCellDef="let element;" style="flex: 40%;"> 
+            <div>
+              <div class=""> {{element.narration}} </div>
+              <div class=""> (Trans.Id: {{element.trans_id}}) </div>
             </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Debit Column -->
+        <ng-container matColumnDef="debit">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%;" mat-sort-header> Debit </mat-header-cell>
+          <mat-cell *matCellDef="let element;" style="flex: 10%;"> 
+            <div> {{element.dr_cr_type==='DR' ? element.amount : 0}} </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Credit Column -->
+        <ng-container matColumnDef="credit">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%;" mat-sort-header> Credit </mat-header-cell>
+          <mat-cell *matCellDef="let element;" style="flex: 10%;"> 
+            <div> {{element.dr_cr_type==='CR' ? element.amount : 0}} </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Balance Column -->
+        <ng-container matColumnDef="balance">
+          <mat-header-cell *matHeaderCellDef class="mat-header-cell-style table-header" style="flex: 10%;" mat-sort-header> Balance </mat-header-cell>
+          <mat-cell *matCellDef="let element;" style="flex: 10%;"> 
+            <div> {{element.balance>0 ? element.balance+' CR' : -element.balance+' DR'}} </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+      <div class="row no-gutters justify-content-between">
+        <div class="col-md-12" style="float:right; border: 1px solid #cdcdcd; padding: 15ps 0px;">
+          <div style="float:right">
+            <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Close</button>
+          </div>
         </div>
-        <div class="form-group">
-            <label>Customer is a</label>
-            <select name="type" formControlName="type" class="form-control">
-              <option value="-1">-- Select --</option>
-              <option value="B2B">Travel Agent</option>
-              <option value="B2C">Retail Customer</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Confirm Password</label>
-            <input type="password" name="password1" formControlName="password1" class="form-control" required>
-            <div *ngIf="submitted && f.password1.errors" class="alert alert-danger">
-                <div *ngIf="f.password1.errors.required">Comfirm password is mandatory and it should match with password</div>
-                <div *ngIf="f.password1.errors.mustMatch">Passwords must match</div>
-            </div>
-        </div>
-        <div class="form-group">
-          <label>Rateplan</label>
-          <select name="rateplanid" formControlName="rateplanid" class="form-control">
-            <option value="-1">-- Select --</option>
-            <option *ngFor="let rp of rateplans" value="{{rp.id}}">{{rp.planname}}</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>State</label>
-          <select name="state" formControlName="state" class="form-control">
-            <option value="-1">-- Select --</option>
-            <option *ngFor="let state of states" value="{{state.id}}">{{state.datavalue}}</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Country</label>
-          <select name="country" formControlName="country" class="form-control">
-            <option value="-1">-- Select --</option>
-            <option *ngFor="let country of countries" value="{{country.id}}">{{country.datavalue}}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12" style="float:right; border: 1px solid #cdcdcd; padding: 15ps 0px;">
-        <div style="float:right">
-          <button type="submit" class="btn btn-sm btn-primary active" style="margin: 0px 10px">Submit</button>
-          <button type="button" class="btn btn-sm btn-secondary" (click)="closeDialog()" style="margin: 0px 10px">Cancel</button>
-        </div>
-      </div>
-    </div>
-</form>
+      </div>    
+    </mat-tab>
+  </mat-tab-group>
 </mat-dialog-content>
