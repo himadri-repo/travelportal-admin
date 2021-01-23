@@ -17,6 +17,7 @@ import { UseractivityComponent } from './components/useractivity/useractivity.co
 import { PnrsearchComponent } from './components/pnrsearch/pnrsearch.component';
 import { ProfileComponent } from './components/general/profile/profile.component';
 import { UserQueryComponent } from './components/users/user-query/user-query.component';
+import { GsheetComponent } from './components/tickets/integration/gsheet/gsheet.component';
 
 const routes: Routes = [
   {path: 'users', component: UsersComponent},
@@ -41,6 +42,7 @@ const routes: Routes = [
   {path: 'admin/userquery', component: UserQueryComponent},
   {path: 'admin/pnrsearch', component: PnrsearchComponent},
   {path: 'admin/:uuid', component: AppComponent},
+  {path: 'admin/integration/gsheets', component: GsheetComponent},
   {path: '**', component: AppComponent}
 ];
 

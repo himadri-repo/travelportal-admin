@@ -72,6 +72,7 @@ import { CompanyinfoComponent } from './components/general/profile/companyinfo/c
 import { BanklistComponent } from './components/general/profile/banklist/banklist.component';
 import { BankinfoComponent } from './components/general/profile/bankinfo/bankinfo.component';
 import { UserQueryComponent } from './components/users/user-query/user-query.component';
+import { GsheetComponent } from './components/tickets/integration/gsheet/gsheet.component';
 
 @NgModule({
   declarations: [
@@ -106,7 +107,8 @@ import { UserQueryComponent } from './components/users/user-query/user-query.com
     CompanyinfoComponent,
     BanklistComponent,
     BankinfoComponent,
-    UserQueryComponent
+    UserQueryComponent,
+    GsheetComponent
   ],
   imports: [
     BrowserModule,

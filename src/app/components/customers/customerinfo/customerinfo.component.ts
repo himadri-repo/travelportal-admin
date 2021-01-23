@@ -28,6 +28,8 @@ export class CustomerinfoComponent implements OnInit {
   public states: Metadata[];
   public countries: Metadata[];
   public CustomerTransactionsSource: MatTableDataSource<Transaction>;
+  public message: string;
+  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sorter: MatSort;
 
@@ -226,5 +228,9 @@ export class CustomerinfoComponent implements OnInit {
 
   onSelectedTabChanged(tabindex) {
     console.log(tabindex);
+  }
+
+  AddTransaction(userid:number = -1) {
+    alert('Feature coming soon...');
   }
 }

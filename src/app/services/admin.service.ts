@@ -14,6 +14,7 @@ import { RateplanDetail } from '../models/rateplandetail';
 import { Service } from '../models/service';
 import { Metadata } from '../models/metadata';
 import { WalletTransaction } from '../models/wallet_transaction';
+import { GoogleSheet } from '../models/googlesheet';
 
 @Injectable({
   providedIn: 'root'
@@ -507,5 +508,13 @@ export class AdminService {
 
   public getUserQueries(companyid: number, status: number, filter: any): any {
     return this.httpClient.post(this.baseUrl + `/users/queries`, {companyid, filter, status});
+  }
+
+  public getGSheetQueries(companyid: number, status: number, filter: any): any {
+    return this.httpClient.get(this.baseUrl + `/company/links/gsheet/${companyid}/${status}`);
+  }
+
+  public changeStatusOfGsheet(gsheetid: number, targetCompanyid: number, gsheetRecord: GoogleSheet): any {
+      return this.httpClient.post(this.baseUrl + `/company/${targetCompanyid}/links/gsheet/${gsheetid}`, gsheetRecord);
   }
 }

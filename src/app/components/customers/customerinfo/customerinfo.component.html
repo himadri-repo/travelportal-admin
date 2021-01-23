@@ -107,6 +107,14 @@
       </form>
     </mat-tab>
     <mat-tab label="Transactions" style="width: 100%;">
+      <mat-toolbar color="default" class="mat-elevation-z1 no-gutters" style="height:35px;">
+        <span class="badge badge-info">{{message}}</span>
+        <span class="example-spacer"></span>
+        <a class="btn btn-sm btn-success text-white" (click)="AddTransaction(this.currentUser.id)" role="button">
+          <i class="fa fa-plus" aria-hidden="true"></i> Add Transaction
+        </a>
+      </mat-toolbar>
+
       <mat-table [dataSource]="CustomerTransactionsSource" matSort class="mat-elevation-z8 field-content">
 
         <!-- Index Column -->
